@@ -10,11 +10,8 @@ package ws.codewash.reader;
 import ws.codewash.parser.Parsable;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.*;
 import java.util.zip.*;
-import java.util.Enumeration;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 public class ZipReader implements Parsable {
     private ZipFile zipFile;
@@ -62,7 +59,7 @@ public class ZipReader implements Parsable {
     }
 
     @Override
-    public ArrayList<Source> getSources() {
+    public List<Source> getSources() {
         return sources();
     }
 }

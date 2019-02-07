@@ -3,8 +3,8 @@ package ws.codewash.parser;
 
 import ws.codewash.reader.Source;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface Parsable {
-    ArrayList<Source> getSources();
+    List<Source> getSources();
 }

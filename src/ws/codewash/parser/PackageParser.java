@@ -1,12 +1,11 @@
 package ws.codewash.parser;
 
-import ws.codewash.java.CWAbstractClass;
-import ws.codewash.java.CWClass;
 import ws.codewash.java.CWPackage;
 import ws.codewash.reader.Source;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,8 +16,8 @@ public class PackageParser extends Parser {
         this.regex = regex;
     }
 
-    public HashMap<String, CWPackage> parsePackages(Parsable sources) {
-        HashMap<String, CWPackage> packages = new HashMap<>();
+    public Map<String, CWPackage> parsePackages(Parsable sources) {
+        Map<String, CWPackage> packages = new HashMap<>();
         boolean comment = false;
         boolean found;
 
