@@ -5,7 +5,7 @@
  * @author
  */
 
-package ws.codewash.java.reader;
+package ws.codewash.reader;
 
 import java.io.*;
 import java.util.Arrays;

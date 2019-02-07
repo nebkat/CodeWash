@@ -6,7 +6,7 @@
  * @author Jakub Gajewski
  */
 
-package ws.codewash.java.reader;
+package ws.codewash.reader;
 
 import java.util.Iterator;
 import java.util.Scanner;
