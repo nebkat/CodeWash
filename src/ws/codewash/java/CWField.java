@@ -1,7 +1,6 @@
 package ws.codewash.java;
 
 public class CWField extends CWMember {
-
     private final CWType mType;
 
     public CWField(CWClass parent, CWAccessModifier accessModifier, boolean _final, String name, CWType type) {
@@ -9,4 +8,7 @@ public class CWField extends CWMember {
         mType = type;
     }
 
+    public CWType getType() {
+    	return mType;
+	}
 }

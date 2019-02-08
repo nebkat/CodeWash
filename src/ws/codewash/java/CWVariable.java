@@ -8,4 +8,12 @@ public class CWVariable {
         mType = type;
         mName = name;
     }
+
+    public CWType getType() {
+    	return mType;
+	}
+
+	public String getName() {
+    	return mName;
+	}
 }

@@ -17,4 +17,8 @@ public class CWClass extends CWAbstractClass {
     public void setSuper(CWClass _super) {
         mSuper = _super;
     }
+
+    public boolean isAbstract() {
+    	return mAbstract;
+	}
 }

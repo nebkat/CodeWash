@@ -15,4 +15,24 @@ public abstract class CWMember {
         mFinal = _final;
         mName = name;
     }
+
+    public CWClass getParent() {
+    	return mParent;
+	}
+
+	public CWAccessModifier getAccess() {
+    	return mAccessModifier;
+	}
+
+	public String getName() {
+    	return mName;
+	}
+
+	public boolean isFinal() {
+    	return mFinal;
+	}
+
+	public List<CWAnnotation> getAnnotations() {
+    	return mAnnotations;
+	}
 }

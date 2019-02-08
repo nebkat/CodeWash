@@ -4,33 +4,39 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CWPackage implements CWClassContainer {
-
-    private final String mName;
-
     private CWPackage mContainer;
-    private final Set<CWPackage> mPackages = new HashSet<>();
+	private final String mName;
+    private final Set<CWPackage> mSubPackages = new HashSet<>();
     private final Set<CWClass> mClasses = new HashSet<>();
 
     public CWPackage(String name){
         mName = name;
     }
 
-    public void addPackage(CWPackage cwPackage) {
-        mPackages.add(cwPackage);
+    public void addSubPackage(CWPackage cwPackage) {
+        mSubPackages.add(cwPackage);
     }
 
-    public void addClass(CWClass cwClass) {
-        mClasses.add(cwClass);
+    public Set<CWPackage> getSubPackages() {
+    	return mSubPackages;
+	}
+
+    public void addClass(CWClass _class) {
+        mClasses.add(_class);
     }
 
-    public void setContainer(CWPackage container) {
-        mContainer = container;
-    }
+    public Set<CWClass> getClasses() {
+    	return mClasses;
+	}
 
     @Override
     public CWClassContainer getContainer() {
         return mContainer;
     }
+
+	public void setContainer(CWPackage container) {
+		mContainer = container;
+	}
 
     @Override
     public String toString() {

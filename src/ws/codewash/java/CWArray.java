@@ -6,4 +6,8 @@ public class CWArray implements CWType {
     public CWArray(CWType type) {
         mType = type;
     }
+
+    private CWType getType() {
+    	return mType;
+	}
 }

@@ -18,4 +18,12 @@ public abstract class CWAbstractClass implements CWType, CWClassContainer {
     public CWClassContainer getContainer() {
         return mContainer;
     }
+
+    private String getName() {
+    	return mName;
+	}
+
+	private CWAccessModifier getAccess() {
+    	return mAccessModifier;
+	}
 }
