@@ -12,24 +12,20 @@ import java.util.Iterator;
 import java.util.Scanner;
 
 public class Source implements Iterable<String>{
-    private String name;
-    private String content;
+    private String mName;
+    private String mContent;
 
-    public Source(String name){
-        this.name = name;
-    }
-
-    public Source(String name, String content){
-        this.name = name;
-        this.content = content;
+    Source(String name, String content){
+        mName = name;
+        mContent = content;
     }
 
     public String getName(){
-        return name;
+        return mName;
     }
 
     public String getContent(){
-        return content;
+        return mContent;
     }
 
     @Override

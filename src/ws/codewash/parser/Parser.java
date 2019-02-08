@@ -1,7 +1,10 @@
 package ws.codewash.parser;
 
 import ws.codewash.java.CWSourceTree;
+import ws.codewash.reader.Source;
+import ws.codewash.reader.SourceReadable;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 public abstract class Parser {
@@ -9,9 +12,9 @@ public abstract class Parser {
     protected static final Pattern CLOSE_COMMENT = Pattern.compile("\\*/");
     protected static final Pattern LINE_COMMENT = Pattern.compile("(" + Regex.WHITE_SPACE + "*//)");
 
-    public static CWSourceTree parse (Parsable javaDirectory) {
+    public static CWSourceTree parse(List<Source> sources) {
         PackageParser packageParser = new PackageParser("(" + Regex.WHITE_SPACE + "*" + Keywords.PACKAGE + "+" + Regex.WHITE_SPACE + "+" + Regex.PACKAGE_FORMATTING + "+[;])");
-        packageParser.parsePackages(javaDirectory);
+        packageParser.parsePackages(sources);
 
         CWSourceTree cb = new CWSourceTree();
         return cb;
