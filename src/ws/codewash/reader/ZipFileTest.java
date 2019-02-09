@@ -1,5 +1,7 @@
 package ws.codewash.reader;
 
+import ws.codewash.parser.Parser;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +22,8 @@ public class ZipFileTest {
 			return;
 		}
 
+
+		/*
 		Scanner scanner = new Scanner(System.in);
 		for (Source source : list) {
 			System.out.println(source.getName());
@@ -32,5 +36,7 @@ public class ZipFileTest {
 			System.out.println("\nPress ENTER to continue\n");
 			scanner.nextLine();
 		}
+		*/
+        Parser.parse(zipReader.getSources());
 	}
 }
