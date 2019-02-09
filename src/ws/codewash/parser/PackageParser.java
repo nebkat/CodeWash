@@ -2,35 +2,30 @@ package ws.codewash.parser;
 
 import ws.codewash.java.CWPackage;
 import ws.codewash.reader.Source;
-import ws.codewash.reader.SourceReadable;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PackageParser extends Parser {
-    private final String regex;
+	private final Pattern mPackagePattern = Pattern.compile("\\s*package+\\s+(?<"+Keywords.PACKAGE+">[a-zA-Z_][a-zA-Z0-9_]*(?:.[a-zA-Z_][a-zA-Z_0-9]*)*)\\s*;");
 
-    public PackageParser(String regex) {
-        this.regex = regex;
-    }
-
-    public Map<String, CWPackage> parsePackages(List<Source> sources) {
+    public Map<String, CWPackage> parsePackages(Map<Source, String> sources) {
         Map<String, CWPackage> packages = new HashMap<>();
-        boolean comment = false;
         boolean found;
 
-        for (Source s : sources) {
-            found = false;
-            Iterator<String> i = s.iterator();
-            while (i.hasNext() && !found) {
-                String line = i.next();
+        for (Source s : sources.keySet()) {
+			found = false;
+			Scanner scanner = new Scanner(sources.get(s));
 
-                if (requiredLine(line, comment)) {
-                    String name = getPackageName(line);
+            while (scanner.hasNextLine() && !found) {
+                String line = scanner.nextLine();
+                Matcher packageLine = mPackagePattern.matcher(line);
+
+                if (packageLine.find()) {
+                    String name = packageLine.group(Keywords.PACKAGE);
                     String packageName = "";
 
                     for (String pack : name.split("([.])")) {
@@ -48,8 +43,7 @@ public class PackageParser extends Parser {
                     }
                     found = true;
                 }
-
-                if (!i.hasNext()) {
+                if (!scanner.hasNextLine()) {
                     System.err.println("Couldn't parse package from: " + s.getName());
                 }
             }
@@ -60,47 +54,5 @@ public class PackageParser extends Parser {
         }
 
         return packages;
-    }
-
-    private boolean requiredLine(String line, boolean comment) {
-        if (line.isEmpty()) {
-            return false;
-        }
-
-        Pattern packagePattern = Pattern.compile(regex);
-        Matcher packageLine = packagePattern.matcher(line);
-
-        Matcher commentMatcher;
-        commentMatcher = comment ? CLOSE_COMMENT.matcher(line) : OPEN_COMMENT.matcher(line);
-
-        Matcher lineCommentMatcher = LINE_COMMENT.matcher(line);
-        if (lineCommentMatcher.find()) {
-            if (lineCommentMatcher.start() == 0) {
-                return false;
-            }
-        }
-
-        if (comment) {
-            if (commentMatcher.find()) {
-                String subLine = line.substring(commentMatcher.start());
-                return requiredLine(subLine, comment = false);
-            }
-            return false;
-        } else {
-            if (commentMatcher.find()) {
-                String subLine = line.substring(commentMatcher.start());
-                return requiredLine(subLine, comment = true);
-            } else return packageLine.find();
-        }
-    }
-
-    private String getPackageName(String line) {
-        Pattern packagePattern = Pattern.compile("(" + Regex.PACKAGE_FORMATTING + "+[;])");
-        Matcher packageMatcher = packagePattern.matcher(line);
-        String name = "";
-        if (packageMatcher.find()) {
-            name = packageMatcher.group().substring(0,packageMatcher.group().indexOf(";"));
-        }
-        return name;
     }
 }

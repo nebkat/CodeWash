@@ -2,25 +2,23 @@ package ws.codewash.parser;
 
 import ws.codewash.java.CWSourceTree;
 import ws.codewash.reader.Source;
-import ws.codewash.reader.SourceReadable;
 
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 public abstract class Parser {
-    protected static final Pattern OPEN_COMMENT = Pattern.compile("/\\*");
-    protected static final Pattern CLOSE_COMMENT = Pattern.compile("\\*/");
-    protected static final Pattern LINE_COMMENT = Pattern.compile("(" + Regex.WHITE_SPACE + "*//)");
-
     public static CWSourceTree parse(List<Source> sources) {
-        PackageParser packageParser = new PackageParser("(" + Regex.WHITE_SPACE + "*" + Keywords.PACKAGE + "+" + Regex.WHITE_SPACE + "+" + Regex.PACKAGE_FORMATTING + "+[;])");
-        packageParser.parsePackages(sources);
+        CommentParser c = new CommentParser();
+        Map<Source, String> cSources = c.parseComments(sources);
+
+		PackageParser packageParser = new PackageParser();
+		packageParser.parsePackages(cSources);
 
         CWSourceTree cb = new CWSourceTree();
         return cb;
     }
 
-    public static class Keywords {
+    final static public class Keywords {
         public static final String ABSTRACT = "abstract";
         public static final String ASSERT = "assert";
         public static final String BREAK = "break";
@@ -58,10 +56,10 @@ public abstract class Parser {
         public static final String VOID = "void";
         public static final String VOLATILE = "volatile";
         public static final String WHILE = "while";
-    }
 
-    protected static class Regex {
-        protected static final String WHITE_SPACE = "(\\s)";
-        protected static final String PACKAGE_FORMATTING = "([a-zA-z0-9_.])";
+        public static final String PUBLIC = "public";
+        public static final String PRIVATE = "private";
+        public static final String PROTECTED = "protected";
     }
 }
+
