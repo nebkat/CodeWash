@@ -24,10 +24,6 @@ public class CommentParser extends Parser {
 			}
 			newSources.put(s, content.toString());
 		}
-
-		for (Source s : sources) {
-			System.out.println(newSources.get(s));
-		}
 		return newSources;
 	}
 
