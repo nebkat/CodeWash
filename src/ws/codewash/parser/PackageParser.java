@@ -7,11 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PackageParser extends Parser {
-	private final Pattern mPackagePattern = Pattern.compile("\\s*package+\\s+(?<"+Keywords.PACKAGE+">[a-zA-Z_][a-zA-Z0-9_]*(?:.[a-zA-Z_][a-zA-Z_0-9]*)*)\\s*;");
-
     public Map<String, CWPackage> parsePackages(Map<Source, String> sources) {
         Map<String, CWPackage> packages = new HashMap<>();
         boolean found;
@@ -47,10 +44,6 @@ public class PackageParser extends Parser {
                     System.err.println("Couldn't parse package from: " + s.getName());
                 }
             }
-        }
-
-        for (String s : packages.keySet()) {
-            System.out.println(packages.get(s));
         }
 
         return packages;

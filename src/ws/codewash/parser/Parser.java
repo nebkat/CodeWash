@@ -5,16 +5,23 @@ import ws.codewash.reader.Source;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public abstract class Parser {
+	protected final Pattern mPackagePattern = Pattern.compile("\\s*package\\s+(?<"+Keywords.PACKAGE+">[a-zA-Z_][a-zA-Z0-9_]*(?:.[a-zA-Z_][a-zA-Z_0-9]*)*)\\s*;");
+
     public static CWSourceTree parse(List<Source> sources) {
-        CommentParser c = new CommentParser();
-        Map<Source, String> cSources = c.parseComments(sources);
+		CWSourceTree cb = new CWSourceTree();
+
+		CommentParser c = new CommentParser();
+		Map<Source, String> cSources = c.parseComments(sources);
 
 		PackageParser packageParser = new PackageParser();
-		packageParser.parsePackages(cSources);
+		cb.setPackages(packageParser.parsePackages(cSources));
 
-        CWSourceTree cb = new CWSourceTree();
+		CIEParser cieParser = new CIEParser();
+		cieParser.parseAbstractClass(cb,cSources);
+
         return cb;
     }
 
@@ -61,5 +68,6 @@ public abstract class Parser {
         public static final String PRIVATE = "private";
         public static final String PROTECTED = "protected";
     }
+
 }
 
