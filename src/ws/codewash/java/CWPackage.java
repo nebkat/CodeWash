@@ -29,6 +29,10 @@ public class CWPackage implements CWClassContainer {
     	return mClasses;
 	}
 
+	public String getName() {
+    	return mName;
+	}
+
     @Override
     public CWClassContainer getContainer() {
         return mContainer;
