@@ -25,7 +25,7 @@ public abstract class Parser {
 		cb.setPackages(packageParser.parsePackages(cSources));
 
 		CIEParser cieParser = new CIEParser();
-		cieParser.parseAbstractClass(cb,cSources);
+		cb.setAbstractClasses(cieParser.parseAbstractClass(cb,cSources));
 
         return cb;
     }
