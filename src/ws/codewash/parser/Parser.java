@@ -1,5 +1,6 @@
 package ws.codewash.parser;
 
+import ws.codewash.java.CWAccessModifier;
 import ws.codewash.java.CWSourceTree;
 import ws.codewash.reader.Source;
 
