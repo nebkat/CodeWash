@@ -7,8 +7,6 @@ public class CWExternalClass implements Extendable {
 	public CWExternalClass(Class _class, String name) {
 		mClass = _class;
 		mName = name;
-
-		mClass.getInterfaces();
 	}
 
 	@Override

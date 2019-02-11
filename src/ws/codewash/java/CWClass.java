@@ -1,7 +1,12 @@
 package ws.codewash.java;
 
-public class CWClass extends CWAbstractClass implements Extendable {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class CWClass extends CWAbstractClass implements Extendable, Implementable {
     private Extendable mSuper = null;
+	private List<Implementable> mInterfaces = new ArrayList<>();
 
     private final boolean mAbstract;
     private final boolean mStatic;
@@ -22,6 +27,15 @@ public class CWClass extends CWAbstractClass implements Extendable {
 
     public boolean isAbstract() {
     	return mAbstract;
+	}
+
+	public void addInterface(Implementable implementable) {
+		mInterfaces.add(implementable);
+	}
+
+	@Override
+	public List<Object> getInterfaces() {
+		return Collections.singletonList(mInterfaces);
 	}
 
 	@Override
