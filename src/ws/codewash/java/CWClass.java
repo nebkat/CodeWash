@@ -1,7 +1,7 @@
 package ws.codewash.java;
 
-public class CWClass extends CWAbstractClass {
-    private CWClass mSuper;
+public class CWClass extends CWAbstractClass implements Extendable {
+    private CWClass mSuper = null;
 
     private final boolean mAbstract;
     private final boolean mStatic;
@@ -12,7 +12,7 @@ public class CWClass extends CWAbstractClass {
         mStatic = _static;
     }
 
-    public CWClass getSuper() {
+    public Extendable getSuper() {
         return mSuper;
     }
 
@@ -24,9 +24,12 @@ public class CWClass extends CWAbstractClass {
     	return mAbstract;
 	}
 
+
 	@Override
 	public String toString() {
-        return mName + ":\n" +
-                mAccessModifier + " " + (mStatic ? "STATIC " : "") + (mFinal ? "FINAL " : "") + (mAbstract ? "ABSTRACT " : "");
+        return "class " + mName + ":\n" +
+                mAccessModifier + " " + (mStatic ? "STATIC " : "") + (mFinal ? "FINAL " : "") +
+                (mAbstract ? "ABSTRACT " : "") + "\n" +
+                (mSuper != null ? "EXTENDS " + mSuper.mName + "\n" : "");
     }
 }
