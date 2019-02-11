@@ -21,4 +21,10 @@ public class CWExternalInterface implements Implementable {
 	public String getName() {
 		return mName;
 	}
+
+	@Override
+	public String toString() {
+		return "extInterface " + mName + ":\n" +
+				mClass.getPackageName() + "\n";
+	}
 }

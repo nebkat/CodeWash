@@ -12,7 +12,7 @@ public class CWInterface extends CWAbstractClass implements Implementable {
     }
 
     public void addInterface(Implementable implementable) {
-    	mInterfaces.add(implementable);
+		mInterfaces.add(implementable);
 	}
 
 	@Override
@@ -28,6 +28,19 @@ public class CWInterface extends CWAbstractClass implements Implementable {
     @Override
     public String toString() {
         return "interface " + mName + ":\n" +
-                mAccessModifier + " " + (mFinal ? "FINAL " : "");
+				getContainer() + "\n" +
+                mAccessModifier + " " + (mFinal ? "FINAL \n" : "\n") +
+				(mInterfaces.isEmpty() ? "" : "IMPLEMENTS: " + printInterfaces() + "\n");
     }
+
+	private String printInterfaces() {
+    	StringBuilder s = new StringBuilder();
+    	for (Implementable i : mInterfaces) {
+    		s.append(i.getName());
+    		if (mInterfaces.indexOf(i) != mInterfaces.size()-1) {
+    			s.append(", ");
+			}
+		}
+		return s.toString();
+	}
 }

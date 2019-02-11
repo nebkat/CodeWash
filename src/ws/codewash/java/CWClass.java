@@ -46,8 +46,21 @@ public class CWClass extends CWAbstractClass implements Extendable, Implementabl
 	@Override
 	public String toString() {
         return "class " + mName + ":\n" +
+				getContainer() + "\n" +
                 mAccessModifier + " " + (mStatic ? "STATIC " : "") + (mFinal ? "FINAL " : "") +
                 (mAbstract ? "ABSTRACT " : "") + "\n" +
-                (mSuper != null ? "EXTENDS " + mSuper.getName() + "\n" : "");
-    }
+                (mSuper != null ? "EXTENDS " + mSuper.getName() + "\n" : "") +
+				(mInterfaces.isEmpty() ? "" : "IMPLEMENTS: " + printInterfaces() + "\n");
+	}
+
+	private String printInterfaces() {
+		StringBuilder s = new StringBuilder();
+		for (Implementable i : mInterfaces) {
+			s.append(i.getName());
+			if (mInterfaces.indexOf(i) != mInterfaces.size()-1) {
+				s.append(", ");
+			}
+		}
+		return s.toString();
+	}
 }
