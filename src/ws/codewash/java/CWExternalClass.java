@@ -7,10 +7,17 @@ public class CWExternalClass implements Extendable {
 	public CWExternalClass(Class _class, String name) {
 		mClass = _class;
 		mName = name;
+
+		mClass.getInterfaces();
 	}
 
 	@Override
 	public Class getSuper() {
 		return mClass.getSuperclass();
+	}
+
+	@Override
+	public String getName() {
+		return mName;
 	}
 }

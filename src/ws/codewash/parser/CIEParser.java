@@ -3,11 +3,7 @@ package ws.codewash.parser;
 import ws.codewash.java.*;
 import ws.codewash.reader.Source;
 
-import javax.swing.plaf.synth.SynthTextAreaUI;
-import java.security.Key;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,12 +12,16 @@ public class CIEParser extends Parser {
 			"(\\s+extends\\s+(?<super>[a-zA-Z_][a-zA-Z0-9_]*))?\\s*" +
 			"(\\s+implements\\s+(?<interface>[a-zA-Z_][a-zA-Z0-9_]*\\s*(?:,\\s*[a-zA-Z_][a-zA-Z0-9_]*)*))?\\s*\\{");
 
-	private final Pattern mInterfacePattern = Pattern.compile("\\s*interface\\s+(?<name>[a-zA-Z_][a-zA-Z0-9_]*)\\s+" +
-			"(extends\\s+(?<interface>[a-zA-Z_][a-zA-Z0-9_]*\\s*(?:,\\s*[a-zA-Z_][a-zA-Z0-9_]*)*))?\\s*");
+	private final Pattern mInterfacePattern = Pattern.compile("\\s*interface\\s+(?<name>[a-zA-Z_][a-zA-Z0-9_]*)\\s*+" +
+			"(\\+extends\\s+(?<interface>[a-zA-Z_][a-zA-Z0-9_]*\\s*(?:,\\s*[a-zA-Z_][a-zA-Z0-9_]*)*))?\\s*");
 
 
 	Map<String, CWAbstractClass> parseAbstractClass(CWSourceTree sourceTree, Map<Source, String> sources) {
 		Map<String, CWAbstractClass> classes = new HashMap<>();
+		Map<CWAbstractClass, Map<String,String>> classImports = new HashMap<>();
+		Map<CWAbstractClass, List<String>> wildcardImports = new HashMap<>();
+		Map<CWAbstractClass, String> extendedClasses = new HashMap<>();
+		Map<CWAbstractClass, List<String>> implementedClasses = new HashMap<>();
 
 		for (Source s : sources.keySet()) {
 			CWPackage cwPackage = null;
@@ -29,7 +29,6 @@ public class CIEParser extends Parser {
 			boolean _static = false;
 			boolean _final = false;
 			boolean _abstract = false;
-			Scanner scanner = new Scanner(sources.get(s));
 
 			String source = sources.get(s);
 			Matcher packageMatcher = mPackagePattern.matcher(source);
@@ -38,7 +37,20 @@ public class CIEParser extends Parser {
 			Matcher openMatcher = mOpenBrace.matcher(source);
 			Matcher closeMatcher = mCloseBrace.matcher(source);
 
-			System.out.println(s.getName());
+			Map<String, String> imports = new HashMap<>();
+			List<String> wildcards = new ArrayList<>();
+
+			Matcher importMatcher = mImportPattern.matcher(source);
+			while (importMatcher.find()) {
+				String importPackage = importMatcher.group(Keywords.PACKAGE);
+				String importName = importPackage.split("\\.")[importPackage.split("\\.").length-1];
+
+				if (importName.equals("*")) {
+					wildcards.add(importPackage.substring(0,importPackage.length()-1));
+				} else {
+					imports.put(importName, importPackage);
+				}
+			}
 
 			while (source.length() > 0) {
 				if (packageMatcher.find() || classMatcher.find() || modifierMatcher.find()) {
@@ -49,29 +61,40 @@ public class CIEParser extends Parser {
 						if (cwPackage == null) {
 							cwPackage = sourceTree.getPackages().get(packageMatcher.group(Keywords.PACKAGE));
 							source = source.substring(packageMatcher.end());
-							System.out.println(cwPackage);
 						} else {
 							System.err.println("Error parsing " + s.getName() + " | Package statement already declared..");
 							break;
 						}
 					} else if (classMatcher.find() && classMatcher.start() == 0) {
-						//System.out.println(classMatcher.group());
 						String name = classMatcher.group("name");
 						String fullName = cwPackage == null ? name : cwPackage.getName() + "." + name;
 
-						System.out.println("\n\n" + " ");
 						classes.put(fullName, new CWClass(cwPackage,accessModifier,_final,_abstract,_static,name));
-						System.out.println(classes.get(fullName));
-						if (classMatcher.group("super") != null) {
-							System.out.println("Extends: " + classMatcher.group("super"));
+						classImports.put(classes.get(fullName),imports);
+						wildcardImports.put(classes.get(fullName), wildcards);
+
+						if (classMatcher.group(Keywords.SUPER) != null) {
+							extendedClasses.put(classes.get(fullName), classMatcher.group(Keywords.SUPER));
 						}
-						if (classMatcher.group("interface") != null) {
-							System.out.println("Implements: " + classMatcher.group("interface"));
+						if (classMatcher.group(Keywords.INTERFACE) != null) {
+							String interfaceStrings = classMatcher.group(Keywords.INTERFACE);
+							List<String> interfaces = new ArrayList<>();
+							if (interfaceStrings.split(",\\s*").length > 0) {
+								interfaces.addAll(Arrays.asList(interfaceStrings.split(",\\s*")));
+							} else {
+								interfaces.add(interfaceStrings.replaceAll("\\s",""));
+							}
+							implementedClasses.put(classes.get(fullName),interfaces);
 						}
 
 						accessModifier = null;
 						_static = _final = _abstract = false;
 						source = source.substring(classMatcher.end());
+					} else if (openMatcher.find() && openMatcher.start() == 0) {
+						accessModifier = null;
+						_static = _final = _abstract = false;
+
+						source = source.substring(openMatcher.end());
 					} else if (modifierMatcher.find()) {
 						String modifier = modifierMatcher.group().replaceAll("\\s","");
 						switch (modifier) {
@@ -97,11 +120,6 @@ public class CIEParser extends Parser {
 								break;
 						}
 						source = source.substring(modifierMatcher.end());
-					} else if (openMatcher.find()) {
-						accessModifier = null;
-						_static = _final = _abstract = false;
-
-						source = source.substring(modifierMatcher.end());
 					}
 				} else {
 					source = "";
@@ -115,6 +133,35 @@ public class CIEParser extends Parser {
 			}
 		}
 
+		//	Adding Supers and Interfaces
+		for (String key : classes.keySet()) {
+			if (classes.get(key) instanceof CWClass) {
+				CWClass cwClass = (CWClass) classes.get(key);
+
+				if (extendedClasses.containsKey(cwClass)) {
+					String superName = extendedClasses.get(cwClass);
+					if (classImports.get(cwClass).containsKey(superName)) {
+						CWClass _super = (CWClass) classes.get(classImports.get(cwClass).get(extendedClasses.get(cwClass)));
+						cwClass.setSuper(_super);
+					} else {
+						for (String _import : wildcardImports.get(cwClass)) {
+							String importClass = _import + extendedClasses.get(cwClass);
+							try {
+								Class superClass = Class.forName(importClass);
+								cwClass.setSuper(new CWExternalClass(superClass,extendedClasses.get(cwClass)));
+								break;
+							} catch (ClassNotFoundException ignored) {
+							}
+						}
+					}
+				}
+				System.out.println(cwClass);
+			}
+		}
+
+
 		return classes;
 	}
+
+	private interface test extends CWType, Extendable{}
 }

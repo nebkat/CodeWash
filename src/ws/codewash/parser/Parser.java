@@ -8,7 +8,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public abstract class Parser {
-	protected final Pattern mPackagePattern = Pattern.compile("\\s*package\\s+(?<"+Keywords.PACKAGE+">[a-zA-Z_][a-zA-Z0-9_]*(?:.[a-zA-Z_][a-zA-Z_0-9]*)*)\\s*;");
+	protected final Pattern mPackagePattern = Pattern.compile("\\s*package\\s+(?<"+Keywords.PACKAGE+">[a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z_0-9]*)*)\\s*;");
+	protected final Pattern mImportPattern = Pattern.compile("\\s*import\\s+(?<"+Keywords.PACKAGE+">[a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z_0-9]*)*(\\.\\*)?)\\s*;");
 	protected final Pattern mOpenBrace = Pattern.compile("\\s*\\{");
 	protected final Pattern mCloseBrace = Pattern.compile("\\s*}");
 
