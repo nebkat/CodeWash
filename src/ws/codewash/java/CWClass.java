@@ -1,10 +1,9 @@
 package ws.codewash.java;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class CWClass extends CWAbstractClass implements Extendable, Implementable {
+public class CWClass extends CWAbstractClass implements Extendable {
     private Extendable mSuper = null;
 	private List<Implementable> mInterfaces = new ArrayList<>();
 
@@ -33,9 +32,8 @@ public class CWClass extends CWAbstractClass implements Extendable, Implementabl
 		mInterfaces.add(implementable);
 	}
 
-	@Override
-	public List<Object> getInterfaces() {
-		return Collections.singletonList(mInterfaces);
+	public List<Implementable> getInterfaces() {
+		return mInterfaces;
 	}
 
 	@Override
