@@ -138,6 +138,7 @@ public class CIEParser extends Parser {
                         modifierHolder.reset();
                         source = source.substring(min + 1);
                     } else {
+                        modifierHolder.reset();
                         source = source.substring(min + 1);
                     }
                 } else {
