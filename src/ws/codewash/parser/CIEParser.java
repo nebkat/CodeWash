@@ -15,6 +15,9 @@ public class CIEParser extends Parser {
 	private final Pattern mInterfacePattern = Pattern.compile("\\s*interface\\s+(?<name>[a-zA-Z_][a-zA-Z0-9_]*)\\s*+" +
 			"(\\+extends\\s+(?<interface>[a-zA-Z_][a-zA-Z0-9_]*\\s*(?:,\\s*[a-zA-Z_][a-zA-Z0-9_]*)*))?\\s*");
 
+	private final Pattern mEnumPattern = Pattern.compile("\\s*enum\\s+(?<name>[a-zA-Z_][a-zA-Z0-9_]*)\\s*+" +
+			"(\\+implements\\s+(?<interface>[a-zA-Z_][a-zA-Z0-9_]*\\s*(?:,\\s*[a-zA-Z_][a-zA-Z0-9_]*)*))?\\s*");
+
 	private Map<String, CWAbstractClass> mClasses = new HashMap<>();
 	private Map<CWAbstractClass, Map<String,String>> mClassImports = new HashMap<>();
 	private Map<CWAbstractClass, List<String>> mWildcardImports = new HashMap<>();
@@ -26,15 +29,21 @@ public class CIEParser extends Parser {
 		mSourceTree = sourceTree;
 
 		//	Creating Classes and Interfaces
-		createClassAndInterface(sources);
+		createAbstractClass(sources);
 
 		//	Adding Supers and Interfaces
 		setSuperAndImplements();
 
+		System.out.println("Amount of AbstractClasses: " + mClasses.values().size() + "\n");
+
+		for (CWAbstractClass c : mClasses.values()) {
+			System.out.println(c);
+		}
+
 		return mClasses;
 	}
 
-	private void createClassAndInterface(Map<Source, String> sources) {
+	private void createAbstractClass(Map<Source, String> sources) {
 		for (Source s : sources.keySet()) {
 			CWPackage cwPackage = null;
 			ModifierHolder modifierHolder = new ModifierHolder();
@@ -43,9 +52,8 @@ public class CIEParser extends Parser {
 			Matcher packageMatcher = mPackagePattern.matcher(source);
 			Matcher classMatcher = mClassPattern.matcher(source);
 			Matcher interfaceMatcher = mInterfacePattern.matcher(source);
+			Matcher enumMatcher = mEnumPattern.matcher(source);
 			Matcher modifierMatcher = mModifierPattern.matcher(source);
-			Matcher openMatcher = mOpenBrace.matcher(source);
-			Matcher closeMatcher = mCloseBrace.matcher(source);
 
 			Map<String, String> imports = new HashMap<>();
 			List<String> wildcards = new ArrayList<>();
@@ -62,63 +70,41 @@ public class CIEParser extends Parser {
 				}
 			}
 
+			while (packageMatcher.find()) {
+				if (packageMatcher.start() == 0) {
+					if (cwPackage == null) {
+						cwPackage = mSourceTree.getPackages().get(packageMatcher.group(Keywords.PACKAGE));
+						wildcards.add(cwPackage.getName() + ".");
+					} else {
+						System.err.println("Error parsing " + s.getName() + " | Package statement already declared..");
+						break;
+					}
+				} else {
+					System.err.println("Error parsing " + s.getName() + " | Package statement not at top.");
+				}
+			}
+
 			while (source.length() > 0) {
-				if (packageMatcher.find() || classMatcher.find() || interfaceMatcher.find() || modifierMatcher.find()) {
-					packageMatcher.reset();
+				if (classMatcher.find() || interfaceMatcher.find() || enumMatcher.find()) {
 					classMatcher.reset();
-					modifierMatcher.reset();
 					interfaceMatcher.reset();
+					enumMatcher.reset();
+					modifierMatcher.reset();
 
-					if (packageMatcher.find()) {
-						if (packageMatcher.start() == 0) {
-							if (cwPackage == null) {
-								cwPackage = mSourceTree.getPackages().get(packageMatcher.group(Keywords.PACKAGE));
-								wildcards.add(cwPackage.getName() + ".");
-								source = source.substring(packageMatcher.end());
-							} else {
-								System.err.println("Error parsing " + s.getName() + " | Package statement already declared..");
-								break;
-							}
-						} else {
-							System.err.println("Error parsing " + s.getName() + " | Package statement not at top.");
-						}
-					} else if (classMatcher.find() && classMatcher.start() == 0) {
-						String name = classMatcher.group("name");
-						String fullName = cwPackage == null ? name : cwPackage.getName() + "." + name;
-
-						mClasses.put(fullName, new CWClass(cwPackage, modifierHolder.getAccessModifier(),
-								modifierHolder.isFinal(), modifierHolder.isAbstract(), modifierHolder.isStatic(), name));
-						mClassImports.put(mClasses.get(fullName),imports);
-						mWildcardImports.put(mClasses.get(fullName), wildcards);
-
-						if (classMatcher.group(Keywords.SUPER) != null) {
-							mExtendedClasses.put(mClasses.get(fullName), classMatcher.group(Keywords.SUPER));
-						}
-						if (classMatcher.group(Keywords.INTERFACE) != null) {
-							mInterfacedClasses.put(mClasses.get(fullName),
-									Arrays.asList(classMatcher.group(Keywords.INTERFACE).split("(,\\s*)|(\\s+)")));
-						}
-
+					if (classMatcher.find() && classMatcher.start() == 0) {
+						addAbstractClass(classMatcher, Keywords.CLASS, modifierHolder, cwPackage, imports, wildcards);
 						modifierHolder.reset();
 						source = source.substring(classMatcher.end());
 
 					} else if (interfaceMatcher.find() && interfaceMatcher.start() == 0) {
-						String name = interfaceMatcher.group("name");
-						String fullName = cwPackage == null ? name : cwPackage.getName() + "." + name;
-
-						mClasses.put(fullName, new CWInterface(cwPackage, modifierHolder.getAccessModifier(),
-								modifierHolder.isFinal(), name));
-						mClassImports.put(mClasses.get(fullName), imports);
-						mWildcardImports.put(mClasses.get(fullName), wildcards);
-
-						if (interfaceMatcher.group(Keywords.INTERFACE) != null) {
-							mInterfacedClasses.put(mClasses.get(fullName),
-									Arrays.asList(interfaceMatcher.group(Keywords.INTERFACE).split("(,\\s*)|(\\s+)")));
-						}
-
+						addAbstractClass(interfaceMatcher, Keywords.INTERFACE, modifierHolder, cwPackage, imports, wildcards);
 						modifierHolder.reset();
 						source = source.substring(interfaceMatcher.end());
 
+					} else if (enumMatcher.find() && enumMatcher.start() == 0) {
+						addAbstractClass(enumMatcher, Keywords.ENUM, modifierHolder, cwPackage, imports, wildcards);
+						modifierHolder.reset();
+						source = source.substring(enumMatcher.end());
 					} else if (modifierMatcher.find()) {
 						modifierHolder.parse(modifierMatcher.group().replaceAll("\\s",""));
 						source = source.substring(modifierMatcher.end());
@@ -127,15 +113,47 @@ public class CIEParser extends Parser {
 					source = "";
 				}
 
-				packageMatcher.reset(source);
 				classMatcher.reset(source);
-				openMatcher.reset(source);
-				closeMatcher.reset(source);
-				modifierMatcher.reset(source);
 				interfaceMatcher.reset(source);
+				enumMatcher.reset(source);
+				modifierMatcher.reset(source);
 			}
 		}
+	}
 
+	private void addAbstractClass(Matcher matcher, String type, ModifierHolder modifier, CWPackage cwPackage,
+								  Map<String, String> imports, List<String> wildcards) {
+		String name = matcher.group("name");
+		String fullName = cwPackage == null ? name : cwPackage.getName() + "." + name;
+
+		CWAbstractClass abstractClass = null;
+		switch (type) {
+			case Keywords.CLASS:
+				mClasses.put(fullName, abstractClass = new CWClass(cwPackage, modifier.getAccessModifier(),
+						modifier.isFinal(), modifier.isAbstract(), modifier.isStatic(), name));
+				break;
+			case Keywords.INTERFACE:
+				mClasses.put(fullName, abstractClass = new CWInterface(cwPackage, modifier.getAccessModifier(),
+						modifier.isFinal(), name));
+				break;
+			case Keywords.ENUM:
+				mClasses.put(fullName, abstractClass = new CWEnum(cwPackage, modifier.getAccessModifier(), name));
+				break;
+		}
+
+		if (abstractClass != null) {
+			mClassImports.put(mClasses.get(fullName), imports);
+			mWildcardImports.put(mClasses.get(fullName), wildcards);
+
+			if (type.equals(Keywords.CLASS) && matcher.group(Keywords.SUPER) != null) {
+				mExtendedClasses.put(mClasses.get(fullName), matcher.group(Keywords.SUPER));
+			}
+
+			if (matcher.group(Keywords.INTERFACE) != null) {
+				mInterfacedClasses.put(mClasses.get(fullName),
+						Arrays.asList(matcher.group(Keywords.INTERFACE).split("(,\\s*)|(\\s+)")));
+			}
+		}
 	}
 
 	private void setSuperAndImplements() {
