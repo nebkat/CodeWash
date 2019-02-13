@@ -19,7 +19,7 @@ public abstract class CWAbstractClass implements CWType, CWClassContainer {
         return mContainer;
     }
 
-    private String getName() {
+    public String getName() {
     	return mName;
 	}
 

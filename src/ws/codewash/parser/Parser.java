@@ -1,20 +1,23 @@
 package ws.codewash.parser;
 
-import ws.codewash.java.CWAccessModifier;
+import ws.codewash.java.CWAbstractClass;
 import ws.codewash.java.CWSourceTree;
 import ws.codewash.reader.Source;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 public abstract class Parser {
+    protected final String[] mDefaultImports = {"java.lang.","java.lang.annotation.","java.lang.instrument.",
+            "java.lang.invoke.","java.lang.management.","java.lang.ref.","java.lang.reflect."};
+
 	protected final Pattern mPackagePattern = Pattern.compile("\\s*package\\s+(?<"+Keywords.PACKAGE+">[a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z_0-9]*)*)\\s*;");
 	protected final Pattern mImportPattern = Pattern.compile("\\s*import\\s+(?<"+Keywords.PACKAGE+">[a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z_0-9]*)*(\\.\\*)?)\\s*;");
-	protected final Pattern mOpenBrace = Pattern.compile("\\s*\\{");
-	protected final Pattern mCloseBrace = Pattern.compile("\\s*}");
-
 	protected final Pattern mModifierPattern = Pattern.compile("\\s*(public|protected|private|abstract|static|final)\\s");
+
+	protected final Map<CWAbstractClass, Map<String,String>> mClassImports = new HashMap<>();
 
     public static CWSourceTree parse(List<Source> sources) {
 		CWSourceTree cb = new CWSourceTree();
