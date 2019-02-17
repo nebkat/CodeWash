@@ -1,7 +1,8 @@
 package ws.codewash.reader;
 
-import java.util.Map;
+import java.nio.file.Path;
+import java.util.List;
 
 public interface SourceReadable {
-	Map<String, String> getSources();
+	List<Path> getSources();
 }

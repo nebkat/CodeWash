@@ -7,8 +7,10 @@ import ws.codewash.java.CWEnum;
 import ws.codewash.java.CWInterface;
 import ws.codewash.parser.ParsedSourceTree.Source;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -90,7 +92,7 @@ public class Parser {
 
 	private ParsedSourceTree mSourceTree;
 
-	public ParsedSourceTree parse(Map<String, String> rawSources) {
+	public ParsedSourceTree parse(List<Path> rawSources) throws IOException {
 		ParsedSourceTree sourceTree = new ParsedSourceTree(rawSources);
 
 		System.out.println("Parsing source tree");

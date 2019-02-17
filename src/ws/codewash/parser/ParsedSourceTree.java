@@ -4,6 +4,9 @@ import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.PendingType;
 import ws.codewash.java.PendingTypeReceiver;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,15 +16,22 @@ import java.util.Set;
 
 public class ParsedSourceTree {
 	private Set<Source> mSources = new HashSet<>();
+	private ExternalClassLoader mExternalClassLoader = new ExternalClassLoader();
 
 	private Map<String, CWClassOrInterface> mClasses = new HashMap<>();
 	private Set<String> mClassDeclarations = new HashSet<>();
 
 	private Set<PendingTypeReceiver> mPendingTypeReceivers = new HashSet<>();
 
-	ParsedSourceTree(Map<String, String> rawSources) {
-		for (Map.Entry<String, String> rawSource : rawSources.entrySet()) {
-			mSources.add(new Source(rawSource.getKey(), rawSource.getValue()));
+	ParsedSourceTree(List<Path> paths) throws IOException {
+		for (Path path : paths) {
+			if (path.toString().endsWith(".java")) {
+				mSources.add(new Source(path));
+			} else if (path.toString().endsWith(".class")) {
+				mExternalClassLoader.addClassFile(path);
+			} else if (path.toString().endsWith(".jar")) {
+				mExternalClassLoader.addJarFile(path);
+			}
 		}
 	}
 
@@ -57,7 +67,13 @@ public class ParsedSourceTree {
 
 	private CWClassOrInterface getOrInitClass(String className) throws ClassNotFoundException {
 		if (!mClasses.containsKey(className)) {
-			Class externalClass = Class.forName(className, true, getClass().getClassLoader());
+			Class externalClass;
+
+			externalClass = Class.forName(className, false, mExternalClassLoader);
+			if (externalClass == null) {
+				externalClass = Class.forName(className, false, getClass().getClassLoader());
+			}
+
 			addClass(CWClassOrInterface.forExternalClass(externalClass));
 			resolvePendingTypes();
 		}
@@ -120,10 +136,10 @@ public class ParsedSourceTree {
 		private Map<String, String> mStaticImportsSingle = new HashMap<>();
 		private List<String> mStaticImportsOnDemand = new ArrayList<>();
 
-		Source(String name, String content) {
-			mName = name;
-			mOriginalContent = content;
-			mProcessedContent = content;
+		Source(Path path) throws IOException {
+			mName = path.toString();
+			mOriginalContent = new String(Files.readAllBytes(path));
+			mProcessedContent = mOriginalContent;
 			mDeclarationStartLocation = mProcessedContent.length();
 		}
 

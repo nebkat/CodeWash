@@ -23,24 +23,16 @@ public class ZipReader implements SourceReadable {
 	}
 
 	@Override
-	public Map<String, String> getSources() {
-		Map<String, String> sources = new HashMap<>();
-
+	public List<Path> getSources() {
 		try (FileSystem fs = FileSystems.newFileSystem(mPath, null)) {
-			List<Path> paths = Files.walk(fs.getPath("/"))
+			return Files.walk(fs.getPath("/"))
 					.filter(Files::isRegularFile)
 					.collect(Collectors.toList());
-
-			for (Path path : paths) {
-				sources.put(path.toString(), new String(Files.readAllBytes(path)));
-			}
 		} catch (IOException e) {
 			// TODO: Handle
 			e.printStackTrace();
 
 			return null;
 		}
-
-		return sources;
 	}
 }

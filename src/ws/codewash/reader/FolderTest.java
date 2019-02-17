@@ -4,6 +4,7 @@ import ws.codewash.analyzer.Analyzer;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.parser.Parser;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FolderTest {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		if (args.length < 1) {
 			System.err.println("File name argument required");
 			return;
