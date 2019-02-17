@@ -1,14 +1,20 @@
 package ws.codewash.java;
 
-public class CWEnum extends CWAbstractClass {
-    public CWEnum(CWClassContainer parent, CWAccessModifier accessModifier, String name) {
-        super(parent, accessModifier, true, name);
-    }
+import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.List;
 
-    @Override
-    public String toString() {
-        return "enum " + mName + ":\n" +
-                getContainer() + "\n" +
-                mAccessModifier + " " + (mFinal ? "FINAL " : "") + "\n";
-    }
+public class CWEnum extends CWClassOrInterface {
+	public CWEnum(String _package, int modifiers, String name, List<String> outerClasses, Collection<String> interfaces) {
+		super(_package, modifiers, name, outerClasses, interfaces);
+	}
+
+	CWEnum(Class _class) {
+		super(_class);
+	}
+
+	@Override
+	protected int getValidModifiers() {
+		return Modifier.classModifiers();
+	}
 }

@@ -1,64 +1,44 @@
 package ws.codewash.java;
 
-import java.util.ArrayList;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class CWClass extends CWAbstractClass implements Extendable {
-    private Extendable mSuper = null;
-	private List<Implementable> mInterfaces = new ArrayList<>();
+public class CWClass extends CWClassOrInterface {
+	private CWClass mSuperClass;
+	private Set<CWClass> mSubClasses = new HashSet<>();
 
-    private final boolean mAbstract;
-    private final boolean mStatic;
+	public CWClass(String _package, int modifiers, String name, String superClass, List<String> outerClasses, Collection<String> interfaces) {
+		super(_package, modifiers, name, outerClasses, interfaces);
 
-    public CWClass(CWClassContainer container, CWAccessModifier accessModifier, boolean _final, boolean _abstract, boolean _static, String name) {
-        super(container, accessModifier, _final, name);
-        mAbstract = _abstract;
-        mStatic = _static;
-    }
-
-    public Extendable getSuper() {
-        return mSuper;
-    }
-
-    public void setSuper(Extendable _super) {
-        mSuper = _super;
-    }
-
-    public boolean isAbstract() {
-    	return mAbstract;
+		mPendingTypes.add(new PendingType<>(superClass, this::setSuperClass));
 	}
 
-	public void addInterface(Implementable implementable) {
-		mInterfaces.add(implementable);
-	}
-
-	public List<Implementable> getInterfaces() {
-		return mInterfaces;
+	CWClass(Class _class) {
+		super(_class);
 	}
 
 	@Override
-	public String getName() {
-		return mName;
+	protected int getValidModifiers() {
+		return Modifier.classModifiers();
 	}
 
-	@Override
-	public String toString() {
-        return "class " + mName + ":\n" +
-				getContainer() + "\n" +
-                mAccessModifier + " " + (mStatic ? "STATIC " : "") + (mFinal ? "FINAL " : "") +
-                (mAbstract ? "ABSTRACT " : "") + "\n" +
-                (mSuper != null ? "EXTENDS " + mSuper.getName() + "\n" : "") +
-				(mInterfaces.isEmpty() ? "" : "IMPLEMENTS: " + printInterfaces() + "\n");
+	private void setSuperClass(CWClass superClass) {
+		mSuperClass = superClass;
+		superClass.addSubClass(this);
 	}
 
-	private String printInterfaces() {
-		StringBuilder s = new StringBuilder();
-		for (Implementable i : mInterfaces) {
-			s.append(i.getName());
-			if (mInterfaces.indexOf(i) != mInterfaces.size()-1) {
-				s.append(", ");
-			}
-		}
-		return s.toString();
+	public CWClass getSuperClass() {
+		return mSuperClass;
+	}
+
+	private void addSubClass(CWClass subClass) {
+		mSubClasses.add(subClass);
+	}
+
+	public Set<CWClass> getSubClasses() {
+		return mSubClasses;
 	}
 }

@@ -1,10 +1,7 @@
 package ws.codewash.reader;
 
-
-import ws.codewash.reader.Source;
-
-import java.util.List;
+import java.util.Map;
 
 public interface SourceReadable {
-    List<Source> getSources();
+	Map<String, String> getSources();
 }

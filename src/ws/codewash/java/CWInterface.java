@@ -1,46 +1,47 @@
 package ws.codewash.java;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class CWInterface extends CWAbstractClass implements Implementable {
-    private List<Implementable> mInterfaces = new ArrayList<>();
+public class CWInterface extends CWClassOrInterface {
+	private Set<CWInterface> mSubInterfaces = new HashSet<>();
+	private Set<CWClassOrInterface> mImplementingClasses = new HashSet<>();
 
-    public CWInterface(CWClassContainer container, CWAccessModifier accessModifier, boolean _final, String name) {
-        super(container, accessModifier, _final, name);
-    }
+	public CWInterface(String _package, int modifiers, String name, List<String> outerClasses, Collection<String> interfaces) {
+		super(_package, modifiers, name, outerClasses, interfaces);
+	}
 
-    public void addInterface(Implementable implementable) {
-		mInterfaces.add(implementable);
+	CWInterface(Class _class) {
+		super(_class);
 	}
 
 	@Override
-	public List<Object> getInterfaces() {
-		return Collections.singletonList(mInterfaces);
+	protected int getValidModifiers() {
+		return Modifier.interfaceModifiers();
+	}
+
+	private void addSubInterface(CWInterface _interface) {
+		mSubInterfaces.add(_interface);
+	}
+
+	public Set<CWInterface> getSubInterfaces() {
+		return mSubInterfaces;
 	}
 
 	@Override
-    public String getName() {
-        return mName;
-    }
+	protected void addInterface(CWInterface _interface) {
+		super.addInterface(_interface);
+		_interface.addSubInterface(this);
+	}
 
-    @Override
-    public String toString() {
-        return "interface " + mName + ":\n" +
-				getContainer() + "\n" +
-                mAccessModifier + " " + (mFinal ? "FINAL \n" : "\n") +
-				(mInterfaces.isEmpty() ? "" : "IMPLEMENTS: " + printInterfaces() + "\n");
-    }
+	void addImplementingClass(CWClassOrInterface _class) {
+		mImplementingClasses.add(_class);
+	}
 
-	private String printInterfaces() {
-    	StringBuilder s = new StringBuilder();
-    	for (Implementable i : mInterfaces) {
-    		s.append(i.getName());
-    		if (mInterfaces.indexOf(i) != mInterfaces.size()-1) {
-    			s.append(", ");
-			}
-		}
-		return s.toString();
+	public Set<CWClassOrInterface> getImplementingClasses() {
+		return mImplementingClasses;
 	}
 }
