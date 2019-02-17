@@ -2,7 +2,7 @@ package ws.codewash.reader;
 
 import ws.codewash.parser.Parser;
 
-import java.net.URI;
+import java.nio.file.Paths;
 
 public class ZipFileTest {
 	public static void main(String[] args) {
@@ -11,7 +11,7 @@ public class ZipFileTest {
 			return;
 		}
 
-		ZipReader zipReader = new ZipReader(URI.create(args[0]));
+		ZipReader zipReader = new ZipReader(Paths.get(args[0]));
 
 		new Parser().parse(zipReader.getSources());
 	}

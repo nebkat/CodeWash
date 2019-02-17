@@ -8,7 +8,6 @@
 package ws.codewash.reader;
 
 import java.io.*;
-import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -17,17 +16,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ZipReader implements SourceReadable {
-	private URI mUri;
+	private Path mPath;
 
-	public ZipReader(URI uri) {
-		mUri = uri;
+	public ZipReader(Path path) {
+		mPath = path;
 	}
 
 	@Override
 	public Map<String, String> getSources() {
 		Map<String, String> sources = new HashMap<>();
 
-		try (FileSystem fs = FileSystems.newFileSystem(mUri, Collections.emptyMap())) {
+		try (FileSystem fs = FileSystems.newFileSystem(mPath, null)) {
 			List<Path> paths = Files.walk(fs.getPath("/"))
 					.filter(Files::isRegularFile)
 					.collect(Collectors.toList());
