@@ -2,29 +2,35 @@ package ws.codewash.analyzer;
 
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.parser.ParsedSourceTree;
+import ws.codewash.util.ConfigManager;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class Analyzer {
 
 	private List<CodeSmell> mCodeSmells = new ArrayList<>();
 
-	public Analyzer(List<String> mSelectedSmells, ParsedSourceTree parsedSourceTree) {
+	public Analyzer(ParsedSourceTree parsedSourceTree) {
 		try {
-			for (String o : mSelectedSmells) {
-				Class<?> cls = Class.forName("ws.codewash.analyzer.smells." + o);
-				Constructor cons = cls.getConstructor(String.class, ParsedSourceTree.class);
-				mCodeSmells.add((CodeSmell) cons.newInstance(o, parsedSourceTree));
+			Properties properties = ConfigManager.getInstance().getProperties();
 
-				System.out.println("Created new instance of " + o);
-
+			for (String s : properties.stringPropertyNames()) {
+				if (Boolean.parseBoolean(properties.getProperty(s))) {
+					Class<?> cls = Class.forName("ws.codewash.analyzer.smells." + s);
+					Constructor cons = cls.getConstructor(String.class, ParsedSourceTree.class);
+					mCodeSmells.add((CodeSmell) cons.newInstance(s, parsedSourceTree));
+				}
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
-			System.out.println("Number of smells to test for: " + mCodeSmells.size());
+			System.out.println("Checking for the Following Smells:");
+			for (CodeSmell codeSmell : mCodeSmells) {
+				System.out.println("- " + codeSmell);
+			}
 		}
 	}
 

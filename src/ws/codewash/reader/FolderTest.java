@@ -22,10 +22,7 @@ public class FolderTest {
 		FolderReader folderReader = new FolderReader(Paths.get(args[0]));
 
 		ParsedSourceTree parsedSourceTree = new Parser().parse(folderReader.getSources());
-		List<String> selectedSmells = new ArrayList<>(){{
-			add("ExcessiveCommenting");
-			add("RefusedBequest");
-		}};
-		new Analyzer(selectedSmells, parsedSourceTree).analyse();
+ 
+		new Analyzer(parsedSourceTree).analyse();
 	}
 }

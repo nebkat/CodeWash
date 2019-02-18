@@ -21,4 +21,8 @@ public abstract class CodeSmell {
 	protected ParsedSourceTree getParsedSourceTree() {
 		return mParsedSourceTree;
 	}
+
+	public String toString(){
+		return mName;
+	}
 }

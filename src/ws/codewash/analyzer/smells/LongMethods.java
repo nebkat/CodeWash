@@ -2,12 +2,14 @@ package ws.codewash.analyzer.smells;
 
 import ws.codewash.parser.ParsedSourceTree;
 
-public class RefusedBequest extends CodeSmell {
+public class LongMethods extends CodeSmell {
 
-	public RefusedBequest(String name, ParsedSourceTree parsedSourceTree){
+	public LongMethods(String name, ParsedSourceTree parsedSourceTree){
 		super(name, parsedSourceTree);
+
 	}
 
 	public void run(){
+
 	}
 }
