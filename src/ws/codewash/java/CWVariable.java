@@ -1,12 +1,14 @@
 package ws.codewash.java;
 
+
 public class CWVariable {
-	private final CWType mType;
+	private CWType mType;
 	private final String mName;
 
-	public CWVariable(CWType type, String name) {
-		mType = type;
+	public CWVariable(TypeResolver resolver, String type, String name) {
 		mName = name;
+
+		resolver.resolve(new PendingType<>(type, this::setType));
 	}
 
 	public CWType getType() {
@@ -15,5 +17,9 @@ public class CWVariable {
 
 	public String getName() {
 		return mName;
+	}
+
+	private void setType(CWType type) {
+		mType = type;
 	}
 }

@@ -3,23 +3,23 @@ package ws.codewash.java;
 import java.util.List;
 
 public class CWMethod extends CWMember {
-    private final CWType mReturnType;
-    private final boolean mAbstract;
+    private CWType mReturnType;
+
     private final List<CWVariable> mParameters;
 
-    public CWMethod(CWClass parent, CWAccessModifier accessModifier, boolean _final, boolean _abstract, String name, CWType returnType, List<CWVariable> parameters) {
-        super(parent, accessModifier, _final, name);
-        mAbstract = _abstract;
-        mReturnType = returnType;
+    public CWMethod(TypeResolver resolver, CWClass parent, int modifiers, String name, String returnType, List<CWVariable> parameters) {
+        super(resolver, parent, modifiers, name);
         mParameters = parameters;
+
+		resolver.resolve(new PendingType<>(returnType, this::setReturnType));
     }
 
     public CWType getReturnType() {
     	return mReturnType;
 	}
 
-	public boolean isAbstract() {
-    	return mAbstract;
+	private void setReturnType(CWType returnType) {
+		mReturnType = returnType;
 	}
 
 	public List<CWVariable> getParameters() {

@@ -1,38 +1,27 @@
 package ws.codewash.java;
 
-import java.util.List;
+public abstract class CWMember implements Modifiable {
+	private final CWClass mParent;
+	private final String mName;
 
-public abstract class CWMember {
-    private final CWClass mParent;
-    private final CWAccessModifier mAccessModifier;
-    private final String mName;
-    private final boolean mFinal;
-    private List<CWAnnotation> mAnnotations;
+	private final int mModifiers;
 
-    protected CWMember(CWClass parent, CWAccessModifier accessModifier, boolean _final, String name) {
-        mParent = parent;
-        mAccessModifier = accessModifier;
-        mFinal = _final;
-        mName = name;
-    }
-
-    public CWClass getParent() {
-    	return mParent;
+	CWMember(TypeResolver resolver, CWClass parent, int modifiers, String name) {
+		mParent = parent;
+		mModifiers = modifiers;
+		mName = name;
 	}
 
-	public CWAccessModifier getAccess() {
-    	return mAccessModifier;
+	public CWClass getParent() {
+		return mParent;
 	}
 
 	public String getName() {
-    	return mName;
+		return mName;
 	}
 
-	public boolean isFinal() {
-    	return mFinal;
-	}
-
-	public List<CWAnnotation> getAnnotations() {
-    	return mAnnotations;
+	@Override
+	public int getModifiers() {
+		return mModifiers;
 	}
 }

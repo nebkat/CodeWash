@@ -2,7 +2,7 @@ package ws.codewash.java;
 
 import java.util.function.Consumer;
 
-public class PendingType<T extends CWReferenceType> {
+public class PendingType<T extends CWType> {
 	private String mCanonicalName;
 	private Consumer<T> mConsumer;
 

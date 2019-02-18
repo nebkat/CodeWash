@@ -10,22 +10,28 @@ public enum CWPrimitive implements CWType {
 	LONG("long"),
 	SHORT("short");
 
-	private final String mKeyword;
+	private final String mName;
 
-	CWPrimitive(String keyword) {
-		mKeyword = keyword;
+	CWPrimitive(String name) {
+		mName = name;
 	}
 
 	public static CWPrimitive get(String keyword) {
 		for (CWPrimitive primitive : CWPrimitive.values()) {
-			if (primitive.getKeyword().equals(keyword)) {
+			if (primitive.getSimpleName().equals(keyword)) {
 				return primitive;
 			}
 		}
 		return null;
 	}
 
-	public String getKeyword() {
-		return mKeyword;
+	@Override
+	public String getSimpleName() {
+		return mName;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "(" + mName + ")";
 	}
 }

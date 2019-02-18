@@ -1,23 +1,9 @@
 package ws.codewash.java;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class CWArray extends CWReferenceType implements PendingTypeReceiver {
+public class CWArray extends CWReferenceType {
 	private CWType mType;
 
-	private Set<PendingType> mPendingTypes = new HashSet<>();
-
-	public CWArray(String type) {
-		// Check if primitive provided, otherwise request type
-		if (CWPrimitive.get(type) != null) {
-			mType = CWPrimitive.get(type);
-		} else {
-			mPendingTypes.add(new PendingType<>(type, this::setType));
-		}
-	}
-
-	private void setType(CWReferenceType type) {
+	public CWArray(CWType type) {
 		mType = type;
 	}
 
@@ -26,7 +12,22 @@ public class CWArray extends CWReferenceType implements PendingTypeReceiver {
 	}
 
 	@Override
-	public Set<PendingType> getPendingTypes() {
-		return mPendingTypes;
+	public String getSimpleName() {
+		return mType.getSimpleName() + "[]";
+	}
+
+	@Override
+	public String getName() {
+		return mType.getName() + "[]";
+	}
+
+	@Override
+	public String getCanonicalName() {
+		return mType.getCanonicalName() + "[]";
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "(" + mType + ")";
 	}
 }

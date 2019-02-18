@@ -1,4 +1,4 @@
 package ws.codewash.java;
 
-public class CWReferenceType implements CWType {
+public abstract class CWReferenceType implements CWType {
 }

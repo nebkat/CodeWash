@@ -10,12 +10,12 @@ public class CWInterface extends CWClassOrInterface {
 	private Set<CWInterface> mSubInterfaces = new HashSet<>();
 	private Set<CWClassOrInterface> mImplementingClasses = new HashSet<>();
 
-	public CWInterface(String _package, int modifiers, String name, List<String> outerClasses, Collection<String> interfaces) {
-		super(_package, modifiers, name, outerClasses, interfaces);
+	public CWInterface(TypeResolver resolver, String _package, int modifiers, String name, CWClassOrInterface outerClass, Collection<String> interfaces) {
+		super(resolver, _package, modifiers, name, outerClass, interfaces);
 	}
 
-	CWInterface(Class _class) {
-		super(_class);
+	CWInterface(TypeResolver resolver, Class _class) {
+		super(resolver, _class);
 	}
 
 	@Override

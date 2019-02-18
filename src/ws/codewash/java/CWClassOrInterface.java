@@ -1,19 +1,12 @@
 package ws.codewash.java;
 
-import ws.codewash.parser.ParsedSourceTree;
-
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.Stack;
-import java.util.Vector;
 
 import static ws.codewash.parser.ParsedSourceTree.dot;
 
-public abstract class CWClassOrInterface extends CWReferenceType implements PendingTypeReceiver {
+public abstract class CWClassOrInterface extends CWReferenceType implements Modifiable {
 	private final Class mClass;
 	private final String mPackageName;
 	private Set<CWInterface> mInterfaces = new HashSet<>();
@@ -22,12 +15,9 @@ public abstract class CWClassOrInterface extends CWReferenceType implements Pend
 	private final int mModifiers;
 
 	private CWClassOrInterface mOuterClass;
-	private String[] mOuterClasses = new String[0];
 	private Set<CWClassOrInterface> mInnerClasses = new HashSet<>();
 
-	Set<PendingType> mPendingTypes = new HashSet<>();
-
-	CWClassOrInterface(String packageName, int modifiers, String name, List<String> outerClasses, Collection<String> interfaces) {
+	CWClassOrInterface(TypeResolver resolver, String packageName, int modifiers, String name, CWClassOrInterface outerClass, Collection<String> interfaces) {
 		mClass = null;
 		mPackageName = packageName;
 		mName = name;
@@ -35,21 +25,17 @@ public abstract class CWClassOrInterface extends CWReferenceType implements Pend
 		mModifiers = modifiers;
 
 		// Outer class
-		if (outerClasses.size() > 0) {
-			mOuterClasses = new String[outerClasses.size()];
-			outerClasses.toArray(mOuterClasses);
-
-			String outerClass = dot(packageName) + String.join("$", outerClasses);
-			mPendingTypes.add(new PendingType<>(outerClass, this::setOuterClass));
+		if (outerClass != null) {
+			setOuterClass(outerClass);
 		}
 
 		// Interfaces
 		for (String _interface : interfaces) {
-			mPendingTypes.add(new PendingType<>(_interface, this::addInterface));
+			resolver.resolve(new PendingType<>(_interface, this::addInterface));
 		}
 	}
 
-	CWClassOrInterface(Class _class) {
+	CWClassOrInterface(TypeResolver resolver, Class _class) {
 		mClass = _class;
 		mPackageName = _class.getPackageName();
 		mName = _class.getSimpleName();
@@ -58,45 +44,29 @@ public abstract class CWClassOrInterface extends CWReferenceType implements Pend
 
 		// Outer class
 		if (_class.getEnclosingClass() != null) {
-			List<String> outerClasses = new ArrayList<>();
-
-			Class enclosingClass = _class;
-			while ((enclosingClass = enclosingClass.getEnclosingClass()) != null) {
-				outerClasses.add(0, enclosingClass.getSimpleName());
-			}
-
-			mOuterClasses = new String[outerClasses.size()];
-			outerClasses.toArray(mOuterClasses);
-
-			String outerClass = dot(mPackageName) + String.join("$", outerClasses);
-			mPendingTypes.add(new PendingType<>(outerClass, this::setOuterClass));
+			resolver.resolve(new PendingType<>(_class.getEnclosingClass().getName(), this::setOuterClass));
 		}
 
 		// Interfaces
 		for (Class _interface : _class.getInterfaces()) {
-			mPendingTypes.add(new PendingType<>(_interface.getName(), this::addInterface));
+			resolver.resolve(new PendingType<>(_interface.getName(), this::addInterface));
 		}
 	}
 
-	public static CWClassOrInterface forExternalClass(Class _class) {
+	public static CWClassOrInterface forExternalClass(TypeResolver resolver, Class _class) {
 		CWClassOrInterface cwClassOrInterface;
 		if (_class.isEnum()) {
-			cwClassOrInterface = new CWEnum(_class);
+			cwClassOrInterface = new CWEnum(resolver, _class);
 		} else if (_class.isInterface()) {
-			cwClassOrInterface = new CWInterface(_class);
+			cwClassOrInterface = new CWInterface(resolver, _class);
 		} else {
-			cwClassOrInterface = new CWClass(_class);
+			cwClassOrInterface = new CWClass(resolver, _class);
 		}
 
 		return cwClassOrInterface;
 	}
 
 	protected abstract int getValidModifiers();
-
-	@Override
-	public Set<PendingType> getPendingTypes() {
-		return mPendingTypes;
-	}
 
 	public void setOuterClass(CWClassOrInterface outerClass) {
 		mOuterClass = outerClass;
@@ -125,21 +95,25 @@ public abstract class CWClassOrInterface extends CWReferenceType implements Pend
 	}
 
 	public String getSimpleName() {
+		if (mClass != null) return mClass.getSimpleName();
 		return mName;
 	}
 
 	public String getName() {
+		if (mClass != null) return mClass.getName();
 		return getHierarchicalName("$");
 	}
 
 	public String getCanonicalName() {
+		if (mClass != null) return mClass.getCanonicalName();
 		return getHierarchicalName(".");
 	}
 
 	public String getHierarchicalName(String classDelimiter) {
-		String outerClasses = String.join(classDelimiter, mOuterClasses);
-
-		return dot(mPackageName) + (outerClasses.isEmpty() ? "" : outerClasses + classDelimiter) + mName;
+		if (mOuterClass == null) {
+			return dot(mPackageName) + mName;
+		}
+		return mOuterClass.getHierarchicalName(classDelimiter) + classDelimiter + mName;
 	}
 
 	public String getPackageName() {
@@ -154,36 +128,16 @@ public abstract class CWClassOrInterface extends CWReferenceType implements Pend
 		return mClass;
 	}
 
-	private CWAccessModifier getAccess() {
-		if (Modifier.isPublic(mModifiers)) {
-			return CWAccessModifier.PUBLIC;
-		} else if (Modifier.isProtected(mModifiers)) {
-			return CWAccessModifier.PROTECTED;
-		} else if (Modifier.isPrivate(mModifiers)) {
-			return CWAccessModifier.PRIVATE;
-		} else {
-			return CWAccessModifier.PACKAGE;
-		}
-	}
-
 	public boolean isInner() {
 		return mOuterClass != null;
 	}
 
-	public boolean isFinal() {
-		return Modifier.isFinal(mModifiers);
-	}
-
-	public boolean isAbstract() {
-		return Modifier.isAbstract(mModifiers);
-	}
-
-	public boolean isStatic() {
-		return Modifier.isStatic(mModifiers);
+	public int getModifiers() {
+		return mModifiers;
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "<" + getCanonicalName() + ">" + (isExternal() ? "(external)" : "");
+		return getClass().getSimpleName() + "(" + getCanonicalName() + ")";
 	}
 }

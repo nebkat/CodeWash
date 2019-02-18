@@ -1,14 +1,19 @@
 package ws.codewash.java;
 
 public class CWField extends CWMember {
-    private final CWType mType;
+	private CWType mType;
 
-    public CWField(CWClass parent, CWAccessModifier accessModifier, boolean _final, String name, CWType type) {
-        super(parent, accessModifier, _final, name);
-        mType = type;
-    }
+	public CWField(TypeResolver resolver, CWClass parent, int modifiers, String name, String type) {
+		super(resolver, parent, modifiers, name);
 
-    public CWType getType() {
-    	return mType;
+		resolver.resolve(new PendingType<>(type, this::setType));
+	}
+
+	public CWType getType() {
+		return mType;
+	}
+
+	private void setType(CWType type) {
+		mType = type;
 	}
 }

@@ -20,7 +20,7 @@ public class Pattern {
 	private String mString;
 	private List<String> mImports = new ArrayList<>();
 
-	static Pattern compile(String pattern) {
+	public static Pattern compile(String pattern) {
 		Pattern p = new Pattern();
 		p.mString = pattern;
 
