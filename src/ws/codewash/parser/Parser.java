@@ -10,6 +10,7 @@ import ws.codewash.parser.ParsedSourceTree.Source;
 import ws.codewash.parser.exception.IllegalFormatParseException;
 import ws.codewash.parser.exception.UnexpectedTokenParseException;
 import ws.codewash.parser.exception.UnresolvedTypeParseException;
+import ws.codewash.util.Arguments;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -111,7 +112,9 @@ public class Parser {
 		// TODO: Generic preprocessor
 		CommentPreProcessor c = new CommentPreProcessor();
 		for (Source s : sourceTree.getSources()) {
-			System.out.println("Removing comments in " + s.getName());
+			if (Arguments.get().verbose()) {
+				System.out.println("Removing comments in " + s.getName());
+			}
 			s.setProcessedContent(c.process(s.getProcessedContent()));
 		}
 
@@ -139,7 +142,9 @@ public class Parser {
 	}
 
 	private void parsePackage(Source source) {
-		System.out.println("Parsing package in " + source.getName());
+		if (Arguments.get().verbose()) {
+			System.out.println("Parsing package in " + source.getName());
+		}
 
 		String content = source.getProcessedContent();
 
@@ -158,7 +163,9 @@ public class Parser {
 	}
 
 	private void parseImports(Source source) {
-		System.out.println("Parsing imports in " + source.getName());
+		if (Arguments.get().verbose()) {
+			System.out.println("Parsing imports in " + source.getName());
+		}
 
 		String content = source.getProcessedContent();
 
@@ -198,12 +205,16 @@ public class Parser {
 	}
 
 	private void detectClassDeclarations(Source source) {
-		System.out.println("Detecting classes in " + source.getName());
+		if (Arguments.get().verbose()) {
+			System.out.println("Detecting classes in " + source.getName());
+		}
 		processClasses(source, false, new Stack<>(), null, source.getProcessedContent(), 0);
 	}
 
 	private void initializeClasses(Source source) {
-		System.out.println("Initializing classes in " + source.getName());
+		if (Arguments.get().verbose()) {
+			System.out.println("Initializing classes in " + source.getName());
+		}
 		processClasses(source, true, new Stack<>(), null, source.getProcessedContent(), 0);
 	}
 

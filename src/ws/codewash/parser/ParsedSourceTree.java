@@ -8,6 +8,7 @@ import ws.codewash.java.CWType;
 import ws.codewash.java.PendingType;
 import ws.codewash.java.TypeResolver;
 import ws.codewash.parser.exception.RedeclarationParseException;
+import ws.codewash.util.Arguments;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -90,7 +91,9 @@ public class ParsedSourceTree implements TypeResolver {
 
 			CWClassOrInterface cwClass = CWClassOrInterface.forExternalClass(this, externalClass);
 
-			System.out.println("Loaded external class " + cwClass.getName());
+			if (Arguments.get().verbose()) {
+				System.out.println("Loaded external class " + cwClass.getName());
+			}
 
 			addType(cwClass);
 		}

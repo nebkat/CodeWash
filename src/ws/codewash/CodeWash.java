@@ -22,9 +22,7 @@ public class CodeWash {
 				//Todo: Generate default config
 			}
 			else if (Arguments.get().getSrcPath() != null) {
-				if (Arguments.get().verbose()) {
-					System.out.println("Washing: " + Arguments.get().getSrcPath());
-				}
+				System.out.println("Washing: " + Arguments.get().getSrcPath());
 				FolderReader folderReader = new FolderReader(Paths.get(Arguments.get().getSrcPath()));
 				ParsedSourceTree parsedSourceTree = new Parser().parse(folderReader.getSources());
 			} else {
