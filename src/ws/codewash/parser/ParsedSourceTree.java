@@ -8,7 +8,7 @@ import ws.codewash.java.CWType;
 import ws.codewash.java.PendingType;
 import ws.codewash.java.TypeResolver;
 import ws.codewash.parser.exception.RedeclarationParseException;
-import ws.codewash.util.Arguments;
+import ws.codewash.util.Log;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,6 +36,7 @@ public class ParsedSourceTree implements TypeResolver {
 	private Set<String> mClassDeclarations = Collections.synchronizedSet(new HashSet<>());
 
 	private Set<PendingType> mPendingTypes = new HashSet<>();
+	private static final String TAG = "PARSEDSOURCETREE";
 
 	ParsedSourceTree(List<Path> paths) throws IOException {
 		for (Path path : paths) {
@@ -91,9 +92,7 @@ public class ParsedSourceTree implements TypeResolver {
 
 			CWClassOrInterface cwClass = CWClassOrInterface.forExternalClass(this, externalClass);
 
-			if (Arguments.get().verbose()) {
-				System.out.println("Loaded external class " + cwClass.getName());
-			}
+			Log.d(TAG, "Loaded external class " + cwClass.getName());
 
 			addType(cwClass);
 		}

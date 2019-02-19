@@ -1,7 +1,6 @@
 package ws.codewash.parser;
 
 import com.florianingerl.util.regex.Matcher;
-import ws.codewash.java.CWArray;
 import ws.codewash.java.CWClass;
 import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.CWEnum;
@@ -10,20 +9,12 @@ import ws.codewash.parser.ParsedSourceTree.Source;
 import ws.codewash.parser.exception.IllegalFormatParseException;
 import ws.codewash.parser.exception.UnexpectedTokenParseException;
 import ws.codewash.parser.exception.UnresolvedTypeParseException;
-import ws.codewash.util.Arguments;
+import ws.codewash.util.Log;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static ws.codewash.parser.ParsedSourceTree.dot;
@@ -101,20 +92,20 @@ public class Parser {
 	private static final Pattern FIELD_PATTERN = Pattern.compile("");
 	private static final Pattern METHOD_PATTERN = Pattern.compile("");
 
+	private static final String TAG = "PARSER";
+
 	private ParsedSourceTree mSourceTree;
 
 	public ParsedSourceTree parse(List<Path> rawSources) throws IOException {
 		ParsedSourceTree sourceTree = new ParsedSourceTree(rawSources);
 
-		System.out.println("Parsing source tree");
+		Log.i(TAG,"Parsing source tree");
 
 		// Preprocess
 		// TODO: Generic preprocessor
 		CommentPreProcessor c = new CommentPreProcessor();
 		for (Source s : sourceTree.getSources()) {
-			if (Arguments.get().verbose()) {
-				System.out.println("Removing comments in " + s.getName());
-			}
+			Log.d(TAG, "Removing comments in " + s.getName());
 			s.setProcessedContent(c.process(s.getProcessedContent()));
 		}
 
@@ -126,25 +117,23 @@ public class Parser {
 		sourceTree.getSources().parallelStream().forEach(this::parseImports);
 		sourceTree.getSources().parallelStream().forEach(this::detectClassDeclarations);
 		sourceTree.getSources().parallelStream().forEach(this::initializeClasses);
-		System.out.println("Resolving super classes, outer classes, implemented interfaces, arrays and generic types");
+		Log.i(TAG,"Resolving super classes, outer classes, implemented interfaces, arrays and generic types");
 		sourceTree.resolvePendingTypes();
 
 		long endTime = System.currentTimeMillis();
 
-		System.out.println();
-		System.out.println("-------------------------");
-		System.out.println("Parsing complete");
-		System.out.println("-------------------------");
-		System.out.println(sourceTree.getClasses().size() + " classes parsed/loaded in " + ((endTime - startTime) / 1000.0) + "s");
-		System.out.println();
+		Log.i(TAG, "\n" +
+				"-------------------------\n" +
+				"Parsing complete\n" +
+				"-------------------------\n" +
+				sourceTree.getClasses().size() + " classes parsed/loaded in " + ((endTime - startTime) / 1000.0) + "s" +
+				"\n\n");
 
 		return sourceTree;
 	}
 
 	private void parsePackage(Source source) {
-		if (Arguments.get().verbose()) {
-			System.out.println("Parsing package in " + source.getName());
-		}
+		Log.d(TAG, "Parsing package in " + source.getName());
 
 		String content = source.getProcessedContent();
 
@@ -163,9 +152,7 @@ public class Parser {
 	}
 
 	private void parseImports(Source source) {
-		if (Arguments.get().verbose()) {
-			System.out.println("Parsing imports in " + source.getName());
-		}
+		Log.d(TAG, "Parsing imports in " + source.getName());
 
 		String content = source.getProcessedContent();
 
@@ -205,16 +192,12 @@ public class Parser {
 	}
 
 	private void detectClassDeclarations(Source source) {
-		if (Arguments.get().verbose()) {
-			System.out.println("Detecting classes in " + source.getName());
-		}
+		Log.d(TAG, "Detecting classes in " + source.getName());
 		processClasses(source, false, new Stack<>(), null, source.getProcessedContent(), 0);
 	}
 
 	private void initializeClasses(Source source) {
-		if (Arguments.get().verbose()) {
-			System.out.println("Initializing classes in " + source.getName());
-		}
+		Log.d(TAG, "Initializing classes in " + source.getName());
 		processClasses(source, true, new Stack<>(), null, source.getProcessedContent(), 0);
 	}
 
