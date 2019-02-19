@@ -7,16 +7,18 @@ import java.util.Set;
 
 public class CWClass extends CWClassOrInterface {
 	private CWClass mSuperClass;
+	private String mPendingSuperClass;
 	private Set<CWClass> mSubClasses = new HashSet<>();
 
-	public CWClass(TypeResolver resolver, String _package, int modifiers, String name, String superClass, CWClassOrInterface outerClass, Collection<String> interfaces) {
-		super(resolver, _package, modifiers, name, outerClass, interfaces);
+	public CWClass(Scope enclosingScope, String _package, int modifiers, String name, String superClass, Collection<String> interfaces) {
+		super(enclosingScope, _package, modifiers, name, interfaces);
 
-		resolver.resolve(new PendingType<>(superClass, this::setSuperClass));
+		mPendingSuperClass = superClass;
+		enclosingScope.resolve(new PendingType<>(superClass, this::setSuperClass));
 	}
 
-	CWClass(TypeResolver resolver, Class _class) {
-		super(resolver, _class);
+	CWClass(Scope enclosingScope, Class _class) {
+		super(enclosingScope, _class);
 	}
 
 	@Override
@@ -39,5 +41,19 @@ public class CWClass extends CWClassOrInterface {
 
 	public Set<CWClass> getSubClasses() {
 		return mSubClasses;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append(getModifiersForToString());
+		builder.append("class ");
+		builder.append(getSimpleName());
+		if (!mPendingSuperClass.equals(Object.class.getName())) {
+			builder.append("extends ").append(mPendingSuperClass);
+		}
+
+		return builder.toString();
 	}
 }

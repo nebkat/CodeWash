@@ -1,7 +1,6 @@
 package ws.codewash.parser;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -15,7 +14,7 @@ public class ExternalClassLoader extends ClassLoader {
 	private Map<String, byte[]> mClassMap = new HashMap<>();
 
 	void addJarFile(Path path) throws IOException {
-		try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
+		try (FileSystem fs = FileSystems.newFileSystem(path, null);) {
 			List<Path> classFiles = Files.walk(fs.getPath("/"))
 					.filter(Files::isRegularFile)
 					.filter(f -> f.toString().endsWith(".class"))

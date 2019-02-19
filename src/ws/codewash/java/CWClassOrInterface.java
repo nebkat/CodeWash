@@ -1,12 +1,14 @@
 package ws.codewash.java;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static ws.codewash.parser.ParsedSourceTree.dot;
 
-public abstract class CWClassOrInterface extends CWReferenceType implements Modifiable {
+public abstract class CWClassOrInterface extends CWReferenceType implements CWParameterizable, Modifiable {
 	private final Class mClass;
 	private final String mPackageName;
 	private Set<CWInterface> mInterfaces = new HashSet<>();
@@ -17,11 +19,16 @@ public abstract class CWClassOrInterface extends CWReferenceType implements Modi
 	private CWClassOrInterface mOuterClass;
 	private Set<CWClassOrInterface> mInnerClasses = new HashSet<>();
 
+	private List<CWTypeParameter> mTypeParameters = new ArrayList<>();
+
+	private Set<CWInitializer> mInitializers = new HashSet<>();
 	private Set<CWConstructor> mConstructors = new HashSet<>();
 	private Set<CWMethod> mMethods = new HashSet<>();
 	private Set<CWField> mFields = new HashSet<>();
 
-	CWClassOrInterface(TypeResolver resolver, String packageName, int modifiers, String name, CWClassOrInterface outerClass, Collection<String> interfaces) {
+	CWClassOrInterface(Scope enclosingScope, String packageName, int modifiers, String name, Collection<String> interfaces) {
+		super(enclosingScope);
+
 		mClass = null;
 		mPackageName = packageName;
 		mName = name;
@@ -29,17 +36,19 @@ public abstract class CWClassOrInterface extends CWReferenceType implements Modi
 		mModifiers = modifiers;
 
 		// Outer class
-		if (outerClass != null) {
-			setOuterClass(outerClass);
+		if (enclosingScope instanceof CWClassOrInterface) {
+			setOuterClass((CWClassOrInterface) enclosingScope);
 		}
 
 		// Interfaces
 		for (String _interface : interfaces) {
-			resolver.resolve(new PendingType<>(_interface, this::addInterface));
+			enclosingScope.resolve(new PendingType<>(_interface, this::addInterface));
 		}
 	}
 
-	CWClassOrInterface(TypeResolver resolver, Class _class) {
+	CWClassOrInterface(Scope enclosingScope, Class _class) {
+		super(enclosingScope);
+
 		mClass = _class;
 		mPackageName = _class.getPackageName();
 		mName = _class.getSimpleName();
@@ -48,29 +57,46 @@ public abstract class CWClassOrInterface extends CWReferenceType implements Modi
 
 		// Outer class
 		if (_class.getEnclosingClass() != null) {
-			resolver.resolve(new PendingType<>(_class.getEnclosingClass().getName(), this::setOuterClass));
+			enclosingScope.resolve(new PendingType<>(_class.getEnclosingClass().getName(), this::setOuterClass));
 		}
 
 		// Interfaces
 		for (Class _interface : _class.getInterfaces()) {
-			resolver.resolve(new PendingType<>(_interface.getName(), this::addInterface));
+			enclosingScope.resolve(new PendingType<>(_interface.getName(), this::addInterface));
 		}
+
+		// TODO: _class.getTypeParameters()
 	}
 
-	public static CWClassOrInterface forExternalClass(TypeResolver resolver, Class _class) {
+	public static Scope getExternalEnclosingScope(Class _class) {
+		if (_class.getDeclaringClass() != null) {
+			// TODO: TODO: TODO:
+			return forExternalClass(_class.getDeclaringClass());
+		}
+
+		return null;
+	}
+
+	public static CWClassOrInterface forExternalClass(Class _class) {
+		Scope enclosingScope = getExternalEnclosingScope(_class);
 		CWClassOrInterface cwClassOrInterface;
 		if (_class.isEnum()) {
-			cwClassOrInterface = new CWEnum(resolver, _class);
+			cwClassOrInterface = new CWEnum(enclosingScope, _class);
 		} else if (_class.isInterface()) {
-			cwClassOrInterface = new CWInterface(resolver, _class);
+			cwClassOrInterface = new CWInterface(enclosingScope, _class);
 		} else {
-			cwClassOrInterface = new CWClass(resolver, _class);
+			cwClassOrInterface = new CWClass(enclosingScope, _class);
 		}
 
 		return cwClassOrInterface;
 	}
 
 	protected abstract int getValidModifiers();
+
+	public void addTypeParameter(CWTypeParameter typeParameter) {
+		mTypeParameters.add(typeParameter);
+		addTypeDeclaration(typeParameter.getVariableName(), typeParameter);
+	}
 
 	public void setOuterClass(CWClassOrInterface outerClass) {
 		mOuterClass = outerClass;
@@ -138,6 +164,26 @@ public abstract class CWClassOrInterface extends CWReferenceType implements Modi
 
 	public int getModifiers() {
 		return mModifiers;
+	}
+
+	public void addInitializer(CWInitializer initializer) {
+		mInitializers.add(initializer);
+	}
+
+	public void addConstructor(CWConstructor constructor) {
+		mConstructors.add(constructor);
+	}
+
+	public void addMethod(CWMethod method) {
+		mMethods.add(method);
+	}
+
+	public void addField(CWField field) {
+		mFields.add(field);
+	}
+
+	public Set<CWInitializer> getInitializers() {
+		return mInitializers;
 	}
 
 	public Set<CWConstructor> getConstructors() {

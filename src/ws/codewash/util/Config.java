@@ -1,6 +1,7 @@
 package ws.codewash.util;
 
 import ws.codewash.analyzer.smells.CodeSmell;
+import ws.codewash.analyzer.smells.bloatedcode.LongClasses;
 import ws.codewash.analyzer.smells.bloatedcode.LongIDs;
 import ws.codewash.analyzer.smells.bloatedcode.LongMethods;
 import ws.codewash.analyzer.smells.bloatedcode.LongParameterList;
@@ -24,6 +25,7 @@ public class Config {
 		put(LongParameterList.NAME, LongParameterList::new);
 		put(PrimitiveObsession.NAME, PrimitiveObsession::new);
 		put(LongIDs.NAME, LongIDs::new);
+		put(LongClasses.NAME, LongClasses::new);
 	}};
 
 	private final List<String> SelectedCodeSmells = new ArrayList<>();

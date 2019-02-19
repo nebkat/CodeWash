@@ -4,6 +4,7 @@ public class CWArray extends CWReferenceType {
 	private CWType mType;
 
 	public CWArray(CWType type) {
+		super();
 		mType = type;
 	}
 

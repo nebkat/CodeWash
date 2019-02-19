@@ -1,0 +1,1200 @@
+//
+// Productions from §3 (Lexical Structure)
+//
+UnicodeInput:
+    {UnicodeInputCharacter}
+
+UnicodeInputCharacter:
+	UnicodeEscape
+	InvalidUnicodeEscape
+	RawInputCharacter
+
+UnicodeEscape:
+    `\\u+[0-9a-fA-F]{4}`
+
+InvalidUnicodeEscape:
+    `\\u+`
+
+RawInputCharacter:
+    `[^\\]+`
+	`.`
+	'\\'
+
+LineTerminator:
+	`\n|\r|\r\n`
+
+// Custom (mod)
+InputCharacter:
+	UnicodeEscape
+	`[^\r\n]`
+
+Input:
+	{InputElement} [Sub]
+
+InputElement:
+	WhiteSpace
+	Comment
+	Token
+
+Token:
+	Identifier
+	Keyword
+	Literal
+	Separator
+	Operator
+
+Sub:
+	`\u001a`
+
+Separator:
+	'('
+	')'
+	'{'
+	'}'
+	'['
+	']'
+	';'
+	','
+	'.'
+	'...'
+	'@'
+	'::'
+
+Operator:
+	'='
+	'>'
+	'<'
+	'!'
+	'~'
+	'?'
+	':'
+	'->'
+	'=='
+	'>='
+	'<='
+	'!='
+	'&&'
+	'||'
+	'++'
+	'--'
+	'+'
+	'-'
+	'*'
+	'/'
+	'&'
+	'|'
+	'^'
+	'%'
+	'<'
+	'>'
+	'+='
+	'-='
+	'*='
+	'/='
+	'&='
+	'|='
+	'^='
+	'%='
+	'<<='
+	'>>='
+	'>>>='
+
+WhiteSpace:
+	`[\x20\t\f]+`
+	LineTerminator
+
+Comment:
+	TraditionalComment
+	EndOfLineComment
+
+TraditionalComment:
+	`\/\*(\*(?!\/)|[^*])*\*\/`
+
+EndOfLineComment:
+	`\/\/[^\r\n]*`
+
+// Custom (mod)
+Identifier:
+	`\p{javaJavaIdentifierStart}\p{javaJavaIdentifierPart}*` &!=NonIdentifier
+
+NonIdentifier:
+	Keyword
+	BooleanLiteral
+	NullLiteral
+
+TypeIdentifier:
+	Identifier &!='var'
+
+Keyword:
+	'abstract'
+	'continue'
+	'for'
+	'new'
+	'switch'
+	'assert'
+	'default'
+	'if'
+	'package'
+	'synchronized'
+	'boolean'
+	'do'
+	'goto'
+	'private'
+	'this'
+	'break'
+	'double'
+	'implements'
+	'protected'
+	'throw'
+	'byte'
+	'else'
+	'import'
+	'public'
+	'throws'
+	'case'
+	'enum'
+	'instanceof'
+	'return'
+	'transient'
+	'catch'
+	'extends'
+	'int'
+	'short'
+	'try'
+	'char'
+	'final'
+	'interface'
+	'static'
+	'void'
+	'class'
+	'finally'
+	'long'
+	'strictfp'
+	'volatile'
+	'const'
+	'float'
+	'native'
+	'super'
+	'while'
+	'_'
+
+Literal:
+	IntegerLiteral
+	FloatingPointLiteral
+	BooleanLiteral
+	CharacterLiteral
+	StringLiteral
+	NullLiteral
+
+IntegerLiteral:
+	DecimalIntegerLiteral
+	HexIntegerLiteral
+	OctalIntegerLiteral
+	BinaryIntegerLiteral
+
+DecimalIntegerLiteral:
+	DecimalNumeral [IntegerTypeSuffix]
+
+HexIntegerLiteral:
+	HexNumeral [IntegerTypeSuffix]
+
+OctalIntegerLiteral:
+	OctalNumeral [IntegerTypeSuffix]
+
+BinaryIntegerLiteral:
+	BinaryNumeral [IntegerTypeSuffix]
+
+IntegerTypeSuffix:
+	'l'
+	'L'
+
+DecimalNumeral:
+	`0|[1-9]([0-9_]*[0-9])?`
+
+Digits:
+	`[0-9]([0-9_]*[0-9])?`
+
+HexNumeral:
+    `0[xX][0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?`
+
+HexDigits:
+	`[0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?`
+
+OctalNumeral:
+    `0[0-7_]*[0-7]`
+
+BinaryNumeral:
+    `0[bB][01]([01_]*[01])?`
+
+FloatingPointLiteral:
+	DecimalFloatingPointLiteral
+	HexadecimalFloatingPointLiteral
+
+DecimalFloatingPointLiteral:
+	Digits '.' [Digits] [ExponentPart] [FloatTypeSuffix]
+	'.' Digits [ExponentPart] [FloatTypeSuffix]
+	Digits ExponentPart [FloatTypeSuffix]
+	Digits [ExponentPart] FloatTypeSuffix
+
+ExponentPart:
+	ExponentIndicator SignedInteger
+
+ExponentIndicator:
+	'e'
+	'E'
+
+SignedInteger:
+	[Sign] Digits
+
+Sign:
+	'+'
+	'-'
+
+FloatTypeSuffix:
+	'f'
+	'F'
+	'd'
+	'D'
+
+HexadecimalFloatingPointLiteral:
+	HexSignificand BinaryExponent [FloatTypeSuffix]
+
+HexSignificand:
+	HexNumeral ['.']
+	'0' 'x' [HexDigits] '.' HexDigits
+	'0' 'X' [HexDigits] '.' HexDigits
+
+BinaryExponent:
+	BinaryExponentIndicator SignedInteger
+
+BinaryExponentIndicator:
+	'p'
+	'P'
+
+BooleanLiteral:
+	'true'
+	'false'
+
+CharacterLiteral:
+	`'` SingleCharacter `'`
+	`'` EscapeSequence `'`
+
+SingleCharacter:
+	InputCharacter &!=CharacterEndOrEscape
+
+// Custom
+CharacterEndOrEscape:
+    `'`
+    '\'
+
+StringLiteral:
+	'"' {StringCharacter} '"'
+
+StringCharacter:
+	InputCharacter &!=StringEndOrEscape
+	EscapeSequence
+	
+// Custom
+StringEndOrEscape:
+    '"'
+    '\'
+
+EscapeSequence:
+	'\b'
+	'\t'
+	'\n'
+	'\f'
+	'\r'
+	'\"'
+	`\\'`
+	'\\'
+	OctalEscape
+
+OctalEscape:
+	`\\[0-3]?[0-7]{1,2}`
+
+NullLiteral:
+	'null'
+
+//
+// Productions from §4 (Types, Values, and Variables)
+//
+Type:
+	PrimitiveType
+	ReferenceType
+
+PrimitiveType:
+	{Annotation} NumericType
+	{Annotation} 'boolean'
+
+NumericType:
+	IntegralType
+	FloatingPointType
+
+IntegralType:
+	'byte'
+	'short'
+	'int'
+	'long'
+	'char'
+
+FloatingPointType:
+	'float'
+	'double'
+
+ReferenceType:
+	ClassType [Dims]
+	PrimitiveType [Dims]
+
+ClassOrInterfaceType:
+	ClassType
+
+ClassType:
+	{Annotation} Identifier [TypeArguments] {'.' {Annotation} Identifier [TypeArguments]}
+
+InterfaceType:
+    ClassType
+
+ArrayType:
+	PrimitiveType Dims
+	ClassOrInterfaceType Dims
+
+Dims:
+	{Annotation} '[' ']' {{Annotation} '[' ']'}
+
+TypeParameter:
+	{TypeParameterModifier} TypeIdentifier [TypeBounds]
+
+TypeParameterModifier:
+	Annotation
+
+TypeBounds:
+	'extends' TypeBoundsList
+
+TypeBoundsList:
+    ClassOrInterfaceType {AdditionalBound}
+
+AdditionalBound:
+    '&' InterfaceType
+
+TypeArguments:
+	'<' TypeArgumentList '>'
+
+TypeArgumentList:
+	TypeArgument {',' TypeArgument}
+
+TypeArgument:
+	ReferenceType
+	Wildcard
+
+Wildcard:
+	{Annotation} '?' [WildcardBounds]
+
+WildcardBounds:
+	'extends' ReferenceType
+	'super' ReferenceType
+
+//
+// Productions from §6 (Names)
+//
+ModuleName:
+	Identifier {'.' Identifier}
+
+PackageName:
+	Identifier {'.' Identifier}
+
+TypeName:
+	Identifier {'.' Identifier}
+
+ExpressionName:
+	Identifier {'.' Identifier}
+
+PackageOrTypeName:
+	Identifier {'.' Identifier}
+
+//
+// Productions from §7 (Packages and Modules)
+//
+CompilationUnit:
+	OrdinaryCompilationUnit
+	ModularCompilationUnit
+
+OrdinaryCompilationUnit:
+	[PackageDeclaration] {ImportDeclaration} {TypeDeclaration}
+
+ModularCompilationUnit:
+	{ImportDeclaration} ModuleDeclaration
+
+PackageDeclaration:
+	{PackageModifier} 'package' PackageName ';'
+
+PackageModifier:
+	Annotation
+
+ImportDeclaration:
+	SingleTypeImportDeclaration
+	TypeImportOnDemandDeclaration
+	SingleStaticImportDeclaration
+	StaticImportOnDemandDeclaration
+
+SingleTypeImportDeclaration:
+	'import' PackageOrTypeName '.' TypeIdentifier ';'
+
+TypeImportOnDemandDeclaration:
+	'import' PackageOrTypeName '.' '*' ';'
+
+SingleStaticImportDeclaration:
+	'import' 'static' PackageOrTypeName '.' TypeIdentifier '.' Identifier ';'
+
+StaticImportOnDemandDeclaration:
+	'import' 'static' PackageOrTypeName '.' TypeIdentifier '.' '*' ';'
+
+TypeDeclaration:
+	ClassDeclaration
+	InterfaceDeclaration
+	';'
+
+ModuleDeclaration:
+	{Annotation} ['open'] 'module' Identifier {'.' Identifier} '{' {ModuleDirective} '}'
+
+ModuleDirective:
+	'requires' {RequiresModifier} ModuleName ';'
+	'exports' PackageName ['to' ModuleName {',' ModuleName}] ';'
+	'opens' PackageName ['to' ModuleName {',' ModuleName}] ';'
+	'uses' TypeName ';'
+	'provides' TypeName 'with' TypeName {',' TypeName} ';'
+
+RequiresModifier:
+	'transitive'
+	'static'
+
+//
+// Productions from §8 (Classes)
+//
+ClassDeclaration:
+	NormalClassDeclaration
+	EnumDeclaration
+
+NormalClassDeclaration:
+	{ClassModifier} 'class' TypeIdentifier [TypeParameters] [Superclass] [Superinterfaces] ClassBody
+
+ClassModifier:
+	Annotation
+	'public'
+	'protected'
+	'private'
+	'abstract'
+	'static'
+	'final'
+	'strictfp'
+
+TypeParameters:
+	'<' TypeParameterList '>'
+
+TypeParameterList:
+	TypeParameter {',' TypeParameter}
+
+Superclass:
+	'extends' ClassType
+
+Superinterfaces:
+	'implements' InterfaceTypeList
+
+InterfaceTypeList:
+	InterfaceType {',' InterfaceType}
+
+ClassBody:
+	'{' {ClassBodyDeclaration} '}'
+
+ClassBodyDeclaration:
+	ClassMemberDeclaration
+	InstanceInitializer
+	StaticInitializer
+	ConstructorDeclaration
+
+ClassMemberDeclaration:
+	FieldDeclaration
+	MethodDeclaration
+	ClassDeclaration
+	InterfaceDeclaration
+	';'
+
+FieldDeclaration:
+	{FieldModifier} Type VariableDeclaratorList ';'
+
+FieldModifier:
+	Annotation
+	'public'
+	'protected'
+	'private'
+	'static'
+	'final'
+	'transient'
+	'volatile'
+
+VariableDeclaratorList:
+	VariableDeclarator {',' VariableDeclarator}
+
+VariableDeclarator:
+	VariableDeclaratorId ['=' VariableInitializer]
+
+VariableDeclaratorId:
+	Identifier [Dims]
+
+VariableInitializer:
+	Expression
+	ArrayInitializer
+
+MethodDeclaration:
+	{MethodModifier} [TypeParameters] {Annotation} Result Identifier '(' [ReceiverParameter ','] [FormalParameterList] ')' [Dims] [Throws] MethodBody
+
+MethodModifier:
+	Annotation
+	'public'
+	'protected'
+	'private'
+	'abstract'
+	'static'
+	'final'
+	'synchronized'
+	'native'
+	'strictfp'
+
+Result:
+	Type
+	'void'
+
+ReceiverParameter:
+	{Annotation} Type [Identifier '.'] 'this'
+
+FormalParameterList:
+	FormalParameter {',' FormalParameter}
+
+FormalParameter:
+	{VariableModifier} Type VariableDeclaratorId
+	VariableArityParameter
+
+VariableArityParameter:
+	{VariableModifier} Type {Annotation} '...' Identifier
+
+VariableModifier:
+	Annotation
+	'final'
+
+Throws:
+	'throws' ExceptionTypeList
+
+ExceptionTypeList:
+	ExceptionType {',' ExceptionType}
+
+ExceptionType:
+	ClassType
+
+MethodBody:
+	Block
+	';'
+
+InstanceInitializer:
+	Block
+
+StaticInitializer:
+	'static' Block
+
+ConstructorDeclaration:
+	{ConstructorModifier} [TypeParameters] TypeIdentifier '(' [ReceiverParameter ','] [FormalParameterList] ')' [Throws] ConstructorBody
+
+ConstructorModifier:
+	Annotation
+	'public'
+	'protected'
+	'private'
+
+ConstructorBody:
+	'{' [ExplicitConstructorInvocation] [BlockStatements] '}'
+
+ExplicitConstructorInvocation:
+	[TypeArguments] 'this' '(' [ArgumentList] ')' ';'
+	[TypeArguments] 'super' '(' [ArgumentList] ')' ';'
+	ExpressionName '.' [TypeArguments] 'super' '(' [ArgumentList] ')' ';'
+	Primary '.' [TypeArguments] 'super' '(' [ArgumentList] ')' ';'
+
+EnumDeclaration:
+	{ClassModifier} 'enum' TypeIdentifier [Superinterfaces] EnumBody
+
+EnumBody:
+	'{' [EnumConstantList] [','] [EnumBodyDeclarations] '}'
+
+EnumConstantList:
+	EnumConstant {',' EnumConstant}
+
+EnumConstant:
+	{EnumConstantModifier} Identifier ['(' [ArgumentList] ')'] [ClassBody]
+
+EnumConstantModifier:
+	Annotation
+
+EnumBodyDeclarations:
+	';' {ClassBodyDeclaration}
+
+//
+// Productions from §9 (Interfaces)
+//
+InterfaceDeclaration:
+	NormalInterfaceDeclaration
+	AnnotationTypeDeclaration
+
+NormalInterfaceDeclaration:
+	{InterfaceModifier} 'interface' TypeIdentifier [TypeParameters] [ExtendsInterfaces] InterfaceBody
+
+InterfaceModifier:
+	Annotation
+	'public'
+	'protected'
+	'private'
+	'abstract'
+	'static'
+	'strictfp'
+
+ExtendsInterfaces:
+	'extends' InterfaceTypeList
+
+InterfaceBody:
+	'{' {InterfaceMemberDeclaration} '}'
+
+InterfaceMemberDeclaration:
+	ConstantDeclaration
+	InterfaceMethodDeclaration
+	ClassDeclaration
+	InterfaceDeclaration
+	';'
+
+ConstantDeclaration:
+	{ConstantModifier} Type VariableDeclaratorList ';'
+
+ConstantModifier:
+	Annotation
+	'public'
+	'static'
+	'final'
+
+InterfaceMethodDeclaration:
+	{InterfaceMethodModifier} [TypeParameters] {Annotation} Result Identifier '(' [ReceiverParameter ','] [FormalParameterList] ')' [Dims] [Throws] MethodBody
+
+InterfaceMethodModifier:
+	Annotation
+	'public'
+	'private'
+	'abstract'
+	'default'
+	'static'
+	'strictfp'
+
+AnnotationTypeDeclaration:
+	{InterfaceModifier} '@' 'interface' TypeIdentifier AnnotationTypeBody
+
+AnnotationTypeBody:
+	'{' {AnnotationTypeMemberDeclaration} '}'
+
+AnnotationTypeMemberDeclaration:
+	AnnotationTypeElementDeclaration
+	ConstantDeclaration
+	ClassDeclaration
+	InterfaceDeclaration
+	';'
+
+AnnotationTypeElementDeclaration:
+	{AnnotationTypeElementModifier} Type Identifier '(' ')' [Dims] [DefaultValue] ';'
+
+AnnotationTypeElementModifier:
+	Annotation
+	'public'
+	'abstract'
+
+DefaultValue:
+	'default' ElementValue
+
+Annotation:
+	NormalAnnotation
+	MarkerAnnotation
+	SingleElementAnnotation
+
+NormalAnnotation:
+	'@' TypeName '(' [ElementValuePairList] ')'
+
+ElementValuePairList:
+	ElementValuePair {',' ElementValuePair}
+
+ElementValuePair:
+	Identifier '=' ElementValue
+
+ElementValue:
+	ConditionalExpression
+	ElementValueArrayInitializer
+	Annotation
+
+ElementValueArrayInitializer:
+	'{' [ElementValueList] [','] '}'
+
+ElementValueList:
+	ElementValue {',' ElementValue}
+
+MarkerAnnotation:
+	'@' TypeName
+
+SingleElementAnnotation:
+	'@' TypeName '(' ElementValue ')'
+
+//
+// Productions from §10 (Arrays)
+//
+ArrayInitializer:
+	'{' [VariableInitializerList] [','] '}'
+
+VariableInitializerList:
+	VariableInitializer {',' VariableInitializer}
+
+//
+// Productions from §14 (Blocks and Statements)
+//
+Block:
+	'{' [BlockStatements] '}'
+
+BlockStatements:
+	BlockStatement {BlockStatement}
+
+BlockStatement:
+	LocalVariableDeclarationStatement
+	ClassDeclaration
+	Statement
+
+LocalVariableDeclarationStatement:
+	LocalVariableDeclaration ';'
+
+LocalVariableDeclaration:
+	{VariableModifier} LocalVariableType VariableDeclaratorList
+
+LocalVariableType:
+	Type
+	'var'
+
+Statement:
+	StatementWithoutTrailingSubstatement
+	LabeledStatement
+	IfThenStatement
+	IfThenElseStatement
+	WhileStatement
+	ForStatement
+
+StatementNoShortIf:
+	StatementWithoutTrailingSubstatement
+	LabeledStatementNoShortIf
+	IfThenElseStatementNoShortIf
+	WhileStatementNoShortIf
+	ForStatementNoShortIf
+
+StatementWithoutTrailingSubstatement:
+	Block
+	EmptyStatement
+	ExpressionStatement
+	AssertStatement
+	SwitchStatement
+	DoStatement
+	BreakStatement
+	ContinueStatement
+	ReturnStatement
+	SynchronizedStatement
+	ThrowStatement
+	TryStatement
+
+EmptyStatement:
+	';'
+
+LabeledStatement:
+	Identifier ':' Statement
+
+LabeledStatementNoShortIf:
+	Identifier ':' StatementNoShortIf
+
+ExpressionStatement:
+	StatementExpression ';'
+
+StatementExpression:
+    Assignment
+    PreIncrementExpression
+    PreDecrementExpression
+    Primary [PostExpression]
+
+IfThenStatement:
+	'if' '(' Expression ')' Statement
+
+IfThenElseStatement:
+	'if' '(' Expression ')' StatementNoShortIf 'else' Statement
+
+IfThenElseStatementNoShortIf:
+	'if' '(' Expression ')' StatementNoShortIf 'else' StatementNoShortIf
+
+AssertStatement:
+	'assert' Expression ';'
+	'assert' Expression ':' Expression ';'
+
+SwitchStatement:
+	'switch' '(' Expression ')' SwitchBlock
+
+SwitchBlock:
+	'{' {SwitchBlockStatementGroup} {SwitchLabel} '}'
+	'{' {EnhancedSwitchCase} '}'
+
+SwitchBlockStatementGroup:
+	SwitchLabels BlockStatements
+
+SwitchLabels:
+	SwitchLabel {SwitchLabel}
+
+SwitchLabel:
+	'case' Expression ':'
+	'default' ':'
+
+EnhancedSwitchCase:
+    'case' Expression {',' Expression} '->' EnhancedSwitchCaseStatement
+    'default' '->' EnhancedSwitchCaseStatement
+
+EnhancedSwitchCaseStatement:
+    Block
+    ExpressionStatement
+    ThrowStatement
+
+WhileStatement:
+	'while' '(' Expression ')' Statement
+
+WhileStatementNoShortIf:
+	'while' '(' Expression ')' StatementNoShortIf
+
+DoStatement:
+	'do' Statement 'while' '(' Expression ')' ';'
+
+ForStatement:
+	BasicForStatement
+	EnhancedForStatement
+
+ForStatementNoShortIf:
+	BasicForStatementNoShortIf
+	EnhancedForStatementNoShortIf
+
+BasicForStatement:
+	'for' '(' [ForInit] ';' [Expression] ';' [ForUpdate] ')' Statement
+
+BasicForStatementNoShortIf:
+	'for' '(' [ForInit] ';' [Expression] ';' [ForUpdate] ')' StatementNoShortIf
+
+ForInit:
+	StatementExpressionList
+	LocalVariableDeclaration
+
+ForUpdate:
+	StatementExpressionList
+
+StatementExpressionList:
+	StatementExpression {',' StatementExpression}
+
+EnhancedForStatement:
+	'for' '(' {VariableModifier} LocalVariableType VariableDeclaratorId ':' Expression ')' Statement
+
+EnhancedForStatementNoShortIf:
+	'for' '(' {VariableModifier} LocalVariableType VariableDeclaratorId ':' Expression ')' StatementNoShortIf
+
+// SWITCH EXPRESSIONS
+//BreakStatement:
+//	'break' [Identifier] ';'
+BreakStatement:
+    'break' [Expression] ';'
+
+ContinueStatement:
+	'continue' [Identifier] ';'
+
+ReturnStatement:
+	'return' [Expression] ';'
+
+ThrowStatement:
+	'throw' Expression ';'
+
+SynchronizedStatement:
+	'synchronized' '(' Expression ')' Block
+
+TryStatement:
+	'try' Block Catches
+	'try' Block [Catches] Finally
+	TryWithResourcesStatement
+
+Catches:
+	CatchClause {CatchClause}
+
+CatchClause:
+	'catch' '(' CatchFormalParameter ')' Block
+
+CatchFormalParameter:
+	{VariableModifier} CatchType VariableDeclaratorId
+
+CatchType:
+	ClassType {'|' ClassType}
+
+Finally:
+	'finally' Block
+
+TryWithResourcesStatement:
+	'try' ResourceSpecification Block [Catches] [Finally]
+
+ResourceSpecification:
+	'(' ResourceList [';'] ')'
+
+ResourceList:
+	Resource {';' Resource}
+
+Resource:
+	{VariableModifier} LocalVariableType Identifier '=' Expression
+	VariableAccess
+
+VariableAccess:
+    ExpressionName
+    FieldAccess
+
+//
+// Productions from §15 (Expressions)
+//
+Primary:
+	PrimaryNoNewArray
+	ArrayCreationExpression
+
+PrimaryNoNewArray:
+    PrimaryArrayAccessOrMethodReference {'.' PrimaryArrayAccessOrMethodReference}
+
+PrimaryArrayAccessOrMethodReference:
+    PrimarySingle [ArrayAccessOrMethodReference]
+
+ArrayAccessOrMethodReference:
+    {'[' Expression ']'}
+    [TypeArguments] '(' [ArgumentList] ')'
+    '::' [TypeArguments] MethodReferenceIdentifier
+
+MethodReferenceIdentifier:
+    Identifier
+    'new'
+
+PrimarySingle:
+    Identifier
+    Literal
+    'this'
+    'super'
+    'class'
+    'boolean'
+    'void'
+    NumericType
+    '(' Expression ')'
+    UnqualifiedClassInstanceCreationExpression
+
+UnqualifiedClassInstanceCreationExpression:
+	'new' [TypeArguments] ClassOrInterfaceTypeToInstantiate '(' [ArgumentList] ')' [ClassBody]
+
+ClassOrInterfaceTypeToInstantiate:
+	{Annotation} Identifier {'.' {Annotation} Identifier} [TypeArgumentsOrDiamond]
+
+TypeArgumentsOrDiamond:
+	TypeArguments
+	'<' '>'
+
+FieldAccess:
+	Primary '.' Identifier
+	'super' '.' Identifier
+	TypeName '.' 'super' '.' Identifier
+
+ArrayAccess:
+	ExpressionName '[' Expression ']'
+	PrimaryNoNewArray '[' Expression ']'
+
+ArgumentList:
+	Expression {',' Expression}
+
+MethodReference:
+	Primary '::' [TypeArguments] Identifier
+	ClassType '::' [TypeArguments] 'new'
+	ArrayType '::' 'new'
+
+ArrayCreationExpression:
+	'new' PrimitiveType DimExprs [Dims]
+	'new' ClassOrInterfaceType DimExprs [Dims]
+	'new' PrimitiveType Dims ArrayInitializer
+	'new' ClassOrInterfaceType Dims ArrayInitializer
+
+DimExprs:
+	DimExpr {DimExpr}
+
+DimExpr:
+	{Annotation} '[' Expression ']'
+
+Expression:
+	LambdaExpression
+	SwitchExpression
+	AssignmentExpression
+
+SwitchExpression:
+    SwitchStatement
+
+ExpressionOperator:
+    Operator
+    ShiftOperator
+
+LambdaExpression:
+	LambdaParameters '->' LambdaBody
+
+LambdaParameters:
+	'(' [LambdaParameterList] ')'
+	Identifier
+
+LambdaParameterList:
+	LambdaParameter {',' LambdaParameter}
+	Identifier {',' Identifier}
+
+LambdaParameter:
+	{VariableModifier} LambdaParameterType VariableDeclaratorId
+	VariableArityParameter
+
+LambdaParameterType:
+	Type
+	'var'
+
+LambdaBody:
+	Expression
+	Block
+
+AssignmentExpression:
+	ConditionalExpression
+	Assignment
+
+Assignment:
+	LeftHandSide AssignmentOperator Expression
+
+LeftHandSide:
+	ExpressionName
+	FieldAccess
+	ArrayAccess
+
+AssignmentOperator:
+	'=' 
+	'*='
+	'/='
+	'%='
+	'+='
+	'-='
+	'<<='
+	'>>='
+	'>>>='
+	'&='
+	'^='
+	'|='
+
+//ConditionalExpression:
+//    PrePrimaryExpression {Operator PrePrimaryExpression} ['instanceof' ReferenceType]
+ConditionalExpression:
+    ConditionalOrExpression ['?' Expression ':' ConditionalLambdaSwitchExpression]
+
+ConditionalLambdaSwitchExpression:
+    ConditionalExpression
+    LambdaExpression
+    SwitchExpression
+
+ConditionalOrExpression:
+	ConditionalAndExpression {'||' ConditionalAndExpression}
+
+ConditionalAndExpression:
+	InclusiveOrExpression {'&&' InclusiveOrExpression}
+
+InclusiveOrExpression:
+	ExclusiveOrExpression {'|' ExclusiveOrExpression}
+
+ExclusiveOrExpression:
+	AndExpression {'^' AndExpression}
+
+AndExpression:
+	EqualityExpression {'&' EqualityExpression}
+
+EqualityExpression:
+	RelationalExpression {EqualityOperator RelationalExpression}
+
+EqualityOperator:
+    '=='
+    '!='
+
+RelationalExpression:
+	ShiftExpression {RelationalOperator ShiftExpression} ['instanceof' ReferenceType]
+
+RelationalOperator:
+    '<'
+    '>'
+    '<='
+    '>='
+
+ShiftExpression:
+	AdditiveExpression {ShiftOperator AdditiveExpression}
+
+ShiftOperator:
+    '<' '<'
+    '>' '>'
+    '>' '>' '>'
+
+AdditiveExpression:
+	MultiplicativeExpression {AdditiveOperator MultiplicativeExpression}
+
+AdditiveOperator:
+    '+'
+    '-'
+
+MultiplicativeExpression:
+	UnaryExpression {MultiplicativeOperator UnaryExpression}
+
+MultiplicativeOperator:
+    '*'
+    '/'
+    '%'
+
+UnaryExpression:
+	PreIncrementExpression
+	PreDecrementExpression
+	'+' UnaryExpression
+	'-' UnaryExpression
+	UnaryExpressionNotPlusMinus
+
+PreIncrementExpression:
+	'++' UnaryExpression
+
+PreDecrementExpression:
+	'--' UnaryExpression
+
+UnaryExpressionNotPlusMinus:
+    PostfixExpression
+    '~' UnaryExpression
+    '!' UnaryExpression
+    CastExpression
+
+PostfixExpression:
+	Primary [PostExpression]
+	ExpressionName [PostExpression]
+
+PreExpression:
+    '+'
+    '-'
+    {'!'}
+    {'~'}
+    '++'
+    '--'
+
+PostExpression:
+    '++'
+    '--'
+
+CastExpression:
+	'(' PrimitiveType ')' UnaryExpression
+	'(' ReferenceType {AdditionalBound} ')' UnaryExpressionNotPlusMinus
+	'(' ReferenceType {AdditionalBound} ')' LambdaExpression
+
+PrePrimaryExpression:
+	[PreExpression] Primary [PostExpression]
+	CastExpression

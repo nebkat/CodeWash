@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Analyzer {
-	private final static String TAG = "ANALYZER";
+	private final static String TAG = "Analyzer";
 	private List<CodeSmell> mCodeSmells = new ArrayList<>();
 
 	public Analyzer(ParsedSourceTree parsedSourceTree) {

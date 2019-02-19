@@ -4,7 +4,6 @@ import ws.codewash.analyzer.reports.ClassReport;
 import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
-import ws.codewash.analyzer.smells.Smell;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.util.Config;
 
@@ -35,9 +34,9 @@ public class LongClasses extends CodeSmell {
 			totalLength += (int)value.getFields().parallelStream().count();
 
 			if (totalLength <= MAX_LENGTH && totalLength >= MID_LENGTH) {
-				reports.add(new ClassReport(Smell.LONG_CLASSES, value, Warning.CAUTION));
+				reports.add(new ClassReport(NAME, value, Warning.CAUTION));
 			} else if (totalLength > MAX_LENGTH){
-				reports.add(new ClassReport(Smell.LONG_CLASSES, value, Warning.ISSUE));
+				reports.add(new ClassReport(NAME, value, Warning.ISSUE));
 			}
 		});
 

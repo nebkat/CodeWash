@@ -6,6 +6,7 @@ import ws.codewash.analyzer.Analyzer;
 import ws.codewash.analyzer.reports.Report;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.parser.Parser;
+import ws.codewash.parser.grammar.Grammar;
 import ws.codewash.reader.FolderReader;
 import ws.codewash.reader.SourceReadable;
 import ws.codewash.reader.ZipReader;
@@ -18,7 +19,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class CodeWash {
-	private static final String TAG = "CODEWASH";
+	private static final String TAG = "CodeWash";
 
 	public static void main(String[] args) throws IOException {
 		JCommander commander = JCommander.newBuilder()
@@ -46,8 +47,9 @@ public class CodeWash {
 					sources = new FolderReader(Paths.get(Arguments.get().getSrcPath()));
 				}
 
-				ParsedSourceTree parsedSourceTree = new Parser().parse(sources.getSources());
-				List<Report> reports = new Analyzer(parsedSourceTree).analyse();
+				Grammar grammar = Grammar.parse(Paths.get("resources/language/java-11.cwls"));
+				ParsedSourceTree tree = new Parser(grammar).parse(sources.getSources());
+				List<Report> reports = new Analyzer(tree).analyse();
 
 			} else {
 				//Todo: Create http server

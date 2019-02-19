@@ -9,6 +9,8 @@ public interface CWType {
 		return getSimpleName();
 	}
 
+	default boolean isVoid() { return this instanceof CWVoid; }
+
 	default boolean isPrimitive() {
 		return this instanceof CWPrimitive;
 	}

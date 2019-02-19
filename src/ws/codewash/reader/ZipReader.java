@@ -24,7 +24,7 @@ public class ZipReader implements SourceReadable {
 
 	@Override
 	public List<Path> getSources() {
-		try (FileSystem fs = FileSystems.newFileSystem(mPath, null)) {
+		try (FileSystem fs = FileSystems.newFileSystem(mPath, null);) {
 			return Files.walk(fs.getPath("/"))
 					.filter(Files::isRegularFile)
 					.collect(Collectors.toList());
