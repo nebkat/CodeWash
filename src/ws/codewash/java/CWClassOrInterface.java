@@ -17,6 +17,10 @@ public abstract class CWClassOrInterface extends CWReferenceType implements Modi
 	private CWClassOrInterface mOuterClass;
 	private Set<CWClassOrInterface> mInnerClasses = new HashSet<>();
 
+	private Set<CWConstructor> mConstructors = new HashSet<>();
+	private Set<CWMethod> mMethods = new HashSet<>();
+	private Set<CWField> mFields = new HashSet<>();
+
 	CWClassOrInterface(TypeResolver resolver, String packageName, int modifiers, String name, CWClassOrInterface outerClass, Collection<String> interfaces) {
 		mClass = null;
 		mPackageName = packageName;
@@ -134,6 +138,18 @@ public abstract class CWClassOrInterface extends CWReferenceType implements Modi
 
 	public int getModifiers() {
 		return mModifiers;
+	}
+
+	public Set<CWConstructor> getConstructors() {
+		return mConstructors;
+	}
+
+	public Set<CWMethod> getMethods() {
+		return mMethods;
+	}
+
+	public Set<CWField> getFields() {
+		return mFields;
 	}
 
 	@Override
