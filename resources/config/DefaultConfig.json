@@ -1,0 +1,17 @@
+{
+  "SelectedCodeSmells": [
+    "LongMethods",
+    "LongParameterList",
+    "PrimitiveObsession"
+  ],
+  "LongMethodsConfig": {
+    "MethodLength": 10
+  },
+  "LongParametersListConfig": {
+    "ParameterListLength": 3
+  },
+  "PrimitiveObsessionConfig": {
+    "MinimumNumberOfFields": 5,
+    "AcceptableRatio": 0.5
+  }
+}

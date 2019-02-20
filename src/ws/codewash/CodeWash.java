@@ -8,6 +8,7 @@ import ws.codewash.reader.FolderReader;
 import ws.codewash.reader.SourceReadable;
 import ws.codewash.reader.ZipReader;
 import ws.codewash.util.Arguments;
+import ws.codewash.util.ConfigManager;
 import ws.codewash.util.Log;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class CodeWash {
 		try {
 			commander.parse(args);
 			if (Arguments.get().getConfigGenPath() != null) {
-				//Todo: Generate default config
+				ConfigManager.get().generateDefaultConfig(Arguments.get().getConfigGenPath());
 			} else if (Arguments.get().getSrcPath() != null) {
 				Log.i(TAG,"Washing: " + Arguments.get().getSrcPath());
 				SourceReadable sources;
