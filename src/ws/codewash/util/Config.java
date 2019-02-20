@@ -28,7 +28,18 @@ public class Config {
 
 	public static void init(Config config) {
 		INSTANCE.SelectedCodeSmells.addAll(config.SelectedCodeSmells);
+		updateMaps(config);
+	}
 
+	public static void set(Config config) {
+		while (!INSTANCE.SelectedCodeSmells.isEmpty()) {
+			INSTANCE.SelectedCodeSmells.remove(0);
+		}
+		INSTANCE.SelectedCodeSmells.addAll(config.SelectedCodeSmells);
+		updateMaps(config);
+	}
+
+	private static void updateMaps(Config config) {
 		for (String s : config.LongMethodsConfig.keySet()) {
 			INSTANCE.LongMethodsConfig.put(s, config.LongMethodsConfig.get(s));
 		}

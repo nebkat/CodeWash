@@ -27,6 +27,10 @@ public class CodeWash {
 			if (Arguments.get().getConfigGenPath() != null) {
 				ConfigManager.get().generateDefaultConfig(Arguments.get().getConfigGenPath());
 			} else if (Arguments.get().getSrcPath() != null) {
+				if (Arguments.get().getConfigPath() != null) {
+					ConfigManager.get().setConfigFile(Arguments.get().getConfigPath());
+				}
+
 				Log.i(TAG,"Washing: " + Arguments.get().getSrcPath());
 				SourceReadable sources;
 				if (Arguments.get().getSrcPath().endsWith(".zip")) {
