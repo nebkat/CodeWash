@@ -19,7 +19,7 @@ public class LongParameterList extends CodeSmell {
 
 	public LongParameterList(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
-		LIST_LENGTH = (Integer) Config.get().LongParameterListConfig(CONFIG_LIST_LENGTH);
+		LIST_LENGTH = Config.get().LongParameterListConfig(CONFIG_LIST_LENGTH).intValue();
 	}
 
 	@Override

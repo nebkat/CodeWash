@@ -10,6 +10,7 @@ import ws.codewash.reader.FolderReader;
 import ws.codewash.reader.SourceReadable;
 import ws.codewash.reader.ZipReader;
 import ws.codewash.util.Arguments;
+import ws.codewash.util.Config;
 import ws.codewash.util.ConfigManager;
 import ws.codewash.util.Log;
 
@@ -25,13 +26,14 @@ public class CodeWash {
 				.addObject(Arguments.get())
 				.build();
 
+		ConfigManager configManager = ConfigManager.get();
 		try {
 			commander.parse(args);
 			if (Arguments.get().getConfigGenPath() != null) {
-				ConfigManager.get().generateDefaultConfig(Arguments.get().getConfigGenPath());
+				configManager.generateDefaultConfig(Arguments.get().getConfigGenPath());
 			} else if (Arguments.get().getSrcPath() != null) {
 				if (Arguments.get().getConfigPath() != null) {
-					ConfigManager.get().setConfigFile(Arguments.get().getConfigPath());
+					configManager.setConfigFile(Arguments.get().getConfigPath());
 				}
 
 				Log.i(TAG,"Washing: " + Arguments.get().getSrcPath());

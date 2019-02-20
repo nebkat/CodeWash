@@ -19,7 +19,7 @@ public class LongMethods extends CodeSmell {
 
 	public LongMethods(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
-		METHOD_LENGTH = (Integer) Config.get().LongMethodsConfig(CONFIG_LENGTH);
+		METHOD_LENGTH = Config.get().LongMethodsConfig(CONFIG_LENGTH).intValue();
 	}
 
 	public String getName() {

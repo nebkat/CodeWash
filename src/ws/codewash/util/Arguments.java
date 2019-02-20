@@ -20,7 +20,7 @@ public class Arguments {
 	private Boolean mVerbose = false;
 
 	@Parameter(names = {"-c", "--config"}, description = "Specifies the path to the config file.")
-	private String mConfigPath = System.getProperty("user.dir");
+	private String mConfigPath;
 
 	@Parameter(names = {"-gc", "--generate_config"}, description = "Generates a default config to a" +
 			" specific path and terminates.")
