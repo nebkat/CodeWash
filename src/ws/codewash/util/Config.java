@@ -66,4 +66,13 @@ public class Config {
 	public Number LongMethodsConfig(String config) {
 		return LongMethodsConfig.get(config);
 	}
+
+	public Number LongParameterListConfig(String config) {
+		return LongParametersListConfig.get(config);
+	}
+
+	public Number PrimitiveObsessionConfig(String config) {
+		return PrimitiveObsessionConfig.get(config);
+	}
+
 }
