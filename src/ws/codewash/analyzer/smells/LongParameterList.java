@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 public class LongParameterList extends CodeSmell {
+
 	private static final String CONFIG_LIST_LENGTH = "ParameterListLength";
 	public final static String NAME = "LongParameterList";
+
 	private final int LIST_LENGTH;
 
 	public LongParameterList(ParsedSourceTree parsedSourceTree) {

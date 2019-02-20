@@ -2,6 +2,8 @@
 
 Welcome to the CodeWash
 
+https://refactoring.guru/smells/primitive-obsession
+
 # Code Smells
 
 - [Bloated Code](#bloated-code)
@@ -26,23 +28,19 @@ Welcome to the CodeWash
   - [Middle Man](#middle-man)
 
 ## Bloated Code
-
 It's bad to make classes do too much and it's also not great to make them do too little, there's a little grey area in between and that's where you want your code.
 
 ### Long Methods
-
 ------
 
 Since it's easier to write code than read it, this *smell* can go unnoticed until a method becomes obscenely long. **Long methods** are the perfect hiding place for duplicate code, so there's no shame in splitting up medium to large methods into smaller ones. Just give them meaningful names and no one will give them a second glance.
 
 ### Long Names
-
 ------
 
 This one's a bit topical. Some will argue that there's nothing wrong with having **long names** and there's reason for it. If the name is carrying essential information to the variable/method then yes a **long name** is ok, but **long names** can be an indication of a violation of the single responsibility principle, i.e. methods should only perform one specific task.
 
 ### Long Classes
-
 ------
 
 Classes are a key part to OOP, they should be designed to represent the functionality of a single object. If a class gets too long there is a strong chance that the class is breaking  one of the core ideas of a class, to represent a single object. **Long classes** can often be split up into smaller classes which better represents the objects functionality.
@@ -58,7 +56,6 @@ If the parameters are result of method calls then the method calls can be moved 
 *Note: Don't get rid of parameters from a method just for the sake of doing so, you don't want to cause an unwanted dependency between classes.*
 
 ### Arrowhead Indentation
-
 ------
 
 Overcomplicated logic in code can often be seen in the shape of an **arrowhead**. Overly complicated logic makes code harder to understand and maintain so keeping logic conditions concise and clear is really important to writing good code.
@@ -79,7 +76,6 @@ if (isA() && isB() && isC() && isD())	// Simplified to only line
 
 
 ### Switch Statements
-
 ------
 
 While **switch statements** do have their place in programming often they can lead duplicated code scattered throughout the program. The OOP concept of Polymorphism has many advantages, one being when the same set of conditions appear across the program. Updating these conditions can be troublesome if you want to use a different/new type, so using polymorphism reduces dependencies. **Most of the time when you see a switch statement you should consider polymorphism.**
@@ -93,7 +89,6 @@ Primitive Obsession can be seen when primitive types are used instead of small o
 If there is a variety of primitive fields, it may be possible to logically group them into a class. It also may be possible to move the code that operates on these fields into the newly created class as well. Reducing the number of primitives makes code more flexible and makes the code more understandable and organised.
 
 ## OOP Violations
-
 We're all about that OOP life.
 
 ### Temporary Fields
@@ -105,7 +100,6 @@ We're all about that OOP life.
 There are several solutions to this code smell. You can extract the temporary fields and all the code operating on them into a separate class. The fields used can also just be parametrized into the method using them. Reducing **Temporary Fields** leads to better code clarity and organisation.
 
 ### Data Class
-
 ------
 
 A **Data Class** refers to a class that contains only fields and crude methods for accessing them. These are simply containers for data used by other classes. They don't contain any additional functionality and can't independently operate on the data that they own. In OOP the true power of objects is that they can contain behavior types or operations on their data.

@@ -20,6 +20,6 @@ public class Report {
 	}
 
 	public enum Warning {
-		ISSUE
+		ISSUE, WARNING
 	}
 }

@@ -29,7 +29,6 @@ public class LongMethods extends CodeSmell {
 	public Report run() {
 		Report report = new Report(NAME, Report.Warning.ISSUE);
 
-		// Stores methods with long method bodies and the class they are contained in
 		Map<CWClassOrInterface, List<CWMethod>> longMethods = new HashMap<>();
 
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
