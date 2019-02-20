@@ -4,6 +4,7 @@ import ws.codewash.analyzer.Report;
 import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.CWMethod;
 import ws.codewash.parser.ParsedSourceTree;
+import ws.codewash.util.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,12 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 public class LongMethods extends CodeSmell {
+	private static final String CONFIG_LENGTH = "MethodLength";
 
 	public final static String NAME = "LongMethods";
-	private final int METHOD_LENGTH = 10;
+	private final int METHOD_LENGTH;
 
 	public LongMethods(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
+		METHOD_LENGTH = (Integer) Config.get().LongMethodsConfig(CONFIG_LENGTH);
 	}
 
 	public String getName() {

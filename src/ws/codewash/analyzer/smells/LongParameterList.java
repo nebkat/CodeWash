@@ -4,6 +4,7 @@ import ws.codewash.analyzer.Report;
 import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.CWMethod;
 import ws.codewash.parser.ParsedSourceTree;
+import ws.codewash.util.Config;
 import ws.codewash.util.Log;
 
 import java.util.ArrayList;
@@ -12,13 +13,13 @@ import java.util.List;
 import java.util.Map;
 
 public class LongParameterList extends CodeSmell {
-
+	private static final String CONFIG_LIST_LENGTH = "ParameterListLength";
 	public final static String NAME = "LongParameterList";
-
-	private final int LIST_LENGTH = 4;
+	private final int LIST_LENGTH;
 
 	public LongParameterList(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
+		LIST_LENGTH = (Integer) Config.get().LongMethodsConfig(CONFIG_LIST_LENGTH);
 	}
 
 	@Override
