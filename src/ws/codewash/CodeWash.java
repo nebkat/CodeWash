@@ -2,6 +2,8 @@ package ws.codewash;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import ws.codewash.analyzer.Analyzer;
+import ws.codewash.analyzer.Report;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.parser.Parser;
 import ws.codewash.reader.FolderReader;
@@ -13,6 +15,7 @@ import ws.codewash.util.Log;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class CodeWash {
 	private static final String TAG = "CODEWASH";
@@ -41,7 +44,9 @@ public class CodeWash {
 				} else {
 					sources = new FolderReader(Paths.get(Arguments.get().getSrcPath()));
 				}
+
 				ParsedSourceTree parsedSourceTree = new Parser().parse(sources.getSources());
+				List<Report> reports = new Analyzer(parsedSourceTree).analyse();
 
 			} else {
 				//Todo: Create http server
