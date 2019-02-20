@@ -1,6 +1,7 @@
 package ws.codewash.reader;
 
 import ws.codewash.analyzer.Analyzer;
+import ws.codewash.analyzer.Report;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.parser.Parser;
 
@@ -22,7 +23,6 @@ public class FolderTest {
 		FolderReader folderReader = new FolderReader(Paths.get(args[0]));
 
 		ParsedSourceTree parsedSourceTree = new Parser().parse(folderReader.getSources());
- 
-		new Analyzer(parsedSourceTree).analyse();
+		List<Report> reports = new Analyzer(parsedSourceTree).analyse();
 	}
 }

@@ -54,7 +54,7 @@ public class ParsedSourceTree implements TypeResolver {
 		return mSources;
 	}
 
-	Map<String, CWClassOrInterface> getClasses() {
+	public Map<String, CWClassOrInterface> getClasses() {
 		return mClasses;
 	}
 
