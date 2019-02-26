@@ -1,23 +1,29 @@
 package ws.codewash.util;
 
 import ws.codewash.analyzer.smells.CodeSmell;
-import ws.codewash.analyzer.smells.LongMethods;
-import ws.codewash.analyzer.smells.LongParameterList;
-import ws.codewash.analyzer.smells.PrimitiveObsession;
+import ws.codewash.analyzer.smells.bloatedcode.LongIDs;
+import ws.codewash.analyzer.smells.bloatedcode.LongMethods;
+import ws.codewash.analyzer.smells.bloatedcode.LongParameterList;
+import ws.codewash.analyzer.smells.bloatedcode.PrimitiveObsession;
 import ws.codewash.parser.ParsedSourceTree;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public class Config {
 	private final static Config INSTANCE = new Config();
 
-	private Config(){}
+	private Config() {
+	}
 
-	private static final Map<String, Function<ParsedSourceTree, CodeSmell>> CODE_SMELLS = new HashMap<>(){{
-			put(LongMethods.NAME, LongMethods::new);
-			put(LongParameterList.NAME, LongParameterList::new);
-			put(PrimitiveObsession.NAME, PrimitiveObsession::new);
+	private static final Map<String, Function<ParsedSourceTree, CodeSmell>> CODE_SMELLS = new HashMap<>() {{
+		put(LongMethods.NAME, LongMethods::new);
+		put(LongParameterList.NAME, LongParameterList::new);
+		put(PrimitiveObsession.NAME, PrimitiveObsession::new);
+		put(LongIDs.NAME, LongIDs::new);
 	}};
 
 	private final List<String> SelectedCodeSmells = new ArrayList<>();
@@ -25,6 +31,7 @@ public class Config {
 	private final Map<String, Number> LongMethodsConfig = new HashMap<>();
 	private final Map<String, Number> LongParametersListConfig = new HashMap<>();
 	private final Map<String, Number> PrimitiveObsessionConfig = new HashMap<>();
+	private final Map<String, Number> LongIDsConfig = new HashMap<>();
 
 	public static void init(Config config) {
 		INSTANCE.SelectedCodeSmells.addAll(config.SelectedCodeSmells);
@@ -40,17 +47,12 @@ public class Config {
 	}
 
 	private static void updateMaps(Config config) {
-		for (String s : config.LongMethodsConfig.keySet()) {
-			INSTANCE.LongMethodsConfig.put(s, config.LongMethodsConfig.get(s));
-		}
-		for (String s : config.LongParametersListConfig.keySet()) {
-			INSTANCE.LongParametersListConfig.put(s, config.LongParametersListConfig.get(s));
-		}
-		for (String s : config.PrimitiveObsessionConfig.keySet()) {
-			INSTANCE.PrimitiveObsessionConfig.put(s, config.PrimitiveObsessionConfig.get(s));
-		}
+		config.LongMethodsConfig.forEach(INSTANCE.LongMethodsConfig::put);
+		config.LongParametersListConfig.forEach(INSTANCE.LongParametersListConfig::put);
+		config.PrimitiveObsessionConfig.forEach(INSTANCE.PrimitiveObsessionConfig::put);
+		config.LongIDsConfig.forEach(INSTANCE.LongIDsConfig::put);
 	}
-	
+
 	public static Config get() {
 		return INSTANCE;
 	}
@@ -75,4 +77,7 @@ public class Config {
 		return PrimitiveObsessionConfig.get(config);
 	}
 
+	public Number LongIDsConfig(String config) {
+		return LongIDsConfig.get(config);
+	}
 }

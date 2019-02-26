@@ -1,6 +1,7 @@
-package ws.codewash.analyzer.smells;
+package ws.codewash.analyzer.smells.bloatedcode;
 
 import ws.codewash.analyzer.Report;
+import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.util.Config;
@@ -11,12 +12,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+// TODO : Finish and test implementation
 public class PrimitiveObsession extends CodeSmell {
 	private static final String CONFIG_MIN_NUM = "MinimumNumberOfFields";
 	private static final String CONFIG_ACCEPT_RATIO = "AcceptableRatio";
 	public static final String NAME = "PrimitiveObsession";
 
-	private final int MIN_NUM_FIELDS ;
+	private final int MIN_NUM_FIELDS;
 	private final double ACCEPTABLE_RATIO;
 
 	public PrimitiveObsession(ParsedSourceTree parsedSourceTree) {
@@ -56,19 +58,19 @@ public class PrimitiveObsession extends CodeSmell {
 				}
 			});
 
-			double ratio = (double) totalPrimitives.get(value) / totalFields.get(value);
-
-			// If we have enough fields, check the ratio
-			if (totalFields.get(value) > MIN_NUM_FIELDS) {
-				if (ratio > ACCEPTABLE_RATIO) {
-					problemClasses.add(value);
-					Log.d(NAME.toUpperCase(), "Added " + value + " to problem classes");
-				}
-			} else {
-				Log.d(NAME.toUpperCase(), "Not adding " + value + " to the problem classes\nRatio = " + ratio);
-			}
+//			double ratio = (double) totalPrimitives.get(value) / totalFields.get(value);
+//
+//			// If we have enough fields, check the ratio
+//			if (totalFields.get(value) > MIN_NUM_FIELDS) {
+//				if (ratio > ACCEPTABLE_RATIO) {
+//					problemClasses.add(value);
+//					Log.d(NAME.toUpperCase(), "Added " + value + " to problem classes");
+//				}
+//			} else {
+//				Log.d(NAME.toUpperCase(), "Not adding " + value + " to the problem classes\nRatio = " + ratio);
+//			}
 		});
-		return null;
+		return report;
 	}
 
 	@Override

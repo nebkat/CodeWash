@@ -1,20 +1,22 @@
-package ws.codewash.analyzer.smells;
+package ws.codewash.analyzer.smells.bloatedcode;
 
 import ws.codewash.analyzer.Report;
+import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.CWMethod;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.util.Config;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+// TODO : Finish and test implementation
 public class LongMethods extends CodeSmell {
 	private static final String CONFIG_LENGTH = "MethodLength";
 
-	public final static String NAME = "LongMethods";
+	public static final String NAME = "LongMethods";
 	private final int METHOD_LENGTH;
 
 	public LongMethods(ParsedSourceTree parsedSourceTree) {
@@ -32,12 +34,10 @@ public class LongMethods extends CodeSmell {
 		Map<CWClassOrInterface, List<CWMethod>> longMethods = new HashMap<>();
 
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
-			List<CWMethod> currentClassMethods = new ArrayList<>();
-			value.getMethods().forEach(cwMethod -> {
-				if (cwMethod.getMethodLength() > METHOD_LENGTH) {
-					currentClassMethods.add(cwMethod);
-				}
-			});
+			List<CWMethod> currentClassMethods = value.getMethods()
+					.parallelStream()
+					.filter(cwMethod -> cwMethod.getMethodLength() > METHOD_LENGTH)
+					.collect(Collectors.toList());
 			longMethods.put(value, currentClassMethods);
 		});
 

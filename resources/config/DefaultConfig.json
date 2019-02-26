@@ -2,7 +2,8 @@
   "SelectedCodeSmells": [
     "LongMethods",
     "LongParameterList",
-    "PrimitiveObsession"
+    "PrimitiveObsession",
+    "LongIDs"
   ],
   "LongMethodsConfig": {
     "MethodLength": 10
@@ -13,5 +14,8 @@
   "PrimitiveObsessionConfig": {
     "MinimumNumberOfFields": 5,
     "AcceptableRatio": 0.5
+  },
+  "LongIDsConfig": {
+    "MaxCharacters" : 25
   }
 }

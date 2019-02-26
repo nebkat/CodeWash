@@ -7,7 +7,7 @@ public abstract class CodeSmell {
 
 	private ParsedSourceTree mParsedSourceTree;
 
-	CodeSmell(ParsedSourceTree parsedSourceTree){
+	protected CodeSmell(ParsedSourceTree parsedSourceTree) {
 		mParsedSourceTree = parsedSourceTree;
 	}
 
@@ -15,7 +15,7 @@ public abstract class CodeSmell {
 
 	public abstract String getName();
 
-	ParsedSourceTree getParsedSourceTree() {
+	protected ParsedSourceTree getParsedSourceTree() {
 		return mParsedSourceTree;
 	}
 }

@@ -6,14 +6,12 @@ public class Report {
 	private String mReportBody;
 	private Warning mWarningLevel;
 
-
 	public Report(String name, Warning warning) {
 		mReportName = name;
 		mWarningLevel = warning;
 	}
 
-	public String toString(){
-
+	public String toString() {
 		String report = "\n---" + mReportName + "---\n" +
 				"Warning Level : " + mWarningLevel + "\n";
 		return report;

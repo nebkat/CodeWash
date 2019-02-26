@@ -1,21 +1,23 @@
-package ws.codewash.analyzer.smells;
+package ws.codewash.analyzer.smells.bloatedcode;
 
 import ws.codewash.analyzer.Report;
+import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.CWMethod;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.util.Config;
 import ws.codewash.util.Log;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+// TODO : Finish and test implementation
 public class LongParameterList extends CodeSmell {
 
 	private static final String CONFIG_LIST_LENGTH = "ParameterListLength";
-	public final static String NAME = "LongParameterList";
+	public static final String NAME = "LongParameterList";
 
 	private final int LIST_LENGTH;
 
@@ -33,12 +35,10 @@ public class LongParameterList extends CodeSmell {
 		Map<CWClassOrInterface, List<CWMethod>> longParamMethods = new HashMap<>();
 
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
-			List<CWMethod> currentClassMethods = new ArrayList<>();
-			value.getMethods().forEach(cwMethod -> {
-				if (cwMethod.getParameters().size() > LIST_LENGTH) {
-					currentClassMethods.add(cwMethod);
-				}
-			});
+			List<CWMethod> currentClassMethods = value.getMethods()
+					.parallelStream()
+					.filter(cwMethod -> cwMethod.getParameters().size() > LIST_LENGTH)
+					.collect(Collectors.toList());
 			longParamMethods.put(value, currentClassMethods);
 		});
 
