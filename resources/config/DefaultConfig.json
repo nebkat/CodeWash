@@ -3,7 +3,8 @@
     "LongMethods",
     "LongParameterList",
     "PrimitiveObsession",
-    "LongIDs"
+    "LongIDs",
+    "LongClasses"
   ],
   "LongMethodsConfig": {
     "MethodLength": 10
@@ -17,5 +18,9 @@
   },
   "LongIDsConfig": {
     "MaxCharacters" : 25
+  },
+  "LongClassConfig": {
+    "MidClassLength" : 200,
+    "MaxClassLength" : 250
   }
 }

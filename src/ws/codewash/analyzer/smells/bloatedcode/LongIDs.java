@@ -1,13 +1,17 @@
 package ws.codewash.analyzer.smells.bloatedcode;
 
-import ws.codewash.analyzer.Report;
+import ws.codewash.analyzer.reports.MemberReport;
+import ws.codewash.analyzer.reports.Report;
+import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
+import ws.codewash.analyzer.smells.Smell;
 import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.CWMember;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.util.Config;
 import ws.codewash.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,17 +31,17 @@ public class LongIDs extends CodeSmell {
 	}
 
 	@Override
-	public Report run() {
+	public List<Report> run() {
 		Log.i(NAME.toUpperCase(), "Running long ids check. Max Characters = " + MAX_CHARACTERS);
-		Report report = new Report(NAME.toUpperCase(), Report.Warning.ISSUE);
 
-		Map<CWClassOrInterface, List<CWMember>> problemMembers = new HashMap<>();
+		List<Report> reports = new ArrayList<>();
 
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
+
 			List<CWMember> longIDs;
 
-			Log.d(NAME.toUpperCase(), "Number of fields in " + value.getSimpleName() + " : " + String.valueOf(value.getFields().size()));
-			Log.d(NAME.toUpperCase(), "Number of methods in " + value.getSimpleName() + " : " + String.valueOf(value.getMethods().size()));
+			Log.d(NAME.toUpperCase(), "Number of fields in " + value.getSimpleName() + " : " + value.getFields().size());
+			Log.d(NAME.toUpperCase(), "Number of methods in " + value.getSimpleName() + " : " + value.getMethods().size());
 
 			longIDs = value.getMethods().parallelStream()
 					.filter(cwMethod -> cwMethod.getName().length() > MAX_CHARACTERS)
@@ -49,11 +53,12 @@ public class LongIDs extends CodeSmell {
 
 			Log.d(NAME.toUpperCase(), "Size of list for " + value.getSimpleName() + " : " + longIDs.size());
 
-			problemMembers.put(value, longIDs);
-
+			if (!longIDs.isEmpty()) {
+				reports.add(new MemberReport(Smell.LONG_IDS, value, longIDs, Warning.CAUTION));
+			}
 		});
 
-		return report;
+		return reports;
 	}
 
 	@Override

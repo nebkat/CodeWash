@@ -1,16 +1,17 @@
 package ws.codewash.analyzer.smells.bloatedcode;
 
-import ws.codewash.analyzer.Report;
+import ws.codewash.analyzer.reports.MemberReport;
+import ws.codewash.analyzer.reports.Report;
+import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
-import ws.codewash.java.CWClassOrInterface;
-import ws.codewash.java.CWMethod;
+import ws.codewash.analyzer.smells.Smell;
+import ws.codewash.java.CWMember;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.util.Config;
 import ws.codewash.util.Log;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 // TODO : Finish and test implementation
@@ -27,22 +28,23 @@ public class LongParameterList extends CodeSmell {
 	}
 
 	@Override
-	public Report run() {
+	public List<Report> run() {
 
 		Log.i(NAME.toUpperCase(), "Running long parameter list check");
-		Report report = new Report(NAME, Report.Warning.ISSUE);
-
-		Map<CWClassOrInterface, List<CWMethod>> longParamMethods = new HashMap<>();
+		List<Report> reports = new ArrayList<>();
 
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
-			List<CWMethod> currentClassMethods = value.getMethods()
+			List<CWMember> problemMethods = value.getMethods()
 					.parallelStream()
 					.filter(cwMethod -> cwMethod.getParameters().size() > LIST_LENGTH)
 					.collect(Collectors.toList());
-			longParamMethods.put(value, currentClassMethods);
+
+			if (!problemMethods.isEmpty()) {
+				reports.add(new MemberReport(Smell.LONG_PARAMETER_LISTS, value, problemMethods, Warning.CAUTION));
+			}
 		});
 
-		return report;
+		return reports;
 	}
 
 	@Override

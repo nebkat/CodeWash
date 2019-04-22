@@ -3,14 +3,13 @@ package ws.codewash;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import ws.codewash.analyzer.Analyzer;
-import ws.codewash.analyzer.Report;
+import ws.codewash.analyzer.reports.Report;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.parser.Parser;
 import ws.codewash.reader.FolderReader;
 import ws.codewash.reader.SourceReadable;
 import ws.codewash.reader.ZipReader;
 import ws.codewash.util.Arguments;
-import ws.codewash.util.Config;
 import ws.codewash.util.ConfigManager;
 import ws.codewash.util.Log;
 

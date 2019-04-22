@@ -32,6 +32,7 @@ public class Config {
 	private final Map<String, Number> LongParametersListConfig = new HashMap<>();
 	private final Map<String, Number> PrimitiveObsessionConfig = new HashMap<>();
 	private final Map<String, Number> LongIDsConfig = new HashMap<>();
+	private final Map<String, Number> LongClassConfig = new HashMap<>();
 
 	public static void init(Config config) {
 		INSTANCE.SelectedCodeSmells.addAll(config.SelectedCodeSmells);
@@ -51,6 +52,7 @@ public class Config {
 		config.LongParametersListConfig.forEach(INSTANCE.LongParametersListConfig::put);
 		config.PrimitiveObsessionConfig.forEach(INSTANCE.PrimitiveObsessionConfig::put);
 		config.LongIDsConfig.forEach(INSTANCE.LongIDsConfig::put);
+		config.LongClassConfig.forEach(INSTANCE.LongClassConfig::put);
 	}
 
 	public static Config get() {
@@ -79,5 +81,9 @@ public class Config {
 
 	public Number LongIDsConfig(String config) {
 		return LongIDsConfig.get(config);
+	}
+
+	public Number LongClassConfig(String config) {
+		return LongClassConfig.get(config);
 	}
 }

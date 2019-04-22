@@ -1,16 +1,17 @@
 package ws.codewash.analyzer.smells.bloatedcode;
 
-import ws.codewash.analyzer.Report;
+import ws.codewash.analyzer.reports.ClassReport;
+import ws.codewash.analyzer.reports.Report;
+import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
+import ws.codewash.analyzer.smells.Smell;
 import ws.codewash.java.CWClassOrInterface;
+import ws.codewash.java.CWField;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.util.Config;
 import ws.codewash.util.Log;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 // TODO : Finish and test implementation
 public class PrimitiveObsession extends CodeSmell {
@@ -28,49 +29,28 @@ public class PrimitiveObsession extends CodeSmell {
 	}
 
 	@Override
-	public Report run() {
+	public List<Report> run() {
 		Log.i(NAME.toUpperCase(), "Running primitive obsession check");
-		Report report = new Report(NAME, Report.Warning.ISSUE);
 
-		Set<CWClassOrInterface> problemClasses = new HashSet<>();
+		List<Report> reports = new ArrayList<>();
 
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
-			Map<CWClassOrInterface, Integer> totalFields = new HashMap<>();
-			Map<CWClassOrInterface, Integer> totalPrimitives = new HashMap<>();
+			int totalPrimitives = (int)value.getFields()
+					.parallelStream()
+					.filter(cwField -> cwField.getType().isPrimitive())
+					.count();
+			int totalFields = value.getFields().size();
+			double ratio = (double) totalPrimitives / totalFields;
 
-			value.getFields().parallelStream().forEach(cwField -> {
-
-				// TODO: Add condition for static and final
-				// TODO: Ensure only non local fields are included in both maps
-				if (cwField.getType().isPrimitive()) {
-
-					if (totalPrimitives.containsKey(value)) {
-						totalPrimitives.put(value, totalPrimitives.get(value) + 1);
-					} else {
-						totalPrimitives.put(value, 1);
-					}
-				}
-
-				if (totalFields.containsKey(value)) {
-					totalFields.put(value, totalFields.get(value) + 1);
-				} else {
-					totalFields.put(value, 1);
-				}
-			});
-
-//			double ratio = (double) totalPrimitives.get(value) / totalFields.get(value);
-//
-//			// If we have enough fields, check the ratio
-//			if (totalFields.get(value) > MIN_NUM_FIELDS) {
-//				if (ratio > ACCEPTABLE_RATIO) {
-//					problemClasses.add(value);
-//					Log.d(NAME.toUpperCase(), "Added " + value + " to problem classes");
-//				}
-//			} else {
-//				Log.d(NAME.toUpperCase(), "Not adding " + value + " to the problem classes\nRatio = " + ratio);
-//			}
+			if (totalFields > MIN_NUM_FIELDS && ratio > ACCEPTABLE_RATIO) {
+				reports.add(new ClassReport(Smell.PRIMITIVE_OBSESSION, value, Warning.CAUTION));
+				Log.d(NAME.toUpperCase(), "Created report for " + value.getSimpleName());
+			} else {
+				Log.d(NAME.toUpperCase(), "Not creating report for " + value.getSimpleName());
+			}
 		});
-		return report;
+
+		return reports;
 	}
 
 	@Override

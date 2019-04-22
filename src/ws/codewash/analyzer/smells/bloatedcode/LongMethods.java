@@ -1,12 +1,17 @@
 package ws.codewash.analyzer.smells.bloatedcode;
 
-import ws.codewash.analyzer.Report;
+import ws.codewash.analyzer.reports.MemberReport;
+import ws.codewash.analyzer.reports.Report;
+import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
+import ws.codewash.analyzer.smells.Smell;
 import ws.codewash.java.CWClassOrInterface;
+import ws.codewash.java.CWMember;
 import ws.codewash.java.CWMethod;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.util.Config;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,20 +33,19 @@ public class LongMethods extends CodeSmell {
 		return NAME;
 	}
 
-	public Report run() {
-		Report report = new Report(NAME, Report.Warning.ISSUE);
-
-		Map<CWClassOrInterface, List<CWMethod>> longMethods = new HashMap<>();
+	public List<Report> run() {
+		List<Report> reports = new ArrayList<>();
 
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
-			List<CWMethod> currentClassMethods = value.getMethods()
+			List<CWMember> longMethods = value.getMethods()
 					.parallelStream()
 					.filter(cwMethod -> cwMethod.getMethodLength() > METHOD_LENGTH)
 					.collect(Collectors.toList());
-			longMethods.put(value, currentClassMethods);
+
+			reports.add(new MemberReport(Smell.LONG_METHODS, value, longMethods, Warning.CAUTION));
 		});
 
-		return report;
+		return reports;
 	}
 
 
