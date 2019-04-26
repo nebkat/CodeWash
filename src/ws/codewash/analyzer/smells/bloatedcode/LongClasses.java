@@ -24,6 +24,7 @@ public class LongClasses extends CodeSmell {
 		MID_LENGTH = Config.get().LongClassConfig(CONFIG_MID_CLASS_LENGTH).intValue();
 	}
 
+	// TODO : Add in count for the actual lines of the file - empty lines
 	@Override
 	public List<Report> run() {
 

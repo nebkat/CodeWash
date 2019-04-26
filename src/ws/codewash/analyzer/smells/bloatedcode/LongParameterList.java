@@ -4,7 +4,6 @@ import ws.codewash.analyzer.reports.MemberReport;
 import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
-import ws.codewash.analyzer.smells.Smell;
 import ws.codewash.java.CWMember;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.util.Config;
@@ -15,38 +14,71 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 // TODO : Finish and test implementation
+
+/**
+ * Class used to manage the Long Parameter List Code Smell.
+ */
 public class LongParameterList extends CodeSmell {
 
-	private static final String CONFIG_LIST_LENGTH = "ParameterListLength";
+	/**
+	 * The name of the Code Smell. Used in reports.
+	 */
 	public static final String NAME = "LongParameterList";
 
-	private final int LIST_LENGTH;
+	/**
+	 * String used to retrieve the max Parameter List length from the config.
+	 */
+	private static final String CONFIG_PARAMETER_LIST_LENGTH = "ParameterListLength";
 
+	/**
+	 * Maximum number of parameters a method can have before being considered a Code Smell
+	 */
+	private final int MAX_PARAMETER_LENGTH;
+
+	/**
+	 * Constructor a LongParameterList with a specified {@link ws.codewash.parser.ParsedSourceTree} object.
+	 *
+	 * @param parsedSourceTree {@link ws.codewash.parser.ParsedSourceTree} object to use
+	 */
 	public LongParameterList(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
-		LIST_LENGTH = Config.get().LongParameterListConfig(CONFIG_LIST_LENGTH).intValue();
+		MAX_PARAMETER_LENGTH = Config.get().LongParameterListConfig(CONFIG_PARAMETER_LIST_LENGTH).intValue();
 	}
 
+	/**
+	 * Procedure for detecting Long Parameter Lists across the {@link ws.codewash.parser.ParsedSourceTree} object.
+	 *
+	 * @return A list of {@link ws.codewash.analyzer.reports.Report} which contain all of the problem methods.
+	 */
 	@Override
 	public List<Report> run() {
+		Log.i(NAME.toUpperCase(), "Running Long Parameter List check. Max Parameter = " + MAX_PARAMETER_LENGTH);
 
-		Log.i(NAME.toUpperCase(), "Running long parameter list check");
 		List<Report> reports = new ArrayList<>();
 
+		/*
+			For each class in the parsed source tree get the methods of that class that match the predicate that their
+			parameter list is greater than the maximum specified.
+		*/
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
 			List<CWMember> problemMethods = value.getMethods()
 					.parallelStream()
-					.filter(cwMethod -> cwMethod.getParameters().size() > LIST_LENGTH)
+					.filter(cwMethod -> cwMethod.getParameters().size() > MAX_PARAMETER_LENGTH)
 					.collect(Collectors.toList());
 
 			if (!problemMethods.isEmpty()) {
-				reports.add(new MemberReport(Smell.LONG_PARAMETER_LISTS, value, problemMethods, Warning.CAUTION));
+				reports.add(new MemberReport(NAME, value, problemMethods, Warning.CAUTION));
 			}
 		});
 
 		return reports;
 	}
 
+	/**
+	 * Retrieves the name associated with each Code Smell.
+	 *
+	 * @return The name of the Code Smell.
+	 */
 	@Override
 	public String getName() {
 		return NAME;

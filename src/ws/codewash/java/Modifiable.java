@@ -20,4 +20,6 @@ public interface Modifiable {
 	default boolean isAbstract() {
 		return Modifier.isFinal(getModifiers());
 	}
+
+	default boolean isPublic() {return Modifier.isPublic(getModifiers());}
 }
