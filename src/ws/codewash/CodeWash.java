@@ -43,11 +43,8 @@ public class CodeWash {
 
 				Log.i(TAG,"Washing: " + Arguments.get().getSrcPath());
 				SourceReadable sources;
-				if (Arguments.get().getSrcPath().endsWith(".zip")) {
+				if (Arguments.get().getSrcPath().endsWith(".zip") || Arguments.get().getSrcPath().endsWith(".jar") ) {
 					sources = new ZipReader(Paths.get(Arguments.get().getSrcPath()));
-				} else if (Arguments.get().getSrcPath().endsWith(".jar")) {
-					//Todo: Jar reader
-					sources = null;
 				} else {
 					sources = new FolderReader(Paths.get(Arguments.get().getSrcPath()));
 				}
