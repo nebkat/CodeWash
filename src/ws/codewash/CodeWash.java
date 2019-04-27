@@ -15,8 +15,13 @@ import ws.codewash.util.ConfigManager;
 import ws.codewash.util.Log;
 
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CodeWash {
 	private static final String TAG = "CodeWash";
@@ -42,14 +47,26 @@ public class CodeWash {
 					sources = new ZipReader(Paths.get(Arguments.get().getSrcPath()));
 				} else if (Arguments.get().getSrcPath().endsWith(".jar")) {
 					//Todo: Jar reader
-					sources = () -> null;
+					sources = null;
 				} else {
 					sources = new FolderReader(Paths.get(Arguments.get().getSrcPath()));
 				}
 
-				Grammar grammar = Grammar.parse(Paths.get("resources/language/java-11.cwls"));
-				ParsedSourceTree tree = new Parser(grammar).parse(sources.getSources());
-				List<Report> reports = new Analyzer(tree).analyse();
+				try {
+					FileSystem fs = sources.getFileSystem();
+					List<Path> files = Files.walk(fs.getPath(sources.getRootPath()))
+							.filter(Files::isRegularFile)
+							.collect(Collectors.toList());
+					Grammar grammar = Grammar.parse(Paths.get("resources/language/java-11.cwls"));
+					ParsedSourceTree tree = new Parser(grammar).parse(files);
+					List<Report> reports = new Analyzer(tree).analyse();
+				} finally {
+					try {
+						sources.close();
+					} catch (Exception e) {
+						// Ignore
+					}
+				}
 
 			} else {
 				//Todo: Create http server
