@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Code Smells</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/scripts.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h2>CodeWash</h2>
+        </div>
+        <ul class="list-unstyled components">
+            <li>
+                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"
+                   class="dropdown-toggle">Analyse</a>
+                <ul class="collapse list-unstyled" id="homeSubmenu">
+                    <li>
+                        <a href="../index.html#uploader">Upload</a>
+                    </li>
+                    <li>
+                        <a href="../index.html#config">Configuration</a>
+                    </li>
+                    <li>
+                        <a href="../index.html#reports">Reports</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="active">
+                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Code
+                    Smells</a>
+                <ul class="collapse list-unstyled show" id="pageSubmenu">
+                    <li>
+                        <a href="#whatisasmell">What is a smell?</a>
+                    </li>
+                    <li>
+                        <a href="#bloatedcode">Bloated Code</a>
+                    </li>
+                    <li>
+                        <a href="#oopviolations">OOP Violations</a>
+                    </li>
+                    <li>
+                        <a href="#couplers">Couplers</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="../how-to-use/index.html">How to Use</a>
+            </li>
+            <li>
+                <a href="../about/index.html">About</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Content -->
+    <div id="content">
+        <h1 id="whatisasmell">What is a Code Smell?</h1>
+        <p>What's a smell? lol explain for me pls</p>
+        <br>
+        <div id="bloatedcode">
+            <hr>
+            <h1>Bloated Code</h1>
+            <hr>
+            <div id="longmethods">
+                <h3>Long Methods</h3>
+                <hr>
+                <p>
+                    Since it's easier to write code than read it, this <i>smell</i> can go unnoticed until a method
+                    becomes
+                    obscenely long. <b>Long methods</b> are the perfect hiding place for duplicate code, so there's no
+                    shame
+                    in splitting up medium to large methods into smaller ones. Just give them meaningful names and no
+                    one
+                    will give them a second glance.
+                </p>
+            </div>
+            <br>
+            <div id="longnames">
+                <h3>Long Names</h3>
+                <hr>
+                <p>
+                    This one's a bit topical. Some will argue that there's nothing wrong with having <b>long names</b>
+                    and
+                    there's reason for it. If the name is carrying essential information to the variable/method then yes
+                    a
+                    <b>long name</b> is ok, but <b>long names</b> can be an indication of a violation of the single
+                    responsibility principle, i.e. methods should only perform one specific task.
+                </p>
+            </div>
+            <br>
+            <div id="longclasses">
+                <h3>Long Classes</h3>
+                <hr>
+                <p>
+                    Classes are a key part to OOP, they should be designed to represent the functionality of a single
+                    object. If a class gets too long there is a strong chance that the class is breaking one of the core
+                    ideas of a class, to represent a single object. <b>Long classes</b> can often be split up into
+                    smaller
+                    classes which better represents the objects functionality.
+                </p>
+            </div>
+            <br>
+            <div id="longparamlist">
+                <h3>Long Parameter List</h3>
+                <hr>
+                <p>
+                    While not always a bad code smell, sometimes having a <b>long list of parameters</b> for a method
+                    call
+                    can be a sign that your code can be changed around to more readable and shorter. <b>Long parameter
+                    lists</b> can be a byproduct of trying to make classes more independent of each other. While this
+                    does
+                    reduce dependency, it increases the number of parameters needed for the method call. As the number
+                    of
+                    parameters increases, the harder it becomes to use and read.
+                </p><br>
+                <p>
+                    If the parameters are result of method calls then the method calls can be moved inside the method
+                    call
+                    itself. Also if the parameters are the received from another object, this object can be passed to
+                    the
+                    method and its data retrieved inside the method. Reducing the length of parameter lists makes code
+                    more
+                    readable, shorter and may possible reveal unnoticed duplicate code elsewhere.
+                </p><br>
+                <p>
+                    <i>Note: Don't get rid of parameters from a method just for the sake of doing so, you don't want to
+                        cause an unwanted dependency between classes.</i>
+                </p>
+            </div>
+            <br>
+            <div id="arrowheadindentation">
+                <h3>Arrowhead Indentation</h3>
+                <hr>
+                <p>
+                    Overcomplicated logic in code can often be seen in the shape of an <b>arrowhead</b>. Overly
+                    complicated
+                    logic makes code harder to understand and maintain so keeping logic conditions concise and clear is
+                    really important to writing good code.
+                </p>
+            </div>
+            <br>
+            <div id="switchstatements">
+                <h3>Switch Statements</h3>
+                <hr>
+                <p>
+                    While <b>switch statements</b> do have their place in programming often they can lead duplicated
+                    code
+                    scattered throughout the program. The OOP concept of Polymorphism has many advantages, one being
+                    when
+                    the same set of conditions appear across the program. Updating these conditions can be troublesome
+                    if
+                    you want to use a different/new type, so using polymorphism reduces dependencies. <b>Most of the
+                    time
+                    when you see a switch statement you should consider polymorphism.</b>
+                </p>
+            </div>
+            <br>
+            <div id="primitiveobsession">
+                <h3>Primitive Obsession</h3>
+                <hr>
+                <p>
+                    Primitive Obsession can be seen when primitive types are used instead of small objects for simple
+                    tasks
+                    such as special strings, ranges, etc. This code smell can occur as the result of brief lapses in the
+                    programmers thought process when they decide to use a primitive field for storing some data. This
+                    then
+                    happens multiple times and next thing classes are riddled with primitives instead of objects.
+                </p><br>
+                <p>
+                    If there is a variety of primitive fields, it may be possible to logically group them into a class.
+                    It
+                    also may be possible to move the code that operates on these fields into the newly created class as
+                    well. Reducing the number of primitives makes code more flexible and makes the code more
+                    understandable
+                    and organised.
+                </p>
+            </div>
+        </div>
+        <br>
+        <div id="oopviolations">
+            <hr>
+            <h1>OOP Violations</h1>
+            <hr>
+            <br>
+            <div id="tempfields">
+                <h3>Temporary Fields</h3>
+                <hr>
+                <p>
+                    <b>Temporary Fields</b> get their values only under certain circumstances. Outside of these
+                    circumstances they are empty. <b>Temporary Fields</b> are often created for use in algorithms that
+                    require a large amount of inputs and rather than using a large number of parameters in the method,
+                    the
+                    programmer decides to create fields for this data in the class, this fields are only used by the
+                    algorithm and not by the rest of the class.
+                </p><br>
+                <p>
+                    There are several solutions to this code smell. You can extract the temporary fields and all the
+                    code
+                    operating on them into a separate class. The fields used can also just be parametrized into the
+                    method
+                    using them. Reducing <b>Temporary Fields</b> leads to better code clarity and organisation.
+                </p>
+            </div>
+            <br>
+            <div id="dataclass">
+                <h3>Data Class</h3>
+                <hr>
+                <p>
+                    A <b>Data Class</b> refers to a class that contains only fields and crude methods for accessing
+                    them.
+                    These are simply containers for data used by other classes. They don't contain any additional
+                    functionality and can't independently operate on the data that they own. In OOP the true power of
+                    objects is that they can contain behavior types or operations on their data.
+                </p><br>
+                <p>
+                    One of the best solutions to this code smell is <b>Encapsulation</b>. If a class contains public
+                    fields
+                    then use encapsulation to prevent direct access to the field and require access via a getter and
+                    setter
+                    only. Also review the client code that uses the <b>Data Class</b>. You may find functionality that
+                    would
+                    be better located in the <b>Data Class</b> itself. If this is the case then just move migrate
+                    functionality to the data class. After the class has been filled with well thought-out methods you
+                    can
+                    get rid of some of the old methods for data access that give overly broad access to the class data,
+                    e.g.
+                    remove setter methods that aren't used etc..
+                </p>
+            </div>
+            <br>
+            <div id="refusedbequest">
+                <h3>Refused Bequest</h3>
+                <hr>
+                <p>
+                    <b>Refused Bequest</b> can be seen if a subclass only uses some of the methods and properties
+                    inherited
+                    from its parents. The unneeded methods may simply go unused or be redefined and give off exceptions.
+                    <b>Refused
+                        Bequest</b> often occurs as a result of the motivation of the programmer to create inheritance
+                    between
+                    classes only by the desire to reuse the code in the superclass, but the superclass and subclass are
+                    completely different.
+                </p><br>
+                <p>
+                    <b>Refused Bequest</b> can be eliminated by following a general rule of inheritance, if the
+                    superclass
+                    and subclass have nothing in common then you should consider some other way of class association
+                    such as
+                    delegation.
+                </p><br>
+                <p>
+                    Or if inheritance is appropriate then get rid of unneeded fields and methods in the subclass. Move
+                    them
+                    into a new subclass and set them to inherit from the new class.
+                </p>
+            </div>
+            <br>
+        </div>
+        <br>
+        <div id="couplers">
+            <hr>
+            <h1>Couplers</h1>
+            <p>
+                These smells result in excessive coupling between classes or show what happens when coupling is replaced
+                by
+                excessive delegation.
+            </p>
+            <hr>
+            <br>
+            <div id="featureenvy">
+                <h3>Feature Envy - Excessive Use of Other Classes</h3>
+                <hr>
+                <p>
+                    <b>Feature Envy</b> is a code smell which can occur in methods. A method has <b>Feature Envy</b> on
+                    another class if it uses more features ( i.e. fields and methods) of another class more than its
+                    own.
+                    <b>Feature Envy</b> can be avoided simply by moving the methods to the preferred class, i.e. the
+                    class
+                    it is envious of.
+                </p>
+            </div>
+            <br>
+            <div id="inappropriateintimacy">
+                <h3>Inappropriate Intimacy</h3>
+                <hr>
+                <p>
+                    One class uses the internal fields and methods of another class. In OOP the less one class knows
+                    about
+                    another the better.
+                </p>
+            </div>
+            <br>
+            <div id="messagechains">
+                <h3>Message Chains</h3>
+                <hr>
+                <p>
+                    <b>Message chains</b> occur when a client requests another object, which in turn requests from
+                    another
+                    object and so on.
+                </p><br>
+                <p>
+                    These chains highlight how dependent the client on navigating the class structure. If a change is
+                    made
+                    to these relationships between classes then the client requires modifying.
+                </p><br>
+                <p>
+                    <b>Message chains</b> can be removed by adding a new method to the second object in the chain (Class
+                    A)
+                    which delegates the call to the next object in the chain(Class B). Now the client doesn't know
+                    anything
+                    about, or depend on Class B.
+                </p><br>
+                <p>
+                    By avoiding <b>message chaining</b> it makes it easier to maintain the client code as the less the
+                    client knows about its relationship to other objects the easier it is to make changes as classes are
+                    less dependent on each other.
+                </p>
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>How To Use</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/scripts.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h2>CodeWash</h2>
+        </div>
+        <ul class="list-unstyled components">
+            <li>
+                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"
+                   class="dropdown-toggle">Analyse</a>
+                <ul class="collapse list-unstyled" id="homeSubmenu">
+                    <li>
+                        <a href="../index.html#uploader">Upload</a>
+                    </li>
+                    <li>
+                        <a href="../index.html#config">Configuration</a>
+                    </li>
+                    <li>
+                        <a href="../index.html#reports">Reports</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Code
+                    Smells</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu">
+                    <li>
+                        <a href="../codesmells/index.html#whatisasmell">What is a smell?</a>
+                    </li>
+                    <li>
+                        <a href="../codesmells/index.html#bloatedcode">Bloated Code</a>
+                    </li>
+                    <li>
+                        <a href="../codesmells/index.html#oopviolations">OOP Violations</a>
+                    </li>
+                    <li>
+                        <a href="../codesmells/index.html#couplers">Couplers</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="../how-to-use/index.html">How to Use</a>
+            </li>
+            <li class="active">
+                <a href="#">About</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Content -->
+    <div id="content">
+        <h1>About</h1>
+        <p>
+        </p>
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+    (function (e) {
+        var r = e.querySelectorAll("html")[0];
+        r.className = r.className.replace(/(^|\s)no-js(\s|$)/, "$1js$2")
+    })(document);
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        e.target.classList.toggle("active"); // newly activated tab
+    })
+</script>
