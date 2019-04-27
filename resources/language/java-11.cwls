@@ -971,9 +971,7 @@ PrimaryArrayAccessOrMethodReference:
     PrimarySingle [ArrayAccessOrMethodReference]
 
 ArrayAccessOrMethodReference:
-    {'[' Expression ']'}
-    [TypeArguments] '(' [ArgumentList] ')'
-    '::' [TypeArguments] MethodReferenceIdentifier
+    [[TypeArguments] '(' [ArgumentList] ')'] {'[' Expression ']'} ['::' [TypeArguments] MethodReferenceIdentifier]
 
 MethodReferenceIdentifier:
     Identifier
@@ -1073,9 +1071,7 @@ Assignment:
 	LeftHandSide AssignmentOperator Expression
 
 LeftHandSide:
-	ExpressionName
-	FieldAccess
-	ArrayAccess
+	PrimaryNoNewArray
 
 AssignmentOperator:
 	'=' 
