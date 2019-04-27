@@ -1,18 +1,6 @@
 package ws.codewash.parser;
 
-import ws.codewash.java.CWClass;
-import ws.codewash.java.CWClassOrInterface;
-import ws.codewash.java.CWConstructor;
-import ws.codewash.java.CWConstructorOrMethod;
-import ws.codewash.java.CWEnum;
-import ws.codewash.java.CWField;
-import ws.codewash.java.CWInitializer;
-import ws.codewash.java.CWInterface;
-import ws.codewash.java.CWMethod;
-import ws.codewash.java.CWParameterizable;
-import ws.codewash.java.CWTypeParameter;
-import ws.codewash.java.CWVariable;
-import ws.codewash.java.Scope;
+import ws.codewash.java.*;
 import ws.codewash.parser.grammar.Grammar;
 import ws.codewash.parser.tree.LexicalTree;
 import ws.codewash.parser.tree.LexicalTreeNode;
@@ -23,16 +11,11 @@ import ws.codewash.util.Log;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static ws.codewash.util.Timing.*;
+import static ws.codewash.util.Timing.duration;
+import static ws.codewash.util.Timing.time;
 
 public class Parser {
 	public static final boolean DEBUG = false;
@@ -243,7 +226,8 @@ public class Parser {
 		node = node.get();
 
 		switch (node.getName()) {
-			case "';'" -> {}
+			case "';'" -> {
+			}
 			case "ClassDeclaration" -> processClassDeclaration(unit, node, scope);
 			case "InterfaceDeclaration" -> processInterfaceDeclaration(unit, node, scope);
 			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO
@@ -255,7 +239,7 @@ public class Parser {
 		// Descend to specific class declaration type node (NormalClassDeclaration, EnumDeclaration)
 		node = node.get();
 
-		boolean normalOrEnum = switch(node.getName()) {
+		boolean normalOrEnum = switch (node.getName()) {
 			case "NormalClassDeclaration" -> true;
 			case "EnumDeclaration" -> false;
 			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO
@@ -378,7 +362,8 @@ public class Parser {
 
 		// TODO:
 		switch (node.getName()) {
-			case "';'" -> {}
+			case "';'" -> {
+			}
 			case "FieldDeclaration", "ConstantDeclaration" -> processFieldDeclaration(node, scope);
 			case "MethodDeclaration", "InterfaceMethodDeclaration" -> processMethodDeclaration(node, scope);
 			case "ClassDeclaration" -> processClassDeclaration(unit, node, scope);
@@ -389,7 +374,7 @@ public class Parser {
 
 	// FieldDeclaration | ConstantDeclaration
 	private void processFieldDeclaration(SyntacticTreeNode node, CWClassOrInterface classOrInterface) {
-		boolean fieldOrConstant = switch(node.getName()) {
+		boolean fieldOrConstant = switch (node.getName()) {
 			case "FieldDeclaration" -> true;
 			case "ConstantDeclaration" -> false;
 			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO
@@ -412,7 +397,7 @@ public class Parser {
 
 	// {MethodModifier} [TypeParameters] {Annotation} Result Identifier '(' [ReceiverParameter ','] [FormalParameterList] ')' [Dims] [Throws] MethodBody
 	private void processMethodDeclaration(SyntacticTreeNode node, CWClassOrInterface classOrInterface) {
-		boolean classOrInterfaceMethod = switch(node.getName()) {
+		boolean classOrInterfaceMethod = switch (node.getName()) {
 			case "MethodDeclaration" -> true;
 			case "InterfaceMethodDeclaration" -> false;
 			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO

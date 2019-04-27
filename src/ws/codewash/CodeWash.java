@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import ws.codewash.analyzer.Analyzer;
 import ws.codewash.analyzer.reports.Report;
+import ws.codewash.http.ServerHandler;
 import ws.codewash.parser.ParsedSourceTree;
 import ws.codewash.parser.Parser;
 import ws.codewash.parser.grammar.Grammar;
@@ -41,7 +42,7 @@ public class CodeWash {
 					configManager.setConfigFile(Arguments.get().getConfigPath());
 				}
 
-				Log.i(TAG,"Washing: " + Arguments.get().getSrcPath());
+				Log.i(TAG, "Washing: " + Arguments.get().getSrcPath());
 				SourceReadable sources;
 				if (Arguments.get().getSrcPath().endsWith(".zip") || Arguments.get().getSrcPath().endsWith(".jar") ) {
 					sources = new ZipReader(Paths.get(Arguments.get().getSrcPath()));
@@ -66,7 +67,7 @@ public class CodeWash {
 				}
 
 			} else {
-				//Todo: Create http server
+				ServerHandler.init();
 			}
 		} catch (ParameterException ignored) {
 			commander.usage();
