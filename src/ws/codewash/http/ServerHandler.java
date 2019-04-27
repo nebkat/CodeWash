@@ -4,27 +4,19 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import ws.codewash.analyzer.Analyzer;
-import ws.codewash.analyzer.reports.Report;
 import ws.codewash.http.util.ByteSearch;
 import ws.codewash.http.util.TokenGenerator;
-import ws.codewash.parser.ParsedSourceTree;
-import ws.codewash.parser.Parser;
-import ws.codewash.parser.grammar.Grammar;
-import ws.codewash.reader.SourceReadable;
-import ws.codewash.reader.ZipReader;
 import ws.codewash.util.Log;
 
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.nio.file.FileSystem;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ServerHandler implements HttpHandler {
 	private static final String TAG = "HTTP";
@@ -32,6 +24,13 @@ public class ServerHandler implements HttpHandler {
 	private static final String GET = "GET";
 	private static final String HEAD = "HEAD";
 	private static final String POST = "POST";
+	private static final String HEADER_ALLOW = "Allow";
+	private static final String HEADER_CONTENT_TYPE = "Content-Type";
+
+	private static final int STATUS_OK = 200;
+	private static final int STATUS_NOT_FOUND = 404;
+	private static final int STATUS_METHOD_NOT_ALLOWED = 405;
+
 
 	private static final String ERROR = "ERROR";
 	private static final String INCORRECT_TYPE = "INCORRECT_TYPE";
@@ -42,8 +41,10 @@ public class ServerHandler implements HttpHandler {
 	private static final String FILE_NOT_FOUND = "404.html";
 	private static final String LENGTH_REQUIRED = "411.html";
 	private static final String METHOD_NOT_SUPPORTED = "501.html";
+	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
-	private ServerHandler() {}
+	private ServerHandler() {
+	}
 
 	public static void init() {
 		try {
@@ -69,29 +70,29 @@ public class ServerHandler implements HttpHandler {
 			Log.i(TAG, exchange.getRequestURI().getPath());
 
 			File file = getFile(exchange.getRequestURI().getPath());
-			exchange.sendResponseHeaders(200, file.length());
+			exchange.sendResponseHeaders(STATUS_OK, file.length());
 			try (OutputStream os = exchange.getResponseBody()) {
 				Files.copy(file.toPath(), os);
 			}
-		} else if (reqMethod.equalsIgnoreCase(HEAD)) {
-
 		} else if (reqMethod.equalsIgnoreCase(POST)) {
-			BufferedReader reqBody = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-
 			Log.d(TAG, "RequestHeaders");
 			Headers reqHeaders = exchange.getRequestHeaders();
 			reqHeaders.forEach((k, v) -> Log.d(TAG, k + ":\t" + v));
 
 			List<String> contentType = reqHeaders.get("Content-type");
 			String boundary = "--" + contentType.get(0).substring(contentType.get(0).lastIndexOf("boundary=") + 9);
-			parseForm(exchange.getRequestBody(), boundary);
+			String response = parseForm(exchange, boundary);
 
+			exchange.getResponseHeaders().set("content-type", "text/html");
+			exchange.sendResponseHeaders(STATUS_OK, response.length());
+			exchange.getResponseBody().write(response.getBytes());
 
+			/*
 			File file = getFile(exchange.getRequestURI().getPath());
-			exchange.sendResponseHeaders(200, file.length());
-			try (OutputStream os = exchange.getResponseBody()) {
-				Files.copy(file.toPath(), os);
-			}
+			exchange.sendResponseHeaders(302, 0);
+*/
+			//exchange.getResponseHeaders().put("Location", Collections.singletonList(exchange.getRequestURI().getPath()));
+
 /*
 			SourceReadable sources = new ZipReader(Paths.get("www/files/output.zip"));
 
@@ -112,9 +113,8 @@ public class ServerHandler implements HttpHandler {
 			}*/
 
 		} else {
-
 			File file = getFile(METHOD_NOT_SUPPORTED);
-			exchange.sendResponseHeaders(200, file.length());
+			exchange.sendResponseHeaders(STATUS_METHOD_NOT_ALLOWED, file.length());
 			try (OutputStream os = exchange.getResponseBody()) {
 				Files.copy(file.toPath(), os);
 			}
@@ -129,7 +129,7 @@ public class ServerHandler implements HttpHandler {
 			path += "/";
 
 		if (path.contains("#"))
-			path.replaceFirst("#", "/" + DEFAULT_FILE + "#");
+			path = path.replaceFirst("#", "/" + DEFAULT_FILE + "#");
 
 		if (path.endsWith("/"))
 			path += DEFAULT_FILE;
@@ -147,9 +147,12 @@ public class ServerHandler implements HttpHandler {
 		return file;
 	}
 
-	private void parseForm(InputStream reqBody, String boundary) {
-		final String dataFile = "name=\"datafile\"";
-		DataInputStream d = new DataInputStream(new BufferedInputStream(reqBody));
+	private String parseForm(HttpExchange exchange, String boundary) {
+		final String uploadFile = "name=\"datafile\"";
+		final String parseButton = "name=\"parseButton\"";
+
+		DataInputStream d = new DataInputStream(new BufferedInputStream(exchange.getRequestBody()));
+		StringBuilder response = new StringBuilder();
 
 		byte[] contentBytes = new byte[0];
 		try {
@@ -173,29 +176,35 @@ public class ServerHandler implements HttpHandler {
 		}
 
 		for (byte[] b : requestBytes) {
-			if (ByteSearch.indexOf(b, dataFile.getBytes(), 0) > -1) {
-				parseFile(b, boundary);
-			}
-			else {
+			if (ByteSearch.indexOf(b, uploadFile.getBytes(), 0) > -1) {
+				String status = parseFile(b, boundary);
+				String error = "";
+				if (status.equalsIgnoreCase(ERROR)) {
+					status = "false";
+					error = "Error parsing file..";
+				} else if (status.equalsIgnoreCase(INCORRECT_TYPE)) {
+					status = "false";
+					error = "Incorrect File type.";
+				} else
+					status = "true";
+
+				response.append("{\"success\": ").append(status);
+				response.append(",\"error\": \"").append(error).append("\"}");
+			} else {
 				Log.i(TAG, "RequestBody:\n" + new String(b));
 			}
 		}
+		return response.toString();
 	}
-
-	/*
-		success: 1
-		incorrect type: 0
-		error: -1
-	 */
 
 	private String parseFile(byte[] contentBytes, String boundary) {
 		final String startString = "\r\n\r\n";
 		Log.i(TAG, "Parsing form to file.");
 
 		int fileNameStart = ByteSearch.indexOf(contentBytes, "filename=".getBytes(), 0) + "filename=".getBytes().length;
-		byte[] currentBytes = new byte[contentBytes.length-1 - fileNameStart];
-		System.arraycopy(contentBytes, fileNameStart, currentBytes, 0, contentBytes.length-1-fileNameStart);
-		int fileNameEnd = ByteSearch.indexOf(currentBytes,"\"".getBytes(), 1) - 1;
+		byte[] currentBytes = new byte[contentBytes.length - 1 - fileNameStart];
+		System.arraycopy(contentBytes, fileNameStart, currentBytes, 0, contentBytes.length - 1 - fileNameStart);
+		int fileNameEnd = ByteSearch.indexOf(currentBytes, "\"".getBytes(), 1) - 1;
 
 		byte[] fileNameBytes = new byte[fileNameEnd];
 		System.arraycopy(contentBytes, fileNameStart + 1, fileNameBytes, 0, fileNameEnd);
