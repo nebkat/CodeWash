@@ -1,8 +1,6 @@
 package ws.codewash.parser;
 
-<<<<<<< HEAD
-import ws.codewash.java.*;
-=======
+
 import ws.codewash.java.CWClass;
 import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.CWConstructor;
@@ -19,7 +17,16 @@ import ws.codewash.java.CompilationUnit;
 import ws.codewash.java.ParsedSourceTree;
 import ws.codewash.java.RawType;
 import ws.codewash.java.Scope;
->>>>>>> master
+import ws.codewash.java.statement.CWBasicForStatement;
+import ws.codewash.java.statement.CWBlock;
+import ws.codewash.java.statement.CWControlStatement;
+import ws.codewash.java.statement.CWEnhancedForStatement;
+import ws.codewash.java.statement.CWIfStatement;
+import ws.codewash.java.statement.CWLabeledStatement;
+import ws.codewash.java.statement.CWLocalVariableDeclarationStatement;
+import ws.codewash.java.statement.CWStatement;
+import ws.codewash.java.statement.CWWhileStatement;
+import ws.codewash.java.statement.expression.CWExpression;
 import ws.codewash.parser.grammar.Grammar;
 import ws.codewash.parser.tree.LexicalTree;
 import ws.codewash.parser.tree.LexicalTreeNode;
@@ -30,7 +37,14 @@ import ws.codewash.util.Log;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ws.codewash.util.Timing.duration;
@@ -205,7 +219,7 @@ public class Parser {
 		// Type declarations
 		SyntacticTreeNode typeDeclarationsNode = tree.get("{TypeDeclaration}");
 		for (SyntacticTreeNode typeDeclarationNode : typeDeclarationsNode.getAll()) {
-			processTypeDeclaration(unit, typeDeclarationNode, unit);
+			processTypeDeclaration(typeDeclarationNode, unit);
 		}
 	}
 
@@ -235,21 +249,20 @@ public class Parser {
 		}
 	}
 
-	private void processTypeDeclaration(CompilationUnit unit, SyntacticTreeNode node, Scope scope) {
+	private void processTypeDeclaration(SyntacticTreeNode node, Scope scope) {
 		// Descend to specific type declaration type node (ClassDeclaration, ImportDeclaration)
 		node = node.get();
 
 		switch (node.getName()) {
-			case "';'" -> {
-			}
-			case "ClassDeclaration" -> processClassDeclaration(unit, node, scope);
-			case "InterfaceDeclaration" -> processInterfaceDeclaration(unit, node, scope);
+			case "';'" -> {}
+			case "ClassDeclaration" -> processClassDeclaration(node, scope);
+			case "InterfaceDeclaration" -> processInterfaceDeclaration(node, scope);
 			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO
 		}
 	}
 
 	// NormalClassDeclaration | EnumDeclaration
-	private void processClassDeclaration(CompilationUnit unit, SyntacticTreeNode node, Scope scope) {
+	private void processClassDeclaration(SyntacticTreeNode node, Scope scope) {
 		// Descend to specific class declaration type node (NormalClassDeclaration, EnumDeclaration)
 		node = node.get();
 
@@ -275,18 +288,18 @@ public class Parser {
 				superClass = parseClassType(superClassNode.get("ClassType"), 0);
 			}
 
-			CWClass cwClass = new CWClass(scope, unit.getPackage(), modifiers, name, superClass, superInterfaces);
+			CWClass cwClass = new CWClass(scope, modifiers, name, superClass, superInterfaces);
 
 			processTypeParameters(node.get("[TypeParameters]"), cwClass);
 
 			SyntacticTreeNode classBodyDeclarations = node.get("ClassBody").get("{ClassBodyDeclaration}");
 			for (SyntacticTreeNode classBodyDeclaration : classBodyDeclarations.getAll()) {
-				processClassBodyDeclaration(unit, classBodyDeclaration, cwClass);
+				processClassBodyDeclaration(classBodyDeclaration, cwClass);
 			}
 
 			mParsedSourceTree.addType(cwClass);
 		} else {
-			CWEnum cwEnum = new CWEnum(scope, unit.getPackage(), modifiers, name, superInterfaces);
+			CWEnum cwEnum = new CWEnum(scope, modifiers, name, superInterfaces);
 
 			SyntacticTreeNode enumBody = node.get("EnumBody");
 			SyntacticTreeNode enumConstantList = enumBody.get("[EnumConstantList]").get();
@@ -300,7 +313,7 @@ public class Parser {
 			if (enumBodyDeclarations != null) {
 				SyntacticTreeNode classBodyDeclarations = enumBodyDeclarations.get("{ClassBodyDeclaration}");
 				for (SyntacticTreeNode classBodyDeclaration : classBodyDeclarations.getAll()) {
-					processClassBodyDeclaration(unit, classBodyDeclaration, cwEnum);
+					processClassBodyDeclaration(classBodyDeclaration, cwEnum);
 				}
 			}
 
@@ -309,19 +322,19 @@ public class Parser {
 	}
 
 	// NormalInterfaceDeclaration | AnnotationTypeDeclaration
-	private void processInterfaceDeclaration(CompilationUnit unit, SyntacticTreeNode node, Scope scope) {
+	private void processInterfaceDeclaration(SyntacticTreeNode node, Scope scope) {
 		// Descend to specific interface declaration type node (NormalInterfaceDeclaration, AnnotationTypeDeclaration)
 		node = node.get();
 
 		switch (node.getName()) {
-			case "NormalInterfaceDeclaration" -> processNormalInterfaceDeclaration(unit, node, scope);
-			case "AnnotationTypeDeclaration" -> processAnnotationTypeDeclaration(unit, node, scope);
+			case "NormalInterfaceDeclaration" -> processNormalInterfaceDeclaration(node, scope);
+			case "AnnotationTypeDeclaration" -> processAnnotationTypeDeclaration(node, scope);
 			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO
 		}
 	}
 
 	// {InterfaceModifier} 'interface' TypeIdentifier [TypeParameters] [ExtendsInterfaces] InterfaceBody
-	private void processNormalInterfaceDeclaration(CompilationUnit unit, SyntacticTreeNode node, Scope scope) {
+	private void processNormalInterfaceDeclaration(SyntacticTreeNode node, Scope scope) {
 		String name = node.get("TypeIdentifier").getContent();
 		int modifiers = parseModifiers(node.get("{InterfaceModifier}"));
 
@@ -331,31 +344,31 @@ public class Parser {
 			superInterfaces = parseClassTypeList(superInterfacesNode.get("InterfaceTypeList"));
 		}
 
-		CWInterface cwInterface = new CWInterface(scope, unit.getPackage(), modifiers, name, superInterfaces);
+		CWInterface cwInterface = new CWInterface(scope, modifiers, name, superInterfaces);
 
 		processTypeParameters(node.get("[TypeParameters]"), cwInterface);
 
 		SyntacticTreeNode classBodyDeclarations = node.get("InterfaceBody").get("{InterfaceMemberDeclaration}");
 		for (SyntacticTreeNode classBodyDeclaration : classBodyDeclarations.getAll()) {
-			processMemberDeclaration(unit, classBodyDeclaration, cwInterface);
+			processMemberDeclaration(classBodyDeclaration, cwInterface);
 		}
 
 		mParsedSourceTree.addType(cwInterface);
 	}
 
 	// {InterfaceModifier} '@' 'interface' TypeIdentifier AnnotationTypeBody
-	private void processAnnotationTypeDeclaration(CompilationUnit unit, SyntacticTreeNode node, Scope scope) {
+	private void processAnnotationTypeDeclaration(SyntacticTreeNode node, Scope scope) {
 		throw new IllegalStateException("@Annotations not supported");
 	}
 
 	// ClassMemberDeclaration | InstanceInitializer | StaticInitializer | ConstructorDeclaration
-	private void processClassBodyDeclaration(CompilationUnit unit, SyntacticTreeNode node, CWClassOrInterface classOrInterface) {
+	private void processClassBodyDeclaration(SyntacticTreeNode node, CWClassOrInterface classOrInterface) {
 		// Descend to specific class body declaration type node (ClassMemberDeclaration, InstanceInitializer, StaticInitializer, ConstructorDeclaration)
 		node = node.get();
 
 		// TODO:
 		switch (node.getName()) {
-			case "ClassMemberDeclaration" -> processMemberDeclaration(unit, node, classOrInterface);
+			case "ClassMemberDeclaration" -> processMemberDeclaration(node, classOrInterface);
 			case "InstanceInitializer", "StaticInitializer" -> processInitializerDeclaration(node, classOrInterface);
 			case "ConstructorDeclaration" -> processConstructorDeclaration(node, classOrInterface);
 			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO
@@ -380,7 +393,7 @@ public class Parser {
 	}
 
 	// FieldDeclaration | ConstantDeclaration | MethodDeclaration | InterfaceMethodDeclaration | ClassDeclaration | InterfaceDeclaration
-	private void processMemberDeclaration(CompilationUnit unit, SyntacticTreeNode node, CWClassOrInterface scope) {
+	private void processMemberDeclaration(SyntacticTreeNode node, CWClassOrInterface scope) {
 		// Descend to specific member declaration type node (FieldDeclaration, ConstantDeclaration, MethodDeclaration, InterfaceMethodDeclaration, ClassDeclaration, InterfaceDeclaration)
 		node = node.get();
 
@@ -390,8 +403,8 @@ public class Parser {
 			}
 			case "FieldDeclaration", "ConstantDeclaration" -> processFieldDeclaration(node, scope);
 			case "MethodDeclaration", "InterfaceMethodDeclaration" -> processMethodDeclaration(node, scope);
-			case "ClassDeclaration" -> processClassDeclaration(unit, node, scope);
-			case "InterfaceDeclaration" -> processInterfaceDeclaration(unit, node, scope);
+			case "ClassDeclaration" -> processClassDeclaration(node, scope);
+			case "InterfaceDeclaration" -> processInterfaceDeclaration(node, scope);
 			default -> throw new IllegalStateException("Unexpected " + node.getName());
 		}
 	}
@@ -429,17 +442,15 @@ public class Parser {
 
 		// Descend to specific type (Type, 'void')
 		SyntacticTreeNode returnTypeNode = node.get("Result").get();
-		RawType returnType = switch (returnTypeNode.getName()) {
-			case "Type" -> parseType(returnTypeNode);
-			case "'void'" -> RawType.VOID_RAW_TYPE;
-			default -> throw new IllegalStateException("Unexpected " + returnTypeNode.getName());
-		};
+		RawType returnType = parseType(returnTypeNode);
 
 		CWMethod cwMethod = new CWMethod(classOrInterface, modifiers, name, returnType);
 		classOrInterface.addMethod(cwMethod);
 
 		processTypeParameters(node.get("[TypeParameters]"), cwMethod);
 		processFormalParameterList(node.get("[FormalParameterList]"), cwMethod);
+
+		processBlock(node.get("MethodBody").get(), cwMethod, cwMethod::setBlock);
 	}
 
 	private void processTypeParameters(SyntacticTreeNode node, CWParameterizable parameterizable) {
@@ -506,6 +517,192 @@ public class Parser {
 		scope.addInitializer(new CWInitializer(scope, staticOrInstance));
 	}
 
+	private void processBlock(SyntacticTreeNode node, Scope scope, Consumer<? super CWBlock> consumer) {
+		switch (node.getName()) {
+			case "';'": return;
+			case "Block": break; // Parsed below
+			default: throw new IllegalStateException("Unexpected " + node.getName());
+		}
+
+		CWBlock block = new CWBlock(scope);
+
+		// TODO: Explicit constructor invocation
+
+		SyntacticTreeNode blockStatementsNode = node.get("[BlockStatements]").get();
+		processBlockStatements(blockStatementsNode, block, block::addStatement);
+
+		consumer.accept(block);
+	}
+
+	private void processBlockStatements(SyntacticTreeNode node, Scope scope, Consumer<CWStatement> consumer) {
+		if (node == null) return;
+
+		List<SyntacticTreeNode> blockStatementNodes = new ArrayList<>();
+		blockStatementNodes.add(node.get(0));
+		blockStatementNodes.addAll(node.get(1).getAll());
+
+		for (SyntacticTreeNode statementNode : blockStatementNodes) {
+			// Descend into specific block statement type (LocalVariableDeclarationStatement, ClassDeclaration, Statement)
+			statementNode = statementNode.get();
+
+			switch (statementNode.getName()) {
+				case "LocalVariableDeclarationStatement" -> processLocalVarDeclarationStatement(statementNode, scope, consumer);
+				case "ClassDeclaration" -> processClassDeclaration(node, scope);
+				case "Statement" -> processStatement(statementNode, scope, consumer);
+				default -> throw new IllegalStateException("Unexpected " + statementNode.getName()); // TODO:
+			}
+		}
+	}
+
+	private void processLocalVarDeclarationStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWLocalVariableDeclarationStatement> consumer) {
+		// Descend to declaration without semicolon
+		node = node.get("LocalVariableDeclaration");
+
+		int modifiers = parseModifiers(node.get("{VariableModifier}"));
+
+		for (SyntacticTreeNode variableDeclarator : node.get("VariableDeclaratorList").getListElements()) {
+			SyntacticTreeNode variableDeclaratorId = variableDeclarator.get("VariableDeclaratorId");
+			String name = variableDeclaratorId.get("Identifier").getContent();
+			RawType type = parseType(node.get("LocalVariableType").get(), parseArrayDims(variableDeclaratorId.get("[Dims]").get()));
+
+			CWVariable cwVariable = new CWVariable(scope, modifiers, type, name);
+			consumer.accept(new CWLocalVariableDeclarationStatement(scope, cwVariable));
+		}
+	}
+
+	private void processStatement(SyntacticTreeNode node, Scope scope, Consumer<CWStatement> consumer) {
+		// Descend to specific statement type
+		node = node.get();
+
+		boolean noShortIf = node.getName().endsWith("NoShortIf");
+
+		switch (node.getName()) {
+			case "StatementWithoutTrailingSubstatement" -> {
+				// Descend into specific statement without trailing substatement
+				node = node.get();
+				switch (node.getName()) {
+					case "Block" -> processBlock(node, scope, consumer);
+					case "EmptyStatement" -> {} // Ignore
+					case "ExpressionStatement" -> {} // TODO:
+					case "AssertStatement" -> {} // TODO:
+					case "SwitchStatement" -> {} // TODO:
+					case "DoStatement" -> processWhileStatement(node, scope, consumer);
+					case "BreakStatement" -> {} // TODO:
+					case "ContinueStatement" -> {} // TODO:
+					case "ReturnStatement" -> {} // TODO:
+					case "SynchronizedStatement" -> {} // TODO:
+					case "ThrowStatement" -> {} // TODO:
+					case "TryStatement" -> {} // TODO:
+				}
+			}
+			case "LabeledStatement", "LabeledStatementNoShortIf" -> {
+				String label = node.get("Identifier").getContent();
+				CWLabeledStatement statement = new CWLabeledStatement(scope, label);
+				consumer.accept(statement);
+
+				processStatement(node.get(!noShortIf ? "Statement" : "StatementNoShortIf"), statement, statement::setStatement);
+			}
+			case "IfThenStatement", "IfThenElseStatement", "IfThenElseStatementNoShortIf" ->
+					processIfStatement(node, scope, consumer);
+			case "WhileStatement", "WhileStatementNoShortIf" -> processWhileStatement(node, scope, consumer);
+			case "ForStatement", "ForStatementNoShortIf" -> processForStatement(node, scope, consumer);
+		}
+	}
+
+	// 'if' '(' Expression ')' Statement
+	// 'if' '(' Expression ')' StatementNoShortIf 'else' Statement
+	// 'if' '(' Expression ')' StatementNoShortIf 'else' StatementNoShortIf
+	private void processIfStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWIfStatement> consumer) {
+		CWExpression condition = parseExpression(node.get("Expression"), scope);
+		CWIfStatement statement = new CWIfStatement(scope, condition);
+		consumer.accept(statement);
+
+		switch (node.getName()) {
+			case "IfThenStatement" -> processStatement(node.get(4), statement, statement::setThenStatement);
+			case "IfThenElseStatement", "IfThenElseStatementNoShortIf" -> {
+				processStatement(node.get(4), statement, statement::setThenStatement);
+				processStatement(node.get(6), statement, statement::setElseStatement);
+			}
+		}
+	}
+
+	// 'do' Statement 'while' '(' Expression ')' ';'
+	// 'while' '(' Expression ')' Statement
+	// 'while' '(' Expression ')' StatementNoShortIf
+	private void processWhileStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWWhileStatement> consumer) {
+		CWExpression condition = parseExpression(node.get("Expression"), scope);
+		CWWhileStatement statement = new CWWhileStatement(scope, node.getName().equals("DoStatement"), condition);
+		consumer.accept(statement);
+
+		boolean noShortIf = node.getName().endsWith("NoShortIf");
+		processStatement(node.get(!noShortIf ? "Statement" : "StatementNoShortIf"), statement, statement::setStatement);
+	}
+
+	// BasicForStatement | EnhancedForStatement
+	private void processForStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWControlStatement> consumer) {
+		// Descend to specific for loop type (BasicForStatement, EnhancedForStatement)
+		node = node.get();
+
+		switch (node.getName()) {
+			case "BasicForStatement" -> processBasicForStatement(node, scope, consumer);
+			case "EnhancedForStatement" -> processEnhancedForStatement(node, scope, consumer);
+			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO
+		}
+	}
+
+	// 'for' '(' [ForInit] ';' [Expression] ';' [ForUpdate] ')' Statement
+	// 'for' '(' [ForInit] ';' [Expression] ';' [ForUpdate] ')' StatementNoShortIf
+	private void processBasicForStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWBasicForStatement> consumer) {
+		CWBasicForStatement statement = new CWBasicForStatement(scope);
+		consumer.accept(statement);
+
+		SyntacticTreeNode forInitNode = node.get("[ForInit]").get();
+		if (forInitNode != null) {
+			switch (forInitNode.get().getName()) {
+				case "LocalVariableDeclaration" -> processLocalVarDeclarationStatement(forInitNode, statement, statement::setInitVariableDeclarationStatement);
+				case "StatementExpressionList" -> statement.setInitExpressions(parseExpressionList(forInitNode.get(), statement));
+				default -> throw new IllegalStateException("Unexpected " + forInitNode.get().getName());
+			}
+		}
+
+		statement.setCondition(parseExpression(node.get("[Expression]").get(), statement));
+
+		SyntacticTreeNode forUpdateNode = node.get("[ForUpdate]").get();
+		if (forUpdateNode != null) {
+			statement.setUpdateExpressions(parseExpressionList(forUpdateNode.get(), statement));
+		}
+	}
+
+	// 'for' '(' {VariableModifier} LocalVariableType VariableDeclaratorId ':' Expression ')' Statement
+	// 'for' '(' {VariableModifier} LocalVariableType VariableDeclaratorId ':' Expression ')' StatementNoShortIf
+	private void processEnhancedForStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWEnhancedForStatement> consumer) {
+		CWExpression expression = parseExpression(node.get("Expression"), scope);
+		CWEnhancedForStatement statement = new CWEnhancedForStatement(scope, expression);
+		consumer.accept(statement);
+
+		int modifiers = parseModifiers(node.get("{VariableModifier}"));
+		SyntacticTreeNode variableDeclaratorId = node.get("VariableDeclaratorId");
+		String name = variableDeclaratorId.get("Identifier").getContent();
+		RawType type = parseType(node.get("LocalVariableType").get());
+
+		CWVariable cwVariable = new CWVariable(scope, modifiers, type, name);
+		statement.setVariable(cwVariable);
+
+		boolean noShortIf = node.getName().endsWith("NoShortIf");
+		processStatement(node.get(!noShortIf ? "Statement" : "StatementNoShortIf"), statement, statement::setStatement);
+	}
+
+	private CWExpression parseExpression(SyntacticTreeNode node, Scope scope) {
+		if (node == null) return null;
+		return null;
+	}
+
+	private List<CWExpression> parseExpressionList(SyntacticTreeNode node, Scope scope) {
+		return node.getListElements().stream()
+				.map(expression -> parseExpression(expression, scope))
+				.collect(Collectors.toList());
+	}
+
 	// TODO: RawTypeName for names
 	private RawType parseTypeName(SyntacticTreeNode node) {
 		return new RawType(node.getListElements().stream()
@@ -519,6 +716,14 @@ public class Parser {
 	}
 
 	private RawType parseType(SyntacticTreeNode node, int outerArrayDimension) {
+		switch (node.getName()) {
+			case "'void'": return RawType.VOID_RAW_TYPE;
+			case "'var'": return RawType.VAR_RAW_TYPE;
+			case "Wildcard": return RawType.WILDCARD_RAW_TYPE;
+			case "Type": break; // Parsed below
+			default: throw new IllegalStateException("Unexpected " + node.getName());
+		}
+
 		int arrayDimension = parseArrayDims(node.get("[Dims]").get()) + outerArrayDimension;
 
 		// Descend to specific type (ClassType, PrimitiveType)
@@ -551,7 +756,7 @@ public class Parser {
 			if (typeArgumentsNode != null) {
 				SyntacticTreeNode typeArgumentList = typeArgumentsNode.get("TypeArgumentList");
 				for (SyntacticTreeNode typeArgumentNode : typeArgumentList.getListElements()) {
-					typeArguments.add(parseTypeArgument(typeArgumentNode));
+					typeArguments.add(parseType(typeArgumentNode.get()));
 				}
 			}
 
@@ -574,21 +779,7 @@ public class Parser {
 		return new RawType(Collections.singletonList(new RawType.Identifier(node.get(1).getContent())), arrayDimension);
 	}
 
-	// Type | Wildcard
-	private RawType parseTypeArgument(SyntacticTreeNode node) {
-		// Descend to specific type argument (Type, Wildcard)
-		node = node.get();
-
-		return switch (node.getName()) {
-			case "Type" -> parseType(node);
-			case "Wildcard" -> new RawType(Collections.singletonList(new RawType.Identifier("?")));
-			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO:
-		};
-	}
-
 	private int parseModifiers(SyntacticTreeNode modifiersNode) {
-
-
 		int modifiers = 0;
 		for (SyntacticTreeNode modifierNode : modifiersNode.getAll()) {
 			modifierNode = modifierNode.get();

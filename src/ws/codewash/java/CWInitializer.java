@@ -1,5 +1,7 @@
 package ws.codewash.java;
 
+import ws.codewash.java.statement.CWBlock;
+
 public class CWInitializer {
 	private final CWClassOrInterface mParent;
 	private boolean mStatic;

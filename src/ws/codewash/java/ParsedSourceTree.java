@@ -102,6 +102,11 @@ public class ParsedSourceTree extends Scope {
 	}
 
 	@Override
+	public CWPackage getPackage() {
+		throw new IllegalStateException("Attempting to access package of root scope");
+	}
+
+	@Override
 	public ParsedSourceTree getRoot() {
 		return this;
 	}

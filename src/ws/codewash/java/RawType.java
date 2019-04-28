@@ -15,6 +15,12 @@ public class RawType {
 	public static final RawType VOID_RAW_TYPE = new RawType(
 			Collections.singletonList(new Identifier("void")));
 
+	public static final RawType VAR_RAW_TYPE = new RawType(
+			Collections.singletonList(new Identifier("var")));
+
+	public static final RawType WILDCARD_RAW_TYPE = new RawType(
+			Collections.singletonList(new Identifier("?")));
+
 	private List<Identifier> mIdentifiers;
 	private int mArrayDimension;
 	private boolean mVarArgs;

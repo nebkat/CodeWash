@@ -1,5 +1,8 @@
 package ws.codewash.java;
 
+
+import ws.codewash.java.statement.CWBlock;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,10 +13,11 @@ public class CWMethod extends Scope implements CWConstructorOrMethod, CWParamete
 	private final int mModifiers;
 
 	private CWType mReturnType;
-	private RawType mPendingReturnType;
 
 	private final List<CWTypeParameter> mTypeParameters = new ArrayList<>();
 	private final List<CWVariable> mParameters = new ArrayList<>();
+
+	private CWBlock mBlock;
 
 	public CWMethod(CWClassOrInterface parent, int modifiers, String name, RawType returnType) {
 		super(parent);
@@ -23,7 +27,6 @@ public class CWMethod extends Scope implements CWConstructorOrMethod, CWParamete
 
 		mModifiers = modifiers;
 
-		mPendingReturnType = returnType;
 		resolve(new PendingType<>(returnType, this::setReturnType));
 	}
 
@@ -34,7 +37,7 @@ public class CWMethod extends Scope implements CWConstructorOrMethod, CWParamete
 
 	public void addParameter(CWVariable parameter) {
 		mParameters.add(parameter);
-		addLocalVariableDeclaration(parameter.getName(), parameter);
+		addLocalVariableDeclaration(parameter);
 	}
 
 	public CWType getReturnType() {
@@ -43,6 +46,14 @@ public class CWMethod extends Scope implements CWConstructorOrMethod, CWParamete
 
 	public void setReturnType(CWType type) {
 		mReturnType = type;
+	}
+
+	public CWBlock getBlock() {
+		return mBlock;
+	}
+
+	public void setBlock(CWBlock block) {
+		mBlock = block;
 	}
 
 	public List<CWVariable> getParameters() {

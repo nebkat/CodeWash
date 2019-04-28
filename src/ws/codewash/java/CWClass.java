@@ -7,13 +7,11 @@ import java.util.Set;
 
 public class CWClass extends CWClassOrInterface {
 	private CWType mSuperClass;
-	private RawType mPendingSuperClass;
 	private Set<CWClass> mSubClasses = new HashSet<>();
 
-	public CWClass(Scope enclosingScope, CWPackage _package, int modifiers, String name, RawType superClass, List<RawType> interfaces) {
-		super(enclosingScope, _package, modifiers, name, interfaces);
+	public CWClass(Scope enclosingScope, int modifiers, String name, RawType superClass, List<RawType> interfaces) {
+		super(enclosingScope, modifiers, name, interfaces);
 
-		mPendingSuperClass = superClass;
 		resolve(new PendingType<>(superClass, this::setSuperClass));
 	}
 
@@ -36,6 +34,8 @@ public class CWClass extends CWClassOrInterface {
 			// TODO:
 			throw new IllegalStateException("Attempting to set non-class " + superType.getName() + " as superclass of " + getName());
 		}
+
+		addSuperScope((CWClass) superType);
 
 		((CWClass) superType).addSubClass(this);
 	}

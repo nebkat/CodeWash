@@ -46,24 +46,16 @@ public class Scope {
 		return mTypeDeclarations.get(simpleName);
 	}
 
-	protected void addFieldDeclaration(String simpleName, CWField field) {
+	public void addFieldDeclaration(String simpleName, CWField field) {
 		mFieldDeclarations.put(simpleName, field);
 	}
 
-	protected void addMethodDeclaration(String simpleName, CWMethod method) {
+	public void addMethodDeclaration(String simpleName, CWMethod method) {
 		mMethodDeclarations.put(simpleName, method);
 	}
 
-	protected void addLocalVariableDeclaration(String simpleName, CWVariable variable) {
-		mLocalVariableDeclarations.put(simpleName, variable);
-	}
-
-	public CWType resolveType(String type) {
-		if (mTypeDeclarations.containsKey(type)) {
-			return mTypeDeclarations.get(type);
-		}
-
-		return mEnclosingScope.resolveType(type);
+	public void addLocalVariableDeclaration(CWVariable variable) {
+		mLocalVariableDeclarations.put(variable.getName(), variable);
 	}
 
 	public Scope getEnclosingScope() {
@@ -192,6 +184,10 @@ public class Scope {
 
 		return resolvedType;
 
+	}
+
+	public CWPackage getPackage() {
+		return mEnclosingScope.getPackage();
 	}
 
 	public ParsedSourceTree getRoot() {

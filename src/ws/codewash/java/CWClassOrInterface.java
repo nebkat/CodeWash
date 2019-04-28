@@ -2,6 +2,7 @@ package ws.codewash.java;
 
 import ws.codewash.util.Log;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,11 +29,11 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 	private Set<CWMethod> mMethods = new HashSet<>();
 	private Set<CWField> mFields = new HashSet<>();
 
-	CWClassOrInterface(Scope enclosingScope, CWPackage _package, int modifiers, String name, List<RawType> interfaces) {
+	CWClassOrInterface(Scope enclosingScope, int modifiers, String name, List<RawType> interfaces) {
 		super(enclosingScope);
 
 		mClass = null;
-		mPackage = _package;
+		mPackage = enclosingScope.getPackage();
 		mName = name;
 
 		enclosingScope.addTypeDeclaration(this);
@@ -60,7 +61,7 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 
 		enclosingScope.addTypeDeclaration(this);
 
-		mModifiers = _class.getModifiers();
+		mModifiers = _class.getModifiers() ^ Modifier.INTERFACE;
 
 		// Outer class
 		if (enclosingScope instanceof CWClassOrInterface) {
@@ -130,6 +131,8 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 			// TODO:
 			throw new IllegalStateException("Attempting to set non-interface " + superType.getName() + " as superinterface of " + getName());
 		}
+
+		addSuperScope((CWInterface) superType);
 
 		((CWInterface) superType).addImplementingClass(this);
 	}
@@ -224,7 +227,7 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 		} else if (this instanceof CWInterface) {
 			builder.append("interface ");
 		}
-		builder.append(getSimpleName());
+		builder.append(getName());
 		if (!mTypeParameters.isEmpty()) {
 			builder.append("<");
 			builder.append(mTypeParameters.stream()
@@ -249,6 +252,39 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 					.map(CWType::getName)
 					.collect(Collectors.joining(", ")));
 		}
+
+		builder.append(" {");
+		if (this instanceof CWEnum) {
+			builder.append(" [");
+			builder.append(((CWEnum) this).getConstants().size());
+			builder.append(" constants]");
+		}
+
+		if (!mInitializers.isEmpty()) {
+			builder.append(" [");
+			builder.append(mInitializers.size());
+			builder.append(" initializer blocks]");
+		}
+
+		if (!mConstructors.isEmpty()) {
+			builder.append(" [");
+			builder.append(mConstructors.size());
+			builder.append(" constructors]");
+		}
+
+		if (!mFields.isEmpty()) {
+			builder.append(" [");
+			builder.append(mFields.size());
+			builder.append(" fields]");
+		}
+
+		if (!mMethods.isEmpty()) {
+			builder.append(" [");
+			builder.append(mMethods.size());
+			builder.append(" methods]");
+		}
+
+		builder.append(" }");
 
 		return builder.toString();
 	}

@@ -24,7 +24,7 @@ public class CWConstructor extends Scope implements CWConstructorOrMethod, CWPar
 
 	public void addParameter(CWVariable parameter) {
 		mParameters.add(parameter);
-		addLocalVariableDeclaration(parameter.getName(), parameter);
+		addLocalVariableDeclaration(parameter);
 	}
 
 	private CWClassOrInterface getParent() {

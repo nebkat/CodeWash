@@ -1,7 +1,5 @@
 package ws.codewash.java;
 
-import ws.codewash.util.Log;
-
 import static ws.codewash.java.ParsedSourceTree.dot;
 
 public class CWPackage extends Scope {
@@ -23,6 +21,11 @@ public class CWPackage extends Scope {
 		}
 
 		return super.resolveUpwards(identifier, startScope);
+	}
+
+	@Override
+	public CWPackage getPackage() {
+		return this;
 	}
 
 	public String getName() {

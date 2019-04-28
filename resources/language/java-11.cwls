@@ -1025,10 +1025,6 @@ Expression:
 SwitchExpression:
 	SwitchStatement
 
-//ExpressionOperator:
-//	Operator
-//	ShiftOperator
-
 LambdaExpression:
 	LambdaParameters '->' LambdaBody
 

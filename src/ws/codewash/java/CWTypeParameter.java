@@ -35,6 +35,6 @@ public class CWTypeParameter implements CWType {
 	@Override
 	public String toString() {
 		return mName + (mBounds.isEmpty() ? "" :
-				" extends" + mBounds.stream().map(CWType::getName).collect(Collectors.joining(" & ")));
+				" extends " + mBounds.stream().map(CWType::getName).collect(Collectors.joining(" & ")));
 	}
 }
