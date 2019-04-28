@@ -158,6 +158,13 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
 				.orElse(null);
 	}
 
+	public List<T> getSimpleListElements() {
+		List<T> list = new ArrayList<>();
+		list.add(get(0));
+		list.addAll(get(1).getAll());
+		return list;
+	}
+
 	// TODO:
 	public List<T> getListElements() {
 		List<T> list = new ArrayList<>();

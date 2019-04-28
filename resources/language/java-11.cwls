@@ -831,14 +831,17 @@ AssertStatement:
 	'assert' Expression ':' Expression ';'
 
 SwitchStatement:
-	'switch' '(' Expression ')' SwitchBlock
+    BasicSwitchStatement
+    EnhancedSwitchStatement
 
-SwitchBlock:
-	'{' {SwitchBlockStatementGroup} {SwitchLabel} '}'
-	'{' {EnhancedSwitchCase} '}'
+BasicSwitchStatement:
+	'switch' '(' Expression ')' '{' {SwitchBlockStatementGroup} '}'
+
+EnhancedSwitchStatement:
+    'switch' '(' Expression ')' '{' {EnhancedSwitchCase} '}'
 
 SwitchBlockStatementGroup:
-	SwitchLabels BlockStatements
+	SwitchLabels [BlockStatements]
 
 SwitchLabels:
 	SwitchLabel {SwitchLabel}
@@ -848,7 +851,7 @@ SwitchLabel:
 	'default' ':'
 
 EnhancedSwitchCase:
-	'case' Expression {',' Expression} '->' EnhancedSwitchCaseStatement
+	'case' ArgumentList '->' EnhancedSwitchCaseStatement
 	'default' '->' EnhancedSwitchCaseStatement
 
 EnhancedSwitchCaseStatement:
@@ -910,10 +913,10 @@ ThrowStatement:
 SynchronizedStatement:
 	'synchronized' '(' Expression ')' Block
 
-TryStatement:
-	'try' Block Catches
+TryStatement*:
 	'try' Block [Catches] Finally
-	TryWithResourcesStatement
+	'try' Block Catches
+	'try' ResourceSpecification Block [Catches] [Finally]
 
 Catches:
 	CatchClause {CatchClause}
@@ -929,9 +932,6 @@ CatchType:
 
 Finally:
 	'finally' Block
-
-TryWithResourcesStatement:
-	'try' ResourceSpecification Block [Catches] [Finally]
 
 ResourceSpecification:
 	'(' ResourceList [';'] ')'

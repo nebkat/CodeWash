@@ -11,6 +11,8 @@ public class CWLocalVariableDeclarationStatement extends CWStatement {
 	public CWLocalVariableDeclarationStatement(SyntacticTreeNode node, Scope enclosingScope, CWVariable localVariable) {
 		super(node, enclosingScope);
 
+		mLocalVariable = localVariable;
+
 		enclosingScope.addLocalVariableDeclaration(localVariable);
 	}
 

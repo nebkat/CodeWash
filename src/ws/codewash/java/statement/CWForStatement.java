@@ -8,7 +8,7 @@ import ws.codewash.parser.tree.SyntacticTreeNode;
 import java.util.Arrays;
 import java.util.List;
 
-public class CWBasicForStatement extends CWControlStatement {
+public class CWForStatement extends CWControlStatement {
 	private CWVariable mVariable;
 	private CWLocalVariableDeclarationStatement mInitVariableDeclarationStatement;
 	private List<CWExpression> mInitExpressions;
@@ -16,7 +16,7 @@ public class CWBasicForStatement extends CWControlStatement {
 	private List<CWExpression> mUpdateExpressions;
 	private CWStatement mStatement;
 
-	public CWBasicForStatement(SyntacticTreeNode node, Scope enclosingScope) {
+	public CWForStatement(SyntacticTreeNode node, Scope enclosingScope) {
 		super(node, enclosingScope);
 	}
 
