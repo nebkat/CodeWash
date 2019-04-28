@@ -4,6 +4,9 @@ import ws.codewash.java.statement.expression.CWExpression;
 import ws.codewash.java.CWVariable;
 import ws.codewash.java.Scope;
 
+import java.util.Collections;
+import java.util.List;
+
 public class CWEnhancedForStatement extends CWControlStatement {
 	private CWVariable mVariable;
 	private CWExpression mExpression;
@@ -21,5 +24,10 @@ public class CWEnhancedForStatement extends CWControlStatement {
 
 	public void setStatement(CWStatement statement) {
 		mStatement = statement;
+	}
+
+	@Override
+	public List<CWStatement> getSubStatements() {
+		return Collections.singletonList(mStatement);
 	}
 }

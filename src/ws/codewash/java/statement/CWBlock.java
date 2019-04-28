@@ -3,6 +3,7 @@ package ws.codewash.java.statement;
 import ws.codewash.java.Scope;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CWBlock extends CWStatement {
@@ -17,6 +18,11 @@ public class CWBlock extends CWStatement {
 	}
 
 	public List<CWStatement> getStatements() {
+		return mStatements;
+	}
+
+	@Override
+	public List<CWStatement> getSubStatements() {
 		return mStatements;
 	}
 }

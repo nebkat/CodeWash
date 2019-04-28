@@ -4,7 +4,12 @@ import ws.codewash.java.CWVariable;
 import ws.codewash.java.Scope;
 import ws.codewash.java.statement.expression.CWExpression;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CWBasicForStatement extends CWControlStatement {
 	private CWVariable mVariable;
@@ -12,6 +17,7 @@ public class CWBasicForStatement extends CWControlStatement {
 	private List<CWExpression> mInitExpressions;
 	private CWExpression mCondition;
 	private List<CWExpression> mUpdateExpressions;
+	private CWStatement mStatement;
 
 	public CWBasicForStatement(Scope enclosingScope) {
 		super(enclosingScope);
@@ -36,5 +42,14 @@ public class CWBasicForStatement extends CWControlStatement {
 
 	public void setUpdateExpressions(List<CWExpression> updateExpressions) {
 		mUpdateExpressions = updateExpressions;
+	}
+
+	public void setStatement(CWStatement statement) {
+		mStatement = statement;
+	}
+
+	@Override
+	public List<CWStatement> getSubStatements() {
+		return Arrays.asList(mInitVariableDeclarationStatement, mStatement);
 	}
 }

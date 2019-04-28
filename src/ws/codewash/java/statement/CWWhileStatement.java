@@ -3,6 +3,9 @@ package ws.codewash.java.statement;
 import ws.codewash.java.statement.expression.CWExpression;
 import ws.codewash.java.Scope;
 
+import java.util.Collections;
+import java.util.List;
+
 public class CWWhileStatement extends CWControlStatement {
 	private CWExpression mCondition;
 	private CWStatement mStatement;
@@ -16,5 +19,10 @@ public class CWWhileStatement extends CWControlStatement {
 
 	public void setStatement(CWStatement statement) {
 		mStatement = statement;
+	}
+
+	@Override
+	public List<CWStatement> getSubStatements() {
+		return Collections.singletonList(mStatement);
 	}
 }
