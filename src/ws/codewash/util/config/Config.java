@@ -2,7 +2,6 @@ package ws.codewash.util.config;
 
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.analyzer.smells.bloatedcode.*;
-import ws.codewash.analyzer.smells.couplers.FeatureEnvy;
 import ws.codewash.java.ParsedSourceTree;
 
 import java.util.ArrayList;
