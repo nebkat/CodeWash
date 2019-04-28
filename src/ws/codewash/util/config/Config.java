@@ -19,7 +19,6 @@ public class Config {
 		put(PrimitiveObsession.NAME, PrimitiveObsession::new);
 		put(LongIDs.NAME, LongIDs::new);
 		put(LongClasses.NAME, LongClasses::new);
-		put(FeatureEnvy.NAME, FeatureEnvy::new);
 		put(ArrowheadIndentation.NAME, ArrowheadIndentation::new);
 	}};
 
