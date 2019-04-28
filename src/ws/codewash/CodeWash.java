@@ -5,7 +5,7 @@ import com.beust.jcommander.ParameterException;
 import ws.codewash.analyzer.Analyzer;
 import ws.codewash.analyzer.reports.Report;
 import ws.codewash.http.ServerHandler;
-import ws.codewash.parser.ParsedSourceTree;
+import ws.codewash.java.ParsedSourceTree;
 import ws.codewash.parser.Parser;
 import ws.codewash.parser.grammar.Grammar;
 import ws.codewash.reader.FolderReader;
@@ -14,10 +14,10 @@ import ws.codewash.reader.ZipReader;
 import ws.codewash.util.Arguments;
 import ws.codewash.util.ConfigManager;
 import ws.codewash.util.Log;
+import ws.codewash.util.ReportWriter;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,7 +44,7 @@ public class CodeWash {
 
 				Log.i(TAG, "Washing: " + Arguments.get().getSrcPath());
 				SourceReadable sources;
-				if (Arguments.get().getSrcPath().endsWith(".zip") || Arguments.get().getSrcPath().endsWith(".jar") ) {
+				if (Arguments.get().getSrcPath().endsWith(".zip") || Arguments.get().getSrcPath().endsWith(".jar")) {
 					sources = new ZipReader(Paths.get(Arguments.get().getSrcPath()));
 				} else {
 					sources = new FolderReader(Paths.get(Arguments.get().getSrcPath()));
@@ -58,6 +58,15 @@ public class CodeWash {
 					Grammar grammar = Grammar.parse(Paths.get("resources/language/java-11.cwls"));
 					ParsedSourceTree tree = new Parser(grammar).parse(files);
 					List<Report> reports = new Analyzer(tree).analyse();
+					for (Report r : reports) {
+						Log.i(TAG, r.toString());
+					}
+					Log.i(TAG, "Total number of smells detected: " + reports.size());
+
+					ReportWriter writer = new ReportWriter();
+					String output = writer.writeReport(reports);
+					System.out.println(output);
+
 				} finally {
 					try {
 						sources.close();

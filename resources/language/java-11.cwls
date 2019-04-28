@@ -1,8 +1,8 @@
 //
 // Productions from §3 (Lexical Structure)
 //
-UnicodeInput:
-    {UnicodeInputCharacter}
++UnicodeInput:
+	{UnicodeInputCharacter}
 
 UnicodeInputCharacter:
 	UnicodeEscape
@@ -10,13 +10,13 @@ UnicodeInputCharacter:
 	RawInputCharacter
 
 UnicodeEscape:
-    `\\u+[0-9a-fA-F]{4}`
+	`\\u+[0-9a-fA-F]{4}`
 
 InvalidUnicodeEscape:
-    `\\u+`
+	`\\u+`
 
 RawInputCharacter:
-    `[^\\]+`
+	`[^\\]+`
 	`.`
 	'\\'
 
@@ -28,7 +28,7 @@ InputCharacter:
 	UnicodeEscape
 	`[^\r\n]`
 
-Input:
++Input:
 	{InputElement} [Sub]
 
 InputElement:
@@ -215,16 +215,16 @@ Digits:
 	`[0-9]([0-9_]*[0-9])?`
 
 HexNumeral:
-    `0[xX][0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?`
+	`0[xX][0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?`
 
 HexDigits:
 	`[0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?`
 
 OctalNumeral:
-    `0[0-7_]*[0-7]`
+	`0[0-7_]*[0-7]`
 
 BinaryNumeral:
-    `0[bB][01]([01_]*[01])?`
+	`0[bB][01]([01_]*[01])?`
 
 FloatingPointLiteral:
 	DecimalFloatingPointLiteral
@@ -284,8 +284,8 @@ SingleCharacter:
 
 // Custom
 CharacterEndOrEscape:
-    `'`
-    '\'
+	`'`
+	'\'
 
 StringLiteral:
 	'"' {StringCharacter} '"'
@@ -296,8 +296,8 @@ StringCharacter:
 	
 // Custom
 StringEndOrEscape:
-    '"'
-    '\'
+	'"'
+	'\'
 
 EscapeSequence:
 	'\b'
@@ -320,8 +320,8 @@ NullLiteral:
 // Productions from §4 (Types, Values, and Variables)
 //
 Type:
-	PrimitiveType
-	ReferenceType
+	ClassType [Dims]
+	PrimitiveType [Dims]
 
 PrimitiveType:
 	{Annotation} NumericType
@@ -342,22 +342,15 @@ FloatingPointType:
 	'float'
 	'double'
 
-ReferenceType:
-	ClassType [Dims]
-	PrimitiveType [Dims]
-
-ClassOrInterfaceType:
-	ClassType
-
 ClassType:
-	{Annotation} Identifier [TypeArguments] {'.' {Annotation} Identifier [TypeArguments]}
+	ClassIdentifier {'.' ClassIdentifier}
 
-InterfaceType:
-    ClassType
+ClassIdentifier:
+	{Annotation} Identifier [TypeArguments]
 
-ArrayType:
-	PrimitiveType Dims
-	ClassOrInterfaceType Dims
+//ArrayType:
+//	PrimitiveType Dims
+//	ClassType Dims
 
 Dims:
 	{Annotation} '[' ']' {{Annotation} '[' ']'}
@@ -372,10 +365,10 @@ TypeBounds:
 	'extends' TypeBoundsList
 
 TypeBoundsList:
-    ClassOrInterfaceType {AdditionalBound}
+	ClassType {'&' ClassType}
 
 AdditionalBound:
-    '&' InterfaceType
+	'&' ClassType
 
 TypeArguments:
 	'<' TypeArgumentList '>'
@@ -384,15 +377,15 @@ TypeArgumentList:
 	TypeArgument {',' TypeArgument}
 
 TypeArgument:
-	ReferenceType
+	Type
 	Wildcard
 
 Wildcard:
 	{Annotation} '?' [WildcardBounds]
 
 WildcardBounds:
-	'extends' ReferenceType
-	'super' ReferenceType
+	'extends' Type
+	'super' Type
 
 //
 // Productions from §6 (Names)
@@ -415,7 +408,7 @@ PackageOrTypeName:
 //
 // Productions from §7 (Packages and Modules)
 //
-CompilationUnit:
++CompilationUnit:
 	OrdinaryCompilationUnit
 	ModularCompilationUnit
 
@@ -501,7 +494,7 @@ Superinterfaces:
 	'implements' InterfaceTypeList
 
 InterfaceTypeList:
-	InterfaceType {',' InterfaceType}
+	ClassType {',' ClassType}
 
 ClassBody:
 	'{' {ClassBodyDeclaration} '}'
@@ -819,10 +812,10 @@ ExpressionStatement:
 	StatementExpression ';'
 
 StatementExpression:
-    Assignment
-    PreIncrementExpression
-    PreDecrementExpression
-    Primary [PostExpression]
+	Assignment
+	PreIncrementExpression
+	PreDecrementExpression
+	Primary [PostExpression]
 
 IfThenStatement:
 	'if' '(' Expression ')' Statement
@@ -855,13 +848,13 @@ SwitchLabel:
 	'default' ':'
 
 EnhancedSwitchCase:
-    'case' Expression {',' Expression} '->' EnhancedSwitchCaseStatement
-    'default' '->' EnhancedSwitchCaseStatement
+	'case' Expression {',' Expression} '->' EnhancedSwitchCaseStatement
+	'default' '->' EnhancedSwitchCaseStatement
 
 EnhancedSwitchCaseStatement:
-    Block
-    ExpressionStatement
-    ThrowStatement
+	Block
+	ExpressionStatement
+	ThrowStatement
 
 WhileStatement:
 	'while' '(' Expression ')' Statement
@@ -906,7 +899,7 @@ EnhancedForStatementNoShortIf:
 //BreakStatement:
 //	'break' [Identifier] ';'
 BreakStatement:
-    'break' [Expression] ';'
+	'break' [Expression] ';'
 
 ContinueStatement:
 	'continue' [Identifier] ';'
@@ -954,8 +947,8 @@ Resource:
 	VariableAccess
 
 VariableAccess:
-    ExpressionName
-    FieldAccess
+	ExpressionName
+	FieldAccess
 
 //
 // Productions from §15 (Expressions)
@@ -965,29 +958,29 @@ Primary:
 	ArrayCreationExpression
 
 PrimaryNoNewArray:
-    PrimaryArrayAccessOrMethodReference {'.' PrimaryArrayAccessOrMethodReference}
+	PrimaryArrayAccessOrMethodInvocationOrReference {'.' PrimaryArrayAccessOrMethodInvocationOrReference}
 
-PrimaryArrayAccessOrMethodReference:
-    PrimarySingle [ArrayAccessOrMethodReference]
+PrimaryArrayAccessOrMethodInvocationOrReference:
+	PrimarySingle [ArrayAccessOrMethodInvocationOrReference]
 
-ArrayAccessOrMethodReference:
-    [[TypeArguments] '(' [ArgumentList] ')'] {'[' Expression ']'} ['::' [TypeArguments] MethodReferenceIdentifier]
+ArrayAccessOrMethodInvocationOrReference:
+	[[TypeArguments] '(' [ArgumentList] ')'] {'[' Expression ']'} ['::' [TypeArguments] MethodReferenceIdentifier]
 
 MethodReferenceIdentifier:
-    Identifier
-    'new'
+	Identifier
+	'new'
 
 PrimarySingle:
-    Identifier
-    Literal
-    'this'
-    'super'
-    'class'
-    'boolean'
-    'void'
-    NumericType
-    '(' Expression ')'
-    UnqualifiedClassInstanceCreationExpression
+	Identifier
+	Literal
+	'this'
+	'super'
+	'class'
+	'boolean'
+	'void'
+	NumericType
+	'(' Expression ')'
+	UnqualifiedClassInstanceCreationExpression
 
 UnqualifiedClassInstanceCreationExpression:
 	'new' [TypeArguments] ClassOrInterfaceTypeToInstantiate '(' [ArgumentList] ')' [ClassBody]
@@ -1004,23 +997,19 @@ FieldAccess:
 	'super' '.' Identifier
 	TypeName '.' 'super' '.' Identifier
 
-ArrayAccess:
-	ExpressionName '[' Expression ']'
-	PrimaryNoNewArray '[' Expression ']'
-
 ArgumentList:
 	Expression {',' Expression}
 
-MethodReference:
-	Primary '::' [TypeArguments] Identifier
-	ClassType '::' [TypeArguments] 'new'
-	ArrayType '::' 'new'
+//MethodReference:
+//	Primary '::' [TypeArguments] Identifier
+//	ClassType '::' [TypeArguments] 'new'
+//	ArrayType '::' 'new'
 
 ArrayCreationExpression:
 	'new' PrimitiveType DimExprs [Dims]
-	'new' ClassOrInterfaceType DimExprs [Dims]
+	'new' ClassType DimExprs [Dims]
 	'new' PrimitiveType Dims ArrayInitializer
-	'new' ClassOrInterfaceType Dims ArrayInitializer
+	'new' ClassType Dims ArrayInitializer
 
 DimExprs:
 	DimExpr {DimExpr}
@@ -1034,11 +1023,11 @@ Expression:
 	AssignmentExpression
 
 SwitchExpression:
-    SwitchStatement
+	SwitchStatement
 
-ExpressionOperator:
-    Operator
-    ShiftOperator
+//ExpressionOperator:
+//	Operator
+//	ShiftOperator
 
 LambdaExpression:
 	LambdaParameters '->' LambdaBody
@@ -1087,15 +1076,13 @@ AssignmentOperator:
 	'^='
 	'|='
 
-//ConditionalExpression:
-//    PrePrimaryExpression {Operator PrePrimaryExpression} ['instanceof' ReferenceType]
 ConditionalExpression:
-    ConditionalOrExpression ['?' Expression ':' ConditionalLambdaSwitchExpression]
+	ConditionalOrExpression ['?' Expression ':' ConditionalLambdaSwitchExpression]
 
 ConditionalLambdaSwitchExpression:
-    ConditionalExpression
-    LambdaExpression
-    SwitchExpression
+	ConditionalExpression
+	LambdaExpression
+	SwitchExpression
 
 ConditionalOrExpression:
 	ConditionalAndExpression {'||' ConditionalAndExpression}
@@ -1116,40 +1103,40 @@ EqualityExpression:
 	RelationalExpression {EqualityOperator RelationalExpression}
 
 EqualityOperator:
-    '=='
-    '!='
+	'=='
+	'!='
 
 RelationalExpression:
-	ShiftExpression {RelationalOperator ShiftExpression} ['instanceof' ReferenceType]
+	ShiftExpression {RelationalOperator ShiftExpression} ['instanceof' Type]
 
 RelationalOperator:
-    '<'
-    '>'
-    '<='
-    '>='
+	'<'
+	'>'
+	'<='
+	'>='
 
 ShiftExpression:
 	AdditiveExpression {ShiftOperator AdditiveExpression}
 
 ShiftOperator:
-    '<' '<'
-    '>' '>'
-    '>' '>' '>'
+	'<' '<'
+	'>' '>'
+	'>' '>' '>'
 
 AdditiveExpression:
 	MultiplicativeExpression {AdditiveOperator MultiplicativeExpression}
 
 AdditiveOperator:
-    '+'
-    '-'
+	'+'
+	'-'
 
 MultiplicativeExpression:
 	UnaryExpression {MultiplicativeOperator UnaryExpression}
 
 MultiplicativeOperator:
-    '*'
-    '/'
-    '%'
+	'*'
+	'/'
+	'%'
 
 UnaryExpression:
 	PreIncrementExpression
@@ -1165,32 +1152,32 @@ PreDecrementExpression:
 	'--' UnaryExpression
 
 UnaryExpressionNotPlusMinus:
-    PostfixExpression
-    '~' UnaryExpression
-    '!' UnaryExpression
-    CastExpression
+	PostfixExpression
+	'~' UnaryExpression
+	'!' UnaryExpression
+	CastExpression
 
 PostfixExpression:
 	Primary [PostExpression]
 	ExpressionName [PostExpression]
 
-PreExpression:
-    '+'
-    '-'
-    {'!'}
-    {'~'}
-    '++'
-    '--'
-
 PostExpression:
-    '++'
-    '--'
+	'++'
+	'--'
 
 CastExpression:
 	'(' PrimitiveType ')' UnaryExpression
-	'(' ReferenceType {AdditionalBound} ')' UnaryExpressionNotPlusMinus
-	'(' ReferenceType {AdditionalBound} ')' LambdaExpression
+	'(' Type {AdditionalBound} ')' UnaryExpressionNotPlusMinus
+	'(' Type {AdditionalBound} ')' LambdaExpression
 
-PrePrimaryExpression:
-	[PreExpression] Primary [PostExpression]
-	CastExpression
+//PrePrimaryExpression:
+//	[PreExpression] Primary [PostExpression]
+//	CastExpression
+
+//PreExpression:
+//	'+'
+//	'-'
+//	{'!'}
+//	{'~'}
+//	'++'
+//	'--'

@@ -1,11 +1,7 @@
 package ws.codewash.parser.tree;
 
-import ws.codewash.parser.CompilationUnit;
+import ws.codewash.java.CompilationUnit;
 import ws.codewash.parser.grammar.GrammarToken;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class SyntacticTreeNode extends AbstractTreeNode<SyntacticTreeNode> {
 	private int mTokenOffset;

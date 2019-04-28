@@ -1,7 +1,7 @@
 package ws.codewash.parser.grammar;
 
 import ws.codewash.parser.tree.LexicalTreeNode;
-import ws.codewash.parser.CompilationUnit;
+import ws.codewash.java.CompilationUnit;
 import ws.codewash.parser.tree.SyntacticTreeNode;
 import ws.codewash.parser.Token;
 

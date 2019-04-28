@@ -1,17 +1,19 @@
 package ws.codewash.java;
 
+import ws.codewash.util.Log;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static ws.codewash.parser.ParsedSourceTree.dot;
+import static ws.codewash.java.ParsedSourceTree.dot;
 
 public abstract class CWClassOrInterface extends CWReferenceType implements CWParameterizable, Modifiable {
 	private final Class mClass;
-	private final String mPackageName;
-	private Set<CWInterface> mInterfaces = new HashSet<>();
+	private final CWPackage mPackage;
+	private Set<CWType> mInterfaces = new HashSet<>();
 	private final String mName;
 
 	private final int mModifiers;
@@ -26,12 +28,14 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 	private Set<CWMethod> mMethods = new HashSet<>();
 	private Set<CWField> mFields = new HashSet<>();
 
-	CWClassOrInterface(Scope enclosingScope, String packageName, int modifiers, String name, Collection<String> interfaces) {
+	CWClassOrInterface(Scope enclosingScope, CWPackage _package, int modifiers, String name, List<RawType> interfaces) {
 		super(enclosingScope);
 
 		mClass = null;
-		mPackageName = packageName;
+		mPackage = _package;
 		mName = name;
+
+		enclosingScope.addTypeDeclaration(this);
 
 		mModifiers = modifiers;
 
@@ -41,8 +45,8 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 		}
 
 		// Interfaces
-		for (String _interface : interfaces) {
-			enclosingScope.resolve(new PendingType<>(_interface, this::addInterface));
+		for (RawType _interface : interfaces) {
+			resolve(new PendingType<>(_interface, this::addInterface));
 		}
 	}
 
@@ -50,35 +54,32 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 		super(enclosingScope);
 
 		mClass = _class;
-		mPackageName = _class.getPackageName();
+		// TODO: Package
+		mPackage = enclosingScope.getRoot().getOrInitPackage(_class.getPackageName());
 		mName = _class.getSimpleName();
+
+		enclosingScope.addTypeDeclaration(this);
 
 		mModifiers = _class.getModifiers();
 
 		// Outer class
-		if (_class.getEnclosingClass() != null) {
-			enclosingScope.resolve(new PendingType<>(_class.getEnclosingClass().getName(), this::setOuterClass));
+		if (enclosingScope instanceof CWClassOrInterface) {
+			setOuterClass((CWClassOrInterface) enclosingScope);
 		}
 
 		// Interfaces
 		for (Class _interface : _class.getInterfaces()) {
-			enclosingScope.resolve(new PendingType<>(_interface.getName(), this::addInterface));
+		//	resolve(new PendingType<>(_interface.getName(), this::addInterface));
 		}
 
 		// TODO: _class.getTypeParameters()
 	}
 
-	public static Scope getExternalEnclosingScope(Class _class) {
-		if (_class.getDeclaringClass() != null) {
-			// TODO: TODO: TODO:
-			return forExternalClass(_class.getDeclaringClass());
+	public static CWClassOrInterface forExternalClass(Scope enclosingScope, Class _class) {
+		if (enclosingScope == null) {
+			// TODO: "AAAAAAAAA"
 		}
 
-		return null;
-	}
-
-	public static CWClassOrInterface forExternalClass(Class _class) {
-		Scope enclosingScope = getExternalEnclosingScope(_class);
 		CWClassOrInterface cwClassOrInterface;
 		if (_class.isEnum()) {
 			cwClassOrInterface = new CWEnum(enclosingScope, _class);
@@ -88,6 +89,10 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 			cwClassOrInterface = new CWClass(enclosingScope, _class);
 		}
 
+		for (Class declaredClass :_class.getDeclaredClasses()) {
+			forExternalClass(cwClassOrInterface, declaredClass);
+		}
+
 		return cwClassOrInterface;
 	}
 
@@ -95,7 +100,7 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 
 	public void addTypeParameter(CWTypeParameter typeParameter) {
 		mTypeParameters.add(typeParameter);
-		addTypeDeclaration(typeParameter.getVariableName(), typeParameter);
+		addTypeDeclaration(typeParameter);
 	}
 
 	public void setOuterClass(CWClassOrInterface outerClass) {
@@ -115,12 +120,21 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 		return mInnerClasses;
 	}
 
-	protected void addInterface(CWInterface _interface) {
-		_interface.addImplementingClass(this);
-		mInterfaces.add(_interface);
+	protected void addInterface(CWType superType) {
+		mInterfaces.add(superType);
+		if (superType instanceof CWParameterizedType) {
+			superType = ((CWParameterizedType) superType).getType();
+		}
+
+		if (!(superType instanceof CWInterface)) {
+			// TODO:
+			throw new IllegalStateException("Attempting to set non-interface " + superType.getName() + " as superinterface of " + getName());
+		}
+
+		((CWInterface) superType).addImplementingClass(this);
 	}
 
-	public Set<CWInterface> getInterfaces() {
+	public Set<CWType> getInterfaces() {
 		return mInterfaces;
 	}
 
@@ -141,13 +155,13 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 
 	public String getHierarchicalName(String classDelimiter) {
 		if (mOuterClass == null) {
-			return dot(mPackageName) + mName;
+			return dot(mPackage.getName()) + mName;
 		}
 		return mOuterClass.getHierarchicalName(classDelimiter) + classDelimiter + mName;
 	}
 
 	public String getPackageName() {
-		return mPackageName;
+		return mPackage.getName();
 	}
 
 	public boolean isExternal() {
@@ -200,6 +214,42 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(" + getCanonicalName() + ")";
+		StringBuilder builder = new StringBuilder();
+
+		builder.append(getModifiersForToString());
+		if (this instanceof CWClass) {
+			builder.append("class ");
+		} else if (this instanceof CWEnum) {
+			builder.append("enum ");
+		} else if (this instanceof CWInterface) {
+			builder.append("interface ");
+		}
+		builder.append(getSimpleName());
+		if (!mTypeParameters.isEmpty()) {
+			builder.append("<");
+			builder.append(mTypeParameters.stream()
+					.map(CWTypeParameter::toString)
+					.collect(Collectors.joining(", ")));
+			builder.append(">");
+		}
+		if (this instanceof CWClass) {
+			CWClass cwClass = (CWClass) this;
+			if (cwClass.getSuperClass() != null && !cwClass.getSuperClass().getName().equals(Object.class.getName())) {
+				builder.append(" extends ");
+				builder.append(cwClass.getSuperClass().getName());
+			}
+		}
+		if (!mInterfaces.isEmpty()) {
+			if (this instanceof CWInterface) {
+				builder.append(" extends ");
+			} else {
+				builder.append(" implements ");
+			}
+			builder.append(getInterfaces().stream()
+					.map(CWType::getName)
+					.collect(Collectors.joining(", ")));
+		}
+
+		return builder.toString();
 	}
 }

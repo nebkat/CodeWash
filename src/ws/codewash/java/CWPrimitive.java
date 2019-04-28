@@ -32,6 +32,6 @@ public enum CWPrimitive implements CWType {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(" + mName + ")";
+		return mName;
 	}
 }

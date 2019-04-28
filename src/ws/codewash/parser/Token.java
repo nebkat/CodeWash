@@ -1,5 +1,6 @@
 package ws.codewash.parser;
 
+import ws.codewash.java.CompilationUnit;
 import ws.codewash.parser.tree.LexicalTreeNode;
 
 public class Token {

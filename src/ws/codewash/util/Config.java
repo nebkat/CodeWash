@@ -6,7 +6,7 @@ import ws.codewash.analyzer.smells.bloatedcode.LongIDs;
 import ws.codewash.analyzer.smells.bloatedcode.LongMethods;
 import ws.codewash.analyzer.smells.bloatedcode.LongParameterList;
 import ws.codewash.analyzer.smells.bloatedcode.PrimitiveObsession;
-import ws.codewash.parser.ParsedSourceTree;
+import ws.codewash.java.ParsedSourceTree;
 
 import java.util.ArrayList;
 import java.util.HashMap;

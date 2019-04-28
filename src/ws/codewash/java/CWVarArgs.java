@@ -1,15 +1,8 @@
 package ws.codewash.java;
 
-public class CWArray extends CWReferenceType {
-	CWType mType;
-
-	CWArray(CWType type) {
-		super();
-		mType = type;
-	}
-
-	public CWType getType() {
-		return mType;
+public class CWVarArgs extends CWArray {
+	CWVarArgs(CWType type) {
+		super(type);
 	}
 
 	@Override

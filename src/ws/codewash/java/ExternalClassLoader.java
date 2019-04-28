@@ -1,4 +1,6 @@
-package ws.codewash.parser;
+package ws.codewash.java;
+
+import ws.codewash.util.Log;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -11,6 +13,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ExternalClassLoader extends ClassLoader {
+	private static final String TAG = ExternalClassLoader.class.getSimpleName();
+
 	private Map<String, byte[]> mClassMap = new HashMap<>();
 
 	void addJarFile(Path path) throws IOException {
@@ -33,6 +37,7 @@ public class ExternalClassLoader extends ClassLoader {
 
 		byte[] classContents = Files.readAllBytes(path);
 		mClassMap.put(className, classContents);
+		Log.v(TAG, "Loaded external class " + className);
 	}
 
 	@Override

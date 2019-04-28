@@ -1,6 +1,25 @@
 package ws.codewash.parser;
 
+<<<<<<< HEAD
 import ws.codewash.java.*;
+=======
+import ws.codewash.java.CWClass;
+import ws.codewash.java.CWClassOrInterface;
+import ws.codewash.java.CWConstructor;
+import ws.codewash.java.CWConstructorOrMethod;
+import ws.codewash.java.CWEnum;
+import ws.codewash.java.CWField;
+import ws.codewash.java.CWInitializer;
+import ws.codewash.java.CWInterface;
+import ws.codewash.java.CWMethod;
+import ws.codewash.java.CWParameterizable;
+import ws.codewash.java.CWTypeParameter;
+import ws.codewash.java.CWVariable;
+import ws.codewash.java.CompilationUnit;
+import ws.codewash.java.ParsedSourceTree;
+import ws.codewash.java.RawType;
+import ws.codewash.java.Scope;
+>>>>>>> master
 import ws.codewash.parser.grammar.Grammar;
 import ws.codewash.parser.tree.LexicalTree;
 import ws.codewash.parser.tree.LexicalTreeNode;
@@ -70,6 +89,11 @@ public class Parser {
 		start = time();
 		sources.parallelStream().forEach(this::processDeclarations);
 		Log.d(TAG, "Processed declarations in " + duration(start, time()) + "s");
+
+		// Resolve pending types
+		start = time();
+		mParsedSourceTree.resolvePendingTypes();
+		Log.d(TAG, "Resolved pending types in " + duration(start, time()) + "s");
 
 		return mParsedSourceTree;
 	}
@@ -170,7 +194,7 @@ public class Parser {
 
 		// Package declaration
 		SyntacticTreeNode packageDeclarationNode = tree.get("[PackageDeclaration]").get();
-		if (packageDeclarationNode != null) processPackageDeclaration(unit, packageDeclarationNode);
+		processPackageDeclaration(unit, packageDeclarationNode);
 
 		// Import declaration
 		SyntacticTreeNode importDeclarationsNode = tree.get("{ImportDeclaration}");
@@ -186,8 +210,9 @@ public class Parser {
 	}
 
 	private void processPackageDeclaration(CompilationUnit unit, SyntacticTreeNode node) {
-		String packageName = node.get("PackageName").getContent();
-		unit.setPackage(packageName);
+		String packageName = node == null ? "" : node.get("PackageName").getContent();
+
+		unit.setPackage(mParsedSourceTree.getOrInitPackage(packageName));
 	}
 
 	// SingleTypeImportDeclaration | TypeImportOnDemandDeclaration | SingleStaticImportDeclaration | StaticImportOnDemandDeclaration
@@ -195,29 +220,18 @@ public class Parser {
 		// Descend to specific import type node (SingleTypeImportDeclaration, TypeImportOnDemandDeclaration, etc)
 		node = node.get();
 
-		String packageOrTypeName = node.get("PackageOrTypeName").getContent();
+		// Get import canonical name
+		RawType canonicalName = parseTypeName(node.get("PackageOrTypeName"));
+		if (node.get("TypeIdentifier") != null) {
+			canonicalName = canonicalName.append(new RawType.Identifier(node.get("TypeIdentifier").getContent()));
+		}
 
 		switch (node.getName()) {
-			case "SingleTypeImportDeclaration" -> {
-				String simpleClassName = node.get("TypeIdentifier").getContent();
-				String canonicalName = packageOrTypeName + "." + simpleClassName;
-
-				unit.addSingleTypeImport(simpleClassName, canonicalName);
-			}
-			case "TypeImportOnDemandDeclaration" -> unit.addOnDemandTypeImport(packageOrTypeName);
-			case "SingleStaticImportDeclaration" -> {
-				String simpleClassName = node.get("TypeIdentifier").getContent();
-				String canonicalName = packageOrTypeName + "." + simpleClassName;
-				String staticMember = node.get("Identifier").getContent();
-
-				unit.addSingleStaticImport(staticMember, canonicalName);
-			}
-			case "StaticImportOnDemandDeclaration" -> {
-				String simpleClassName = node.get("TypeIdentifier").getContent();
-				String canonicalName = packageOrTypeName + "." + simpleClassName;
-
-				unit.addOnDemandStaticImport(canonicalName);
-			}
+			case "SingleTypeImportDeclaration" -> unit.addSingleTypeImport(canonicalName);
+			case "TypeImportOnDemandDeclaration" -> unit.addOnDemandTypeImport(canonicalName);
+			case "SingleStaticImportDeclaration" -> unit.addSingleStaticImport(node.get("Identifier").getContent(), canonicalName);
+			case "StaticImportOnDemandDeclaration" -> unit.addOnDemandStaticImport(canonicalName);
+			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO
 		}
 	}
 
@@ -247,13 +261,18 @@ public class Parser {
 
 		String name = node.get("TypeIdentifier").getContent();
 		int modifiers = parseModifiers(node.get("{ClassModifier}"));
-		List<String> superInterfaces = parseInterfaces(node.get("[Superinterfaces]"));
+
+		List<RawType> superInterfaces = Collections.emptyList();
+		SyntacticTreeNode superInterfacesNode = node.get("[Superinterfaces]").get();
+		if (superInterfacesNode != null) {
+			superInterfaces = parseClassTypeList(superInterfacesNode.get("InterfaceTypeList"));
+		}
 
 		if (normalOrEnum) {
-			String superClass = Object.class.getName();
+			RawType superClass = RawType.OBJECT_RAW_TYPE;
 			SyntacticTreeNode superClassNode = node.get("[Superclass]").get();
 			if (superClassNode != null) {
-				superClass = superClassNode.get("ClassType").getContent();
+				superClass = parseClassType(superClassNode.get("ClassType"), 0);
 			}
 
 			CWClass cwClass = new CWClass(scope, unit.getPackage(), modifiers, name, superClass, superInterfaces);
@@ -305,9 +324,14 @@ public class Parser {
 	private void processNormalInterfaceDeclaration(CompilationUnit unit, SyntacticTreeNode node, Scope scope) {
 		String name = node.get("TypeIdentifier").getContent();
 		int modifiers = parseModifiers(node.get("{InterfaceModifier}"));
-		List<String> extendsInterfaces = parseInterfaces(node.get("[ExtendsInterfaces]"));
 
-		CWInterface cwInterface = new CWInterface(scope, unit.getPackage(), modifiers, name, extendsInterfaces);
+		List<RawType> superInterfaces = Collections.emptyList();
+		SyntacticTreeNode superInterfacesNode = node.get("[ExtendsInterfaces]").get();
+		if (superInterfacesNode != null) {
+			superInterfaces = parseClassTypeList(superInterfacesNode.get("InterfaceTypeList"));
+		}
+
+		CWInterface cwInterface = new CWInterface(scope, unit.getPackage(), modifiers, name, superInterfaces);
 
 		processTypeParameters(node.get("[TypeParameters]"), cwInterface);
 
@@ -380,17 +404,14 @@ public class Parser {
 			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO
 		};
 
-		String type = node.get("Type").getContent();
 		int modifiers = parseModifiers(node.get(fieldOrConstant ? "{FieldModifier}" : "{ConstantModifier}"));
 
 		for (SyntacticTreeNode variableDeclarator : node.get("VariableDeclaratorList").getListElements()) {
 			SyntacticTreeNode variableDeclaratorId = variableDeclarator.get("VariableDeclaratorId");
 			String name = variableDeclaratorId.get("Identifier").getContent();
+			RawType type = parseType(node.get("Type"), parseArrayDims(variableDeclaratorId.get("[Dims]").get()));
 
-			// TODO: Initializer
-
-			CWField cwField = new CWField(classOrInterface, modifiers,
-					type + variableDeclaratorId.get("[Dims]").getContent(), name);
+			CWField cwField = new CWField(classOrInterface, modifiers, type, name);
 			classOrInterface.addField(cwField);
 		}
 	}
@@ -405,7 +426,14 @@ public class Parser {
 
 		int modifiers = parseModifiers(node.get(classOrInterfaceMethod ? "{MethodModifier}" : "{InterfaceMethodModifier}"));
 		String name = node.get("Identifier").getContent();
-		String returnType = node.get("Result").getContent() + node.get("[Dims]").getContent();
+
+		// Descend to specific type (Type, 'void')
+		SyntacticTreeNode returnTypeNode = node.get("Result").get();
+		RawType returnType = switch (returnTypeNode.getName()) {
+			case "Type" -> parseType(returnTypeNode);
+			case "'void'" -> RawType.VOID_RAW_TYPE;
+			default -> throw new IllegalStateException("Unexpected " + returnTypeNode.getName());
+		};
 
 		CWMethod cwMethod = new CWMethod(classOrInterface, modifiers, name, returnType);
 		classOrInterface.addMethod(cwMethod);
@@ -427,17 +455,12 @@ public class Parser {
 		for (SyntacticTreeNode typeParameter : typeParameterList.getListElements()) {
 			String name = typeParameter.get("TypeIdentifier").getContent();
 
-			List<String> bounds = new ArrayList<>();
+			List<RawType> bounds = Collections.emptyList();
 
 			SyntacticTreeNode typeBounds = typeParameter.get("[TypeBounds]").get();
-			if (typeBounds != null) {
-				SyntacticTreeNode typeBoundsList = typeBounds.get("TypeBoundsList");
-				for (SyntacticTreeNode typeBound : typeBoundsList.getListElements()) {
-					bounds.add(typeBound.getContent());
-				}
-			}
+			if (typeBounds != null) bounds = parseClassTypeList(typeBounds.get("TypeBoundsList"));
 
-			parameterizable.addTypeParameter(new CWTypeParameter((Scope) parameterizable, name, bounds));
+			parameterizable.addTypeParameter(new CWTypeParameter(parameterizable, name, bounds));
 		}
 	}
 
@@ -458,15 +481,14 @@ public class Parser {
 			}
 
 			int modifiers = parseModifiers(formalParameter.get("{VariableModifier}"));
-			String type = formalParameter.get("Type").getContent();
+			RawType type = parseType(formalParameter.get("Type"));
 			String name;
 			if (arityParameter) {
 				name = formalParameter.get("Identifier").getContent();
-				type += "...";
+				type.setVarArgs();
 			} else {
 				SyntacticTreeNode variableDeclaratorId = formalParameter.get("VariableDeclaratorId");
 				name = variableDeclaratorId.get("Identifier").getContent();
-				type += variableDeclaratorId.get("[Dims]").getContent();
 			}
 
 			constructorOrMethod.addParameter(new CWVariable((Scope) constructorOrMethod, modifiers, type, name));
@@ -484,25 +506,84 @@ public class Parser {
 		scope.addInitializer(new CWInitializer(scope, staticOrInstance));
 	}
 
-	private List<String> parseInterfaces(SyntacticTreeNode node) {
-		// Descend into optional
-		node = node.get();
-
-		if (node == null) {
-			return Collections.emptyList();
-		}
-
-		List<String> superInterfaces = new ArrayList<>();
-
-		SyntacticTreeNode interfaceTypeList = node.get("InterfaceTypeList");
-		// TODO: PARSE
-
-		return superInterfaces;
+	// TODO: RawTypeName for names
+	private RawType parseTypeName(SyntacticTreeNode node) {
+		return new RawType(node.getListElements().stream()
+				.map(SyntacticTreeNode::getContent)
+				.map(RawType.Identifier::new)
+				.collect(Collectors.toList()));
 	}
 
-	// TODO:
-	private List<String> parseTypeList(SyntacticTreeNode node) {
-		return null;
+	private RawType parseType(SyntacticTreeNode node) {
+		return parseType(node, 0);
+	}
+
+	private RawType parseType(SyntacticTreeNode node, int outerArrayDimension) {
+		int arrayDimension = parseArrayDims(node.get("[Dims]").get()) + outerArrayDimension;
+
+		// Descend to specific type (ClassType, PrimitiveType)
+		node = node.get(0);
+
+		return switch (node.getName()) {
+			case "ClassType" -> parseClassType(node, arrayDimension);
+			case "PrimitiveType" -> parsePrimitiveType(node, arrayDimension);
+			default -> throw new IllegalStateException("Unexpected " + node.getName());
+		};
+	}
+
+	private int parseArrayDims(SyntacticTreeNode node) {
+		// No dims present
+		if (node == null) return 0;
+
+		return 1 + node.get("{{Annotation} '[' ']'}").getElementCount();
+	}
+
+	private RawType parseClassType(SyntacticTreeNode node) {
+		return parseClassType(node, 0);
+	}
+
+	private RawType parseClassType(SyntacticTreeNode node, int arrayDimension) {
+		List<RawType.Identifier> identifiers = new ArrayList<>();
+
+		for (SyntacticTreeNode identifierNode : node.getListElements()) {
+			List<RawType> typeArguments = new ArrayList<>();
+			SyntacticTreeNode typeArgumentsNode = identifierNode.get("[TypeArguments]").get();
+			if (typeArgumentsNode != null) {
+				SyntacticTreeNode typeArgumentList = typeArgumentsNode.get("TypeArgumentList");
+				for (SyntacticTreeNode typeArgumentNode : typeArgumentList.getListElements()) {
+					typeArguments.add(parseTypeArgument(typeArgumentNode));
+				}
+			}
+
+			String identifier = identifierNode.get("Identifier").getContent();
+
+			identifiers.add(new RawType.Identifier(identifier, typeArguments));
+		}
+
+		return new RawType(identifiers, arrayDimension);
+	}
+
+	private List<RawType> parseClassTypeList(SyntacticTreeNode node) {
+		return node.getListElements().stream()
+				.map(this::parseClassType)
+				.collect(Collectors.toList());
+	}
+
+	// {Annotation} NumericType | {Annotation} 'boolean'
+	private RawType parsePrimitiveType(SyntacticTreeNode node, int arrayDimension) {
+		return new RawType(Collections.singletonList(new RawType.Identifier(node.get(1).getContent())), arrayDimension);
+	}
+
+	// Type | Wildcard
+	private RawType parseTypeArgument(SyntacticTreeNode node) {
+		// Descend to specific type argument (Type, Wildcard)
+		node = node.get();
+
+		return switch (node.getName()) {
+			case "Type" -> parseType(node);
+			case "Wildcard" -> new RawType(Collections.singletonList(new RawType.Identifier("?")));
+			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO:
+		};
 	}
 
 	private int parseModifiers(SyntacticTreeNode modifiersNode) {

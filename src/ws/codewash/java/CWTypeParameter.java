@@ -8,41 +8,33 @@ import java.util.stream.Collectors;
 
 public class CWTypeParameter implements CWType {
 	private String mName;
-	private Set<CWClassOrInterface> mBounds = new HashSet<>();
+	private Set<CWType> mBounds = new HashSet<>();
 
-	public CWTypeParameter(Scope enclosingScope, String name, List<String> bounds) {
+	public CWTypeParameter(CWParameterizable parent, String name, List<RawType> bounds) {
 		mName = name;
 
-		for (String pendingType : bounds) {
-			enclosingScope.resolve(new PendingType<>(pendingType, this::addBound));
+		for (RawType pendingType : bounds) {
+			// Type parameter bounds scope is the enclosing scope of the parameterizable
+			((Scope) parent).resolve(new PendingType<>(pendingType, this::addBound));
 		}
 	}
 
-	private void addBound(CWClassOrInterface bound) {
+	private void addBound(CWType bound) {
+		if (bound == this) {
+			// TODO:
+			throw new IllegalStateException("Adding self as bound");
+		}
 		mBounds.add(bound);
-	}
-
-	public String getVariableName() {
-		return mName;
 	}
 
 	@Override
 	public String getSimpleName() {
-		return mName + extendsString(CWType::getSimpleName);
+		return mName;
 	}
 
 	@Override
-	public String getName() {
-		return mName + extendsString(CWType::getName);
-	}
-
-	@Override
-	public String getCanonicalName() {
-		return getSimpleName();
-	}
-
-	private String extendsString(Function<CWClassOrInterface, String> nameMethod) {
-		return mBounds.isEmpty() ? "" :
-				" extends" + mBounds.stream().map(nameMethod).collect(Collectors.joining(" & "));
+	public String toString() {
+		return mName + (mBounds.isEmpty() ? "" :
+				" extends" + mBounds.stream().map(CWType::getName).collect(Collectors.joining(" & ")));
 	}
 }

@@ -1,20 +1,17 @@
 package ws.codewash.java;
 
-import java.lang.reflect.Modifier;
-
 public class CWVariable implements Modifiable {
 	private final String mName;
 	private CWType mType;
-	private String mPendingType;
+	private RawType mPendingType;
 
 	private final int mModifiers;
 
-	public CWVariable(Scope enclosingScope, int modifiers, String type, String name) {
+	public CWVariable(Scope enclosingScope, int modifiers, RawType type, String name) {
 		mName = name;
 		mModifiers = modifiers;
 
 		mPendingType = type;
-
 		enclosingScope.resolve(new PendingType<>(type, this::setType));
 	}
 

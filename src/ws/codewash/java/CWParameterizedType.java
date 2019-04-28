@@ -1,6 +1,5 @@
 package ws.codewash.java;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,23 +12,36 @@ public class CWParameterizedType extends CWReferenceType {
 		mTypes = types;
 	}
 
+	public CWClassOrInterface getType() {
+		return mClass;
+	}
+
 	@Override
 	public String getSimpleName() {
-		return mClass.getSimpleName() + "<" + mTypes.stream().map(CWType::getSimpleName).collect(Collectors.joining(", ")) + ">";
+		return mClass.getSimpleName() + "<" + mTypes.stream()
+				.map(CWType::getSimpleName)
+				.collect(Collectors.joining(", "))
+				+ ">";
 	}
 
 	@Override
 	public String getName() {
-		return mClass.getName() + "<" + mTypes.stream().map(CWType::getName).collect(Collectors.joining(", ")) + ">";
+		return mClass.getName() + "<" + mTypes.stream()
+				.map(CWType::getName)
+				.collect(Collectors.joining(", "))
+				+ ">";
 	}
 
 	@Override
 	public String getCanonicalName() {
-		return mClass.getCanonicalName() + "<" + mTypes.stream().map(CWType::getCanonicalName).collect(Collectors.joining(", ")) + ">";
+		return mClass.getCanonicalName() + "<" + mTypes.stream()
+				.map(CWType::getCanonicalName)
+				.collect(Collectors.joining(", "))
+				+ ">";
 	}
 
 	@Override
 	public String toString() {
-		return mClass.getClass().getSimpleName() + "(" + mClass.getCanonicalName() + "<" + mTypes.stream().map(CWType::getName).collect(Collectors.joining(", ")) + ">" + ")";
+		return getSimpleName();
 	}
 }
