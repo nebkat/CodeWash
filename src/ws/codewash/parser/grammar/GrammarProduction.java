@@ -2,6 +2,7 @@ package ws.codewash.parser.grammar;
 
 import ws.codewash.parser.tree.AbstractTreeNode;
 import ws.codewash.parser.Parser;
+import ws.codewash.parser.tree.SyntacticTree;
 import ws.codewash.parser.tree.SyntacticTreeNode;
 import ws.codewash.java.CompilationUnit;
 import ws.codewash.parser.Token;
@@ -15,6 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GrammarProduction extends GrammarToken {
 	private static final boolean DEBUG = Parser.DEBUG;
@@ -22,10 +24,13 @@ public class GrammarProduction extends GrammarToken {
 	private String mSymbol;
 	private List<GrammarTokenSet> mAlternatives = new ArrayList<>();
 
-	private boolean mReferenced = false;
+	private boolean mReferenced;
+	private boolean mGreedy;
 
-	GrammarProduction(String symbol) {
+	GrammarProduction(String symbol, boolean start, boolean greedy) {
 		mSymbol = symbol;
+		mReferenced = start;
+		mGreedy = greedy;
 	}
 
 	void addAlternative(GrammarTokenSet tokenSet) {
@@ -63,12 +68,19 @@ public class GrammarProduction extends GrammarToken {
 
 		String finalTree = tree;
 
-		List<SyntacticTreeNode> matches = mAlternatives.stream()
-				.map(option -> option.match(unit, tokens, offset, finalTree))
-				.flatMap(Collection::stream)
-				.filter(Objects::nonNull)
-				.peek(option -> option.setSymbol(this))
-				.collect(Collectors.toList());
+		Stream<List<SyntacticTreeNode>> resultStream = mAlternatives.stream()
+				.map(option -> option.match(unit, tokens, offset, finalTree));
+
+		List<SyntacticTreeNode> matches;
+		if (!mGreedy) {
+			matches = resultStream.flatMap(Collection::stream)
+					.peek(option -> option.setSymbol(this))
+					.collect(Collectors.toList());
+		} else {
+			matches = resultStream.filter(match -> match.stream().anyMatch(m -> m.length() > 0))
+					.findFirst().orElse(Collections.emptyList());
+			matches.forEach(option -> option.setSymbol(this));
+		}
 
 		if (mSymbol.equals("ClassBodyDeclaration") && matches.size() > 0) {
 			//Log.wtf("AAAAA", matches.get(matches.size() - 1).toString(1));
@@ -86,21 +98,17 @@ public class GrammarProduction extends GrammarToken {
 		//Log.sleep(1000);
 
 		//Log.w(tree, offset + " " + input.substring(offset, Math.min(input.length(), offset + 30)));
-		LexicalTreeNode result;
-		if (!mSymbol.equals("InputElement")) {
-			result = mAlternatives.stream()
-					.map(option -> option.match(unit, input, offset, finalTree))
-					.filter(Objects::nonNull)
-					.max(Comparator.comparingInt(AbstractTreeNode::length))
-					.orElse(null);
-		} else {
-			result = mAlternatives.stream()
-					.map(option -> option.match(unit, input, offset, finalTree))
-					.filter(Objects::nonNull)
-					.findFirst()
-					.orElse(null);
-		}
 
+		Stream<LexicalTreeNode> resultStream = mAlternatives.stream()
+				.map(option -> option.match(unit, input, offset, finalTree))
+				.filter(Objects::nonNull);
+
+		LexicalTreeNode result;
+		if (!mGreedy) {
+			result = resultStream.max(Comparator.comparingInt(AbstractTreeNode::length)).orElse(null);
+		} else {
+			result = resultStream.findFirst().orElse(null);
+		}
 
 		//Log.wtf(tree, offset + " " + (result == null ? "" : result.getContent()));
 
