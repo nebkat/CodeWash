@@ -15,7 +15,7 @@ public class ClassReport implements Report {
 	/**
 	 * The class in which there is an issue.
 	 */
-	private CWClassOrInterface mProblemClasses;
+	private CWClassOrInterface mProblemClass;
 
 	/**
 	 * The warning associated with the Code Smell
@@ -31,8 +31,31 @@ public class ClassReport implements Report {
 	 */
 	public ClassReport(String codeSmell, CWClassOrInterface problemClass, Warning warning) {
 		mCodeSmell = codeSmell;
-		mProblemClasses = problemClass;
+		mProblemClass = problemClass;
 		mSmellWarning = warning;
+	}
+
+	public String getCodeSmell() {
+		return mCodeSmell;
+	}
+
+	public CWClassOrInterface getProblemClass() {
+		return mProblemClass;
+	}
+
+	public Warning getSmellWarning() {
+		return mSmellWarning;
+	}
+
+	public String toString() {
+
+		return  mCodeSmell +
+				"\n" +
+				"\tClass = " +
+				mProblemClass.getSimpleName() +
+				" || Warning: " +
+				mSmellWarning +
+				"\n";
 	}
 
 }

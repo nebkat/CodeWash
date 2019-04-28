@@ -65,7 +65,11 @@ public class LongMethods extends CodeSmell {
 					.filter(cwMethod -> cwMethod.getMethodLength() > METHOD_LENGTH)
 					.collect(Collectors.toList());
 
-			reports.add(new MemberReport(NAME, value, longMethods, Warning.CAUTION));
+			if (!longMethods.isEmpty()) {
+				Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
+				reports.add(new MemberReport(NAME, value, longMethods, Warning.CAUTION));
+			}
+
 		});
 
 		return reports;

@@ -77,13 +77,21 @@ public class PrimitiveObsession extends CodeSmell {
 					.filter(cwField -> cwField.getType().isPrimitive())
 					.count();
 			int totalFields = value.getFields().size();
-			double ratio = (double) totalPrimitives / totalFields;
+			if (totalFields > 0) {
+				double ratio = (double) totalPrimitives / totalFields;
+				Log.d(NAME, value.getSimpleName() + "Total Fields = " + totalFields);
+				Log.d(NAME, value.getSimpleName() + "Total Primitives = " + totalPrimitives);
 
-			if (totalFields > MIN_NUM_FIELDS && ratio > ACCEPTABLE_RATIO) {
-				reports.add(new ClassReport(NAME, value, Warning.CAUTION));
-				Log.d(NAME.toUpperCase(), "Created report for " + value.getSimpleName());
-			} else {
-				Log.d(NAME.toUpperCase(), "Not creating report for " + value.getSimpleName());
+				Log.d(NAME, value.getSimpleName() + "Ratio is " + ratio);
+
+				Log.d(NAME, totalFields + " > " + MIN_NUM_FIELDS + " and " + ratio + " > " + 0.5);
+				if (totalFields > MIN_NUM_FIELDS && ratio > 0.5) {
+					Log.i(NAME, "Class = " + value.getSimpleName() + " total fields = " + totalFields + " total Primitives = " + totalPrimitives);
+					reports.add(new ClassReport(NAME, value, Warning.CAUTION));
+					Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
+				} else {
+					Log.d(NAME.toUpperCase(), "Not creating report for " + value.getSimpleName() + " Num primitives = " + totalPrimitives);
+				}
 			}
 		});
 

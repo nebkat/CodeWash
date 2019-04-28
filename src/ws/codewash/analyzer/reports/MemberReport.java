@@ -2,6 +2,7 @@ package ws.codewash.analyzer.reports;
 
 import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.CWMember;
+import ws.codewash.java.CWMethod;
 
 import java.util.List;
 
@@ -42,6 +43,43 @@ public class MemberReport implements Report {
 		mReportClass = reportClass;
 		mProblemMembers = problemMembers;
 		mSmellWarning = warning;
+	}
+
+	public String getCodeSmell() {
+		return mCodeSmell;
+	}
+
+	public CWClassOrInterface getReportClass() {
+		return mReportClass;
+	}
+
+	public List<CWMember> getProblemMembers() {
+		return mProblemMembers;
+	}
+
+	public Warning getSmellWarning() {
+		return mSmellWarning;
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(mCodeSmell);
+		sb.append("\n");
+		for (CWMember member : mProblemMembers) {
+			sb.append("\tClass = ");
+			sb.append(mReportClass.getSimpleName());
+
+			if (member instanceof CWMethod) {
+				sb.append(" - Method = ");
+			} else {
+				sb.append(" - Field = ");
+			}
+
+			sb.append(member.getName());
+			sb.append("\n");
+		}
+
+		return sb.toString();
 	}
 
 }

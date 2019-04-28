@@ -70,12 +70,12 @@ public class LongIDs extends CodeSmell {
 					.collect(Collectors.toList());
 
 			longIDs.addAll(value.getFields().parallelStream()
-					.filter(cwField -> cwField.getName().length() > MAX_CHARACTERS)
+					.filter(cwField -> !cwField.isFinal() && cwField.getName().length() > MAX_CHARACTERS)
 					.collect(Collectors.toList()));
 
-			Log.d(NAME.toUpperCase(), "Size of list for " + value.getSimpleName() + " : " + longIDs.size());
 
 			if (!longIDs.isEmpty()) {
+				Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
 				reports.add(new MemberReport(NAME, value, longIDs, Warning.CAUTION));
 			}
 		});
