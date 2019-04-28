@@ -74,6 +74,10 @@ public class MultipleGrammarToken extends GrammarToken {
 	}
 
 	public List<SyntacticTreeNode> match(CompilationUnit unit, List<Token> tokens, int offset, String tree) {
+		if (tokens.size() <= offset) {
+			return Collections.emptyList();
+		}
+
 		List<SyntacticTreeNode> parents = new ArrayList<>();
 		parents.add(new SyntacticTreeNode(unit, this, offset, 0));
 		List<SyntacticTreeNode> childNodes = new ArrayList<>();
