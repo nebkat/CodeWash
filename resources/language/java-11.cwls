@@ -31,7 +31,7 @@ InputCharacter:
 +Input:
 	{InputElement} [Sub]
 
-InputElement:
+InputElement*:
 	WhiteSpace
 	Comment
 	Token
@@ -424,7 +424,7 @@ PackageDeclaration:
 PackageModifier:
 	Annotation
 
-ImportDeclaration:
+ImportDeclaration*:
 	SingleTypeImportDeclaration
 	TypeImportOnDemandDeclaration
 	SingleStaticImportDeclaration
@@ -464,14 +464,14 @@ RequiresModifier:
 //
 // Productions from §8 (Classes)
 //
-ClassDeclaration:
+ClassDeclaration*:
 	NormalClassDeclaration
 	EnumDeclaration
 
 NormalClassDeclaration:
 	{ClassModifier} 'class' TypeIdentifier [TypeParameters] [Superclass] [Superinterfaces] ClassBody
 
-ClassModifier:
+ClassModifier*:
 	Annotation
 	'public'
 	'protected'
@@ -499,13 +499,13 @@ InterfaceTypeList:
 ClassBody:
 	'{' {ClassBodyDeclaration} '}'
 
-ClassBodyDeclaration:
+ClassBodyDeclaration*:
 	ClassMemberDeclaration
 	InstanceInitializer
 	StaticInitializer
 	ConstructorDeclaration
 
-ClassMemberDeclaration:
+ClassMemberDeclaration*:
 	FieldDeclaration
 	MethodDeclaration
 	ClassDeclaration
@@ -515,7 +515,7 @@ ClassMemberDeclaration:
 FieldDeclaration:
 	{FieldModifier} Type VariableDeclaratorList ';'
 
-FieldModifier:
+FieldModifier*:
 	Annotation
 	'public'
 	'protected'
@@ -541,7 +541,7 @@ VariableInitializer:
 MethodDeclaration:
 	{MethodModifier} [TypeParameters] {Annotation} Result Identifier '(' [ReceiverParameter ','] [FormalParameterList] ')' [Dims] [Throws] MethodBody
 
-MethodModifier:
+MethodModifier*:
 	Annotation
 	'public'
 	'protected'
@@ -553,7 +553,7 @@ MethodModifier:
 	'native'
 	'strictfp'
 
-Result:
+Result*:
 	Type
 	'void'
 
@@ -563,14 +563,14 @@ ReceiverParameter:
 FormalParameterList:
 	FormalParameter {',' FormalParameter}
 
-FormalParameter:
+FormalParameter*:
 	{VariableModifier} Type VariableDeclaratorId
 	VariableArityParameter
 
 VariableArityParameter:
 	{VariableModifier} Type {Annotation} '...' Identifier
 
-VariableModifier:
+VariableModifier*:
 	Annotation
 	'final'
 
@@ -583,7 +583,7 @@ ExceptionTypeList:
 ExceptionType:
 	ClassType
 
-MethodBody:
+MethodBody*:
 	Block
 	';'
 
@@ -596,7 +596,7 @@ StaticInitializer:
 ConstructorDeclaration:
 	{ConstructorModifier} [TypeParameters] TypeIdentifier '(' [ReceiverParameter ','] [FormalParameterList] ')' [Throws] ConstructorBody
 
-ConstructorModifier:
+ConstructorModifier*:
 	Annotation
 	'public'
 	'protected'
@@ -632,14 +632,14 @@ EnumBodyDeclarations:
 //
 // Productions from §9 (Interfaces)
 //
-InterfaceDeclaration:
+InterfaceDeclaration*:
 	NormalInterfaceDeclaration
 	AnnotationTypeDeclaration
 
 NormalInterfaceDeclaration:
 	{InterfaceModifier} 'interface' TypeIdentifier [TypeParameters] [ExtendsInterfaces] InterfaceBody
 
-InterfaceModifier:
+InterfaceModifier*:
 	Annotation
 	'public'
 	'protected'
@@ -654,7 +654,7 @@ ExtendsInterfaces:
 InterfaceBody:
 	'{' {InterfaceMemberDeclaration} '}'
 
-InterfaceMemberDeclaration:
+InterfaceMemberDeclaration*:
 	ConstantDeclaration
 	InterfaceMethodDeclaration
 	ClassDeclaration
@@ -664,7 +664,7 @@ InterfaceMemberDeclaration:
 ConstantDeclaration:
 	{ConstantModifier} Type VariableDeclaratorList ';'
 
-ConstantModifier:
+ConstantModifier*:
 	Annotation
 	'public'
 	'static'
@@ -673,7 +673,7 @@ ConstantModifier:
 InterfaceMethodDeclaration:
 	{InterfaceMethodModifier} [TypeParameters] {Annotation} Result Identifier '(' [ReceiverParameter ','] [FormalParameterList] ')' [Dims] [Throws] MethodBody
 
-InterfaceMethodModifier:
+InterfaceMethodModifier*:
 	Annotation
 	'public'
 	'private'
@@ -688,7 +688,7 @@ AnnotationTypeDeclaration:
 AnnotationTypeBody:
 	'{' {AnnotationTypeMemberDeclaration} '}'
 
-AnnotationTypeMemberDeclaration:
+AnnotationTypeMemberDeclaration*:
 	AnnotationTypeElementDeclaration
 	ConstantDeclaration
 	ClassDeclaration
@@ -706,10 +706,10 @@ AnnotationTypeElementModifier:
 DefaultValue:
 	'default' ElementValue
 
-Annotation:
+Annotation*:
 	NormalAnnotation
-	MarkerAnnotation
 	SingleElementAnnotation
+	MarkerAnnotation
 
 NormalAnnotation:
 	'@' TypeName '(' [ElementValuePairList] ')'
@@ -770,25 +770,24 @@ LocalVariableType:
 	Type
 	'var'
 
-Statement:
-	StatementWithoutTrailingSubstatement
+Statement*:
 	LabeledStatement
-	IfThenStatement
 	IfThenElseStatement
+	IfThenStatement
 	WhileStatement
 	ForStatement
-
-StatementNoShortIf:
 	StatementWithoutTrailingSubstatement
+
+StatementNoShortIf*:
 	LabeledStatementNoShortIf
 	IfThenElseStatementNoShortIf
 	WhileStatementNoShortIf
 	ForStatementNoShortIf
+	StatementWithoutTrailingSubstatement
 
-StatementWithoutTrailingSubstatement:
+StatementWithoutTrailingSubstatement*:
 	Block
 	EmptyStatement
-	ExpressionStatement
 	AssertStatement
 	SwitchStatement
 	DoStatement
@@ -798,6 +797,7 @@ StatementWithoutTrailingSubstatement:
 	SynchronizedStatement
 	ThrowStatement
 	TryStatement
+	ExpressionStatement
 
 EmptyStatement:
 	';'
@@ -811,7 +811,7 @@ LabeledStatementNoShortIf:
 ExpressionStatement:
 	StatementExpression ';'
 
-StatementExpression:
+StatementExpression*:
 	Assignment
 	PreIncrementExpression
 	PreDecrementExpression
@@ -865,11 +865,11 @@ WhileStatementNoShortIf:
 DoStatement:
 	'do' Statement 'while' '(' Expression ')' ';'
 
-ForStatement:
+ForStatement*:
 	BasicForStatement
 	EnhancedForStatement
 
-ForStatementNoShortIf:
+ForStatementNoShortIf*:
 	BasicForStatementNoShortIf
 	EnhancedForStatementNoShortIf
 
@@ -895,9 +895,6 @@ EnhancedForStatement:
 EnhancedForStatementNoShortIf:
 	'for' '(' {VariableModifier} LocalVariableType VariableDeclaratorId ':' Expression ')' StatementNoShortIf
 
-// SWITCH EXPRESSIONS
-//BreakStatement:
-//	'break' [Identifier] ';'
 BreakStatement:
 	'break' [Expression] ';'
 
@@ -970,7 +967,7 @@ MethodReferenceIdentifier:
 	Identifier
 	'new'
 
-PrimarySingle:
+PrimarySingle*:
 	Identifier
 	Literal
 	'this'
@@ -999,11 +996,6 @@ FieldAccess:
 
 ArgumentList:
 	Expression {',' Expression}
-
-//MethodReference:
-//	Primary '::' [TypeArguments] Identifier
-//	ClassType '::' [TypeArguments] 'new'
-//	ArrayType '::' 'new'
 
 ArrayCreationExpression:
 	'new' PrimitiveType DimExprs [Dims]
@@ -1058,7 +1050,7 @@ Assignment:
 LeftHandSide:
 	PrimaryNoNewArray
 
-AssignmentOperator:
+AssignmentOperator*:
 	'=' 
 	'*='
 	'/='
@@ -1114,7 +1106,7 @@ RelationalOperator:
 ShiftExpression:
 	AdditiveExpression {ShiftOperator AdditiveExpression}
 
-ShiftOperator:
+ShiftOperator*:
 	'<' '<'
 	'>' '>'
 	'>' '>' '>'
@@ -1122,19 +1114,19 @@ ShiftOperator:
 AdditiveExpression:
 	MultiplicativeExpression {AdditiveOperator MultiplicativeExpression}
 
-AdditiveOperator:
+AdditiveOperator*:
 	'+'
 	'-'
 
 MultiplicativeExpression:
 	UnaryExpression {MultiplicativeOperator UnaryExpression}
 
-MultiplicativeOperator:
+MultiplicativeOperator*:
 	'*'
 	'/'
 	'%'
 
-UnaryExpression:
+UnaryExpression*:
 	PreIncrementExpression
 	PreDecrementExpression
 	'+' UnaryExpression
@@ -1157,7 +1149,7 @@ PostfixExpression:
 	Primary [PostExpression]
 	ExpressionName [PostExpression]
 
-PostExpression:
+PostExpression*:
 	'++'
 	'--'
 
@@ -1165,15 +1157,3 @@ CastExpression:
 	'(' PrimitiveType ')' UnaryExpression
 	'(' Type {AdditionalBound} ')' UnaryExpressionNotPlusMinus
 	'(' Type {AdditionalBound} ')' LambdaExpression
-
-//PrePrimaryExpression:
-//	[PreExpression] Primary [PostExpression]
-//	CastExpression
-
-//PreExpression:
-//	'+'
-//	'-'
-//	{'!'}
-//	{'~'}
-//	'++'
-//	'--'
