@@ -1,10 +1,9 @@
 {
   "SelectedCodeSmells": [
     "LongMethods",
-    "LongParameterList",
-    "PrimitiveObsession",
     "LongIDs",
-    "LongClasses"
+    "LongParameterList",
+    "PrimitiveObsession"
   ],
   "LongMethodsConfig": {
     "MethodLength": 10

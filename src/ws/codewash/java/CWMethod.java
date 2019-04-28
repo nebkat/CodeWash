@@ -2,6 +2,7 @@ package ws.codewash.java;
 
 
 import ws.codewash.java.statement.CWBlock;
+import ws.codewash.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,23 @@ public class CWMethod extends Scope implements CWConstructorOrMethod, CWParamete
 	}
 
 	public int getMethodLength() {
+
+		if (mBlock != null) {
+			String tmpContent = mBlock.getNode().getContent();
+			int blankLines = 0;
+
+			String[] lines = tmpContent.split("\n");
+
+			for (String line : lines) {
+				line = line.trim();
+				if (line.matches("\\w+") || line.isEmpty()) {
+					blankLines++;
+				}
+
+			}
+			System.out.println(mName + " Blanks = " + blankLines);
+			return lines.length - blankLines- 2;
+		}
 		return 0;
 	}
 
