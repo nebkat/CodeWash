@@ -58,7 +58,7 @@ public class Grammar {
 		private static final String NAME_OPEN_DELIMITER = "<";
 		private static final String NAME_CLOSE_DELIMITER = ">";
 
-		private final Pattern RULE_DECLARATION = Pattern.compile("(?<name>[a-zA-Z0-9]+):");
+		private final Pattern RULE_DECLARATION = Pattern.compile("(?<start>\\+?)(?<name>[a-zA-Z0-9]+):");
 
 		private List<ReferenceGrammarToken> mReferenceTokens = new ArrayList<>();
 
@@ -82,7 +82,11 @@ public class Grammar {
 
 				// Parse entire rule
 				String ruleName = ruleMatcher.group("name");
-				GrammarProduction symbol = new GrammarProduction(ruleName);
+				boolean start = !ruleMatcher.group("start").isEmpty();
+				GrammarProduction production = new GrammarProduction(ruleName);
+				if (start) {
+					production.setReferenced();
+				}
 
 				while (iterator.hasNext()) {
 					lineNumber++;
@@ -99,11 +103,11 @@ public class Grammar {
 					}
 
 					// Add token set
-					symbol.addAlternative(tokenSet);
+					production.addAlternative(tokenSet);
 				}
 
 				// Add rule
-				addProduction(symbol);
+				addProduction(production);
 			}
 
 			for (ReferenceGrammarToken referenceToken : mReferenceTokens) {
