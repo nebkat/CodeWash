@@ -1,5 +1,6 @@
 package ws.codewash.java;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,12 +11,14 @@ public class CWMethod extends Scope implements CWConstructorOrMethod, CWParamete
 	private final int mModifiers;
 
 	private CWType mReturnType;
-	private String mPendingReturnType;
+	private RawType mPendingReturnType;
 
 	private final List<CWTypeParameter> mTypeParameters = new ArrayList<>();
 	private final List<CWVariable> mParameters = new ArrayList<>();
 
-	public CWMethod(CWClassOrInterface parent, int modifiers, String name, String returnType) {
+	public CWMethod(CWClassOrInterface parent, int modifiers, String name, RawType returnType) {
+		super(parent);
+
 		mParent = parent;
 		mName = name;
 
@@ -27,7 +30,7 @@ public class CWMethod extends Scope implements CWConstructorOrMethod, CWParamete
 
 	public void addTypeParameter(CWTypeParameter typeParameter) {
 		mTypeParameters.add(typeParameter);
-		addTypeDeclaration(typeParameter.getVariableName(), typeParameter);
+		addTypeDeclaration(typeParameter);
 	}
 
 	public void addParameter(CWVariable parameter) {
@@ -68,7 +71,24 @@ public class CWMethod extends Scope implements CWConstructorOrMethod, CWParamete
 
 	@Override
 	public String toString() {
-		return getModifiersForToString() + mPendingReturnType + " " + mName +
-				"(" + mParameters.stream().map(CWVariable::toString).collect(Collectors.joining(", ")) + ")";
+		StringBuilder builder = new StringBuilder();
+
+		builder.append(getModifiersForToString());
+		if (!mTypeParameters.isEmpty()) {
+			builder.append("<");
+			builder.append(mTypeParameters.stream()
+					.map(CWTypeParameter::toString)
+					.collect(Collectors.joining(", ")));
+			builder.append(">");
+		}
+		builder.append(getName());
+		builder.append("(");
+		builder.append(mParameters.stream()
+				.map(CWVariable::toString)
+				.collect(Collectors.joining(", ")));
+		builder.append(")");
+		builder.append(" { }");
+
+		return builder.toString();
 	}
 }

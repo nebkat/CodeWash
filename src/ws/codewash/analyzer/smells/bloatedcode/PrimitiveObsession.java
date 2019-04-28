@@ -4,7 +4,7 @@ import ws.codewash.analyzer.reports.ClassReport;
 import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
-import ws.codewash.parser.ParsedSourceTree;
+import ws.codewash.java.ParsedSourceTree;
 import ws.codewash.util.Config;
 import ws.codewash.util.Log;
 
@@ -44,9 +44,9 @@ public class PrimitiveObsession extends CodeSmell {
 	private final double ACCEPTABLE_RATIO;
 
 	/**
-	 * Constructs a Primitive Obsession object with a {@link ws.codewash.parser.ParsedSourceTree} object
+	 * Constructs a Primitive Obsession object with a {@link ParsedSourceTree} object
 	 *
-	 * @param parsedSourceTree The {@link ws.codewash.parser.ParsedSourceTree} to check for Primitive Obsession.
+	 * @param parsedSourceTree The {@link ParsedSourceTree} to check for Primitive Obsession.
 	 */
 	public PrimitiveObsession(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
@@ -55,7 +55,7 @@ public class PrimitiveObsession extends CodeSmell {
 	}
 
 	/**
-	 * Procedure for detecting Primitive Obsession across the {@link ws.codewash.parser.ParsedSourceTree} object.
+	 * Procedure for detecting Primitive Obsession across the {@link ParsedSourceTree} object.
 	 *
 	 * @return A list of {@link ws.codewash.analyzer.reports.Report} which contains all of the problem classes.
 	 */

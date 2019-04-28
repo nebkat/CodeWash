@@ -1,12 +1,11 @@
 package ws.codewash.parser.grammar;
 
 import ws.codewash.parser.tree.LexicalTreeNode;
-import ws.codewash.parser.CompilationUnit;
+import ws.codewash.java.CompilationUnit;
 import ws.codewash.parser.tree.SyntacticTreeNode;
 import ws.codewash.parser.Token;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;

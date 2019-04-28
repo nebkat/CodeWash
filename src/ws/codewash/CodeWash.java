@@ -4,7 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import ws.codewash.analyzer.Analyzer;
 import ws.codewash.analyzer.reports.Report;
-import ws.codewash.parser.ParsedSourceTree;
+import ws.codewash.java.ParsedSourceTree;
 import ws.codewash.parser.Parser;
 import ws.codewash.parser.grammar.Grammar;
 import ws.codewash.reader.FolderReader;
@@ -16,7 +16,6 @@ import ws.codewash.util.Log;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

@@ -19,7 +19,7 @@ public class CWConstructor extends Scope implements CWConstructorOrMethod, CWPar
 
 	public void addTypeParameter(CWTypeParameter typeParameter) {
 		mTypeParameters.add(typeParameter);
-		addTypeDeclaration(typeParameter.getVariableName(), typeParameter);
+		addTypeDeclaration(typeParameter);
 	}
 
 	public void addParameter(CWVariable parameter) {

@@ -5,7 +5,7 @@ import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CWMember;
-import ws.codewash.parser.ParsedSourceTree;
+import ws.codewash.java.ParsedSourceTree;
 import ws.codewash.util.Config;
 import ws.codewash.util.Log;
 
@@ -36,9 +36,9 @@ public class LongMethods extends CodeSmell {
 	private final int METHOD_LENGTH;
 
 	/**
-	 * Constructs a LongMethods object with a specified {@link ws.codewash.parser.ParsedSourceTree} object.
+	 * Constructs a LongMethods object with a specified {@link ParsedSourceTree} object.
 	 *
-	 * @param parsedSourceTree The {@link ws.codewash.parser.ParsedSourceTree} object to use.
+	 * @param parsedSourceTree The {@link ParsedSourceTree} object to use.
 	 */
 	public LongMethods(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
@@ -46,7 +46,7 @@ public class LongMethods extends CodeSmell {
 	}
 
 	/**
-	 * Procedure for detecting Long Methods across the {@link ws.codewash.parser.ParsedSourceTree} object.
+	 * Procedure for detecting Long Methods across the {@link ParsedSourceTree} object.
 	 *
 	 * @return A list of {@link ws.codewash.analyzer.reports.Report} which contain all of the problem methods.
 	 */

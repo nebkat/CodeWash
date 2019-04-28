@@ -1,6 +1,6 @@
 package ws.codewash.parser.tree;
 
-import ws.codewash.parser.CompilationUnit;
+import ws.codewash.java.CompilationUnit;
 import ws.codewash.parser.grammar.GrammarProduction;
 import ws.codewash.parser.grammar.GrammarToken;
 import ws.codewash.parser.grammar.MultipleGrammarToken;

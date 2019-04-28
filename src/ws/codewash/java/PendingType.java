@@ -3,16 +3,16 @@ package ws.codewash.java;
 import java.util.function.Consumer;
 
 public class PendingType<T extends CWType> {
-	private String mCanonicalName;
+	private RawType mRawType;
 	private Consumer<T> mConsumer;
 
-	PendingType(String canonicalName, Consumer<T> consumer) {
-		mCanonicalName = canonicalName;
+	public PendingType(RawType rawType, Consumer<T> consumer) {
+		mRawType = rawType;
 		mConsumer = consumer;
 	}
 
-	public String getCanonicalName() {
-		return mCanonicalName;
+	public RawType getRawType() {
+		return mRawType;
 	}
 
 	public void accept(T type) {

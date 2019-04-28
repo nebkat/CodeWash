@@ -2,7 +2,7 @@ package ws.codewash.analyzer;
 
 import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.smells.CodeSmell;
-import ws.codewash.parser.ParsedSourceTree;
+import ws.codewash.java.ParsedSourceTree;
 import ws.codewash.util.Config;
 import ws.codewash.util.Log;
 

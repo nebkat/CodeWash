@@ -1,11 +1,6 @@
-package ws.codewash.parser;
+package ws.codewash.java;
 
-import ws.codewash.java.CWClassOrInterface;
-import ws.codewash.java.CWPackage;
-import ws.codewash.java.CWPrimitive;
-import ws.codewash.java.CWType;
-import ws.codewash.java.RawType;
-import ws.codewash.java.Scope;
+import ws.codewash.util.Log;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -30,7 +25,7 @@ public class ParsedSourceTree extends Scope {
 
 	private static final String TAG = "ParsedSourceTree";
 
-	ParsedSourceTree(List<Path> paths) throws IOException {
+	public ParsedSourceTree(List<Path> paths) throws IOException {
 		for (Path path : paths) {
 			if (path.toString().endsWith(".java")) {
 				mSources.add(new CompilationUnit(this, path));
@@ -42,7 +37,7 @@ public class ParsedSourceTree extends Scope {
 		}
 	}
 
-	Set<CompilationUnit> getSources() {
+	public Set<CompilationUnit> getSources() {
 		return mSources;
 	}
 
@@ -66,40 +61,28 @@ public class ParsedSourceTree extends Scope {
 		return getOrInitPackage("java.lang").resolveQualified(type, startScope);
 	}
 
-	/*private CWClassOrInterface getOrInitClass(String className) throws ClassNotFoundException {
+	CWClassOrInterface getOrInitClass(String className) {
 		if (!mClasses.containsKey(className)) {
 			Class externalClass;
 
 			try {
 				externalClass = Class.forName(className, false, mExternalClassLoader);
 			} catch (ClassNotFoundException e) {
-				externalClass = Class.forName(className, false, getClass().getClassLoader());
+				try {
+					externalClass = Class.forName(className, false, getClass().getClassLoader());
+				} catch (ClassNotFoundException ex) {
+					return null;
+				}
 			}
 
-			CWClassOrInterface cwClass = CWClassOrInterface.forExternalClass(externalClass);
-
-			Log.d(TAG, "Loaded external class " + cwClass.getName());
-
+			CWClassOrInterface cwClass = CWClassOrInterface.forExternalClass(getOrInitPackage(externalClass.getPackageName()), externalClass);
 			addType(cwClass);
 		}
 
 		return mClasses.get(className);
-	}*/
-
-	boolean hasClass(String _class) {
-		if (mClasses.containsKey(_class)) {
-			return true;
-		}
-
-		try {
-			Class.forName(_class, false, getClass().getClassLoader());
-		} catch (ClassNotFoundException e) {
-			return false;
-		}
-		return true;
 	}
 
-	void addType(CWType type) {
+	public void addType(CWType type) {
 		if (mTypes.containsKey(type.getName())) {
 			throw new IllegalStateException("Duplicate type declaration");
 		}
@@ -113,14 +96,14 @@ public class ParsedSourceTree extends Scope {
 		}
 	}
 
-	@Override
 	public CWPackage getOrInitPackage(String name) {
 		mPackages.putIfAbsent(name, new CWPackage(this, name));
 		return mPackages.get(name);
 	}
 
-	void addPackage(CWPackage _package) {
-		mPackages.put(_package.getName(), _package);
+	@Override
+	public ParsedSourceTree getRoot() {
+		return this;
 	}
 
 	public static String dot(String string) {

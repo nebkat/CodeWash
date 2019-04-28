@@ -24,31 +24,31 @@ public class Log {
 	private static final String CYAN_BOLD = "\033[1;36m";
 	private static final String WHITE_BOLD = "\033[1;37m";
 
-	public static void v(String TAG, String message) {
-		if (true || Arguments.get().verbose()) {
-			System.out.println(WHITE_BOLD + "VERBOSE/" + TAG + " : " + WHITE + message + RESET);
+	public static void v(String TAG, Object message) {
+		if (Arguments.get().verbose()) {
+			System.out.println(WHITE + "VERBOSE/" + TAG + " : " + message + RESET);
 		}
 	}
 
-	public static void d(String TAG, String message) {
-		if (true || Arguments.get().verbose()) {
+	public static void d(String TAG, Object message) {
+		if (Arguments.get().verbose()) {
 			System.out.println(WHITE_BOLD + "DEBUG/" + TAG + " : " + WHITE + message + RESET);
 		}
 	}
 
-	public static void e(String TAG, String message) {
+	public static void e(String TAG, Object message) {
 		System.out.println(RED_BOLD + "ERROR/" + TAG + " : " + RED + message + RESET);
 	}
 
-	public static void i(String TAG, String message) {
+	public static void i(String TAG, Object message) {
 		System.out.println(BLUE_BOLD + "INFO/" + TAG + " : " + BLUE + message + RESET);
 	}
 
-	public static void w(String TAG, String message) {
+	public static void w(String TAG, Object message) {
 		System.out.println(YELLOW_BOLD + "WARN/" + TAG + " : " + YELLOW + message + RESET);
 	}
 
-	public static void wtf(String TAG, String message) {
+	public static void wtf(String TAG, Object message) {
 		System.out.println(PURPLE_BOLD + "WTF/" + TAG + " : " + PURPLE + message + RESET);
 	}
 }

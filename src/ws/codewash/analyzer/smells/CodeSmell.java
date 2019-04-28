@@ -1,7 +1,7 @@
 package ws.codewash.analyzer.smells;
 
 import ws.codewash.analyzer.reports.Report;
-import ws.codewash.parser.ParsedSourceTree;
+import ws.codewash.java.ParsedSourceTree;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ public abstract class CodeSmell {
 	private ParsedSourceTree mParsedSourceTree;
 
 	/**
-	 * Constructs a CodeSmell Object with a {@link ws.codewash.parser.ParsedSourceTree} object
-	 * @param parsedSourceTree The {@link ws.codewash.parser.ParsedSourceTree} to check for code smells
+	 * Constructs a CodeSmell Object with a {@link ParsedSourceTree} object
+	 * @param parsedSourceTree The {@link ParsedSourceTree} to check for code smells
 	 */
 	protected CodeSmell(ParsedSourceTree parsedSourceTree) {
 		mParsedSourceTree = parsedSourceTree;
@@ -33,8 +33,8 @@ public abstract class CodeSmell {
 	public abstract String getName();
 
 	/**
-	 * Retrieves the {@link ws.codewash.parser.ParsedSourceTree} object.
-	 * @return The {@link ws.codewash.parser.ParsedSourceTree} of the Code Smell.
+	 * Retrieves the {@link ParsedSourceTree} object.
+	 * @return The {@link ParsedSourceTree} of the Code Smell.
 	 */
 	protected ParsedSourceTree getParsedSourceTree() {
 		return mParsedSourceTree;

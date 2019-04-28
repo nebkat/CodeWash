@@ -5,7 +5,7 @@ import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CWMember;
-import ws.codewash.parser.ParsedSourceTree;
+import ws.codewash.java.ParsedSourceTree;
 import ws.codewash.util.Config;
 import ws.codewash.util.Log;
 
@@ -36,9 +36,9 @@ public class LongParameterList extends CodeSmell {
 	private final int MAX_PARAMETER_LENGTH;
 
 	/**
-	 * Constructor a LongParameterList with a specified {@link ws.codewash.parser.ParsedSourceTree} object.
+	 * Constructor a LongParameterList with a specified {@link ParsedSourceTree} object.
 	 *
-	 * @param parsedSourceTree {@link ws.codewash.parser.ParsedSourceTree} object to use
+	 * @param parsedSourceTree {@link ParsedSourceTree} object to use
 	 */
 	public LongParameterList(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
@@ -46,7 +46,7 @@ public class LongParameterList extends CodeSmell {
 	}
 
 	/**
-	 * Procedure for detecting Long Parameter Lists across the {@link ws.codewash.parser.ParsedSourceTree} object.
+	 * Procedure for detecting Long Parameter Lists across the {@link ParsedSourceTree} object.
 	 *
 	 * @return A list of {@link ws.codewash.analyzer.reports.Report} which contain all of the problem methods.
 	 */

@@ -1,10 +1,6 @@
-package ws.codewash.parser;
+package ws.codewash.java;
 
-import ws.codewash.java.CWPackage;
-import ws.codewash.java.CWType;
-import ws.codewash.java.PendingType;
-import ws.codewash.java.RawType;
-import ws.codewash.java.Scope;
+import ws.codewash.parser.Token;
 import ws.codewash.parser.tree.LexicalTree;
 import ws.codewash.parser.tree.SyntacticTree;
 import ws.codewash.util.Log;
@@ -58,19 +54,19 @@ public class CompilationUnit extends Scope {
 		return mContent.length();
 	}
 
-	void setContent(String content) {
+	public void setContent(String content) {
 		mContent = content;
 	}
 
-	void setLexicalTree(LexicalTree tree) {
+	public void setLexicalTree(LexicalTree tree) {
 		mLexicalTree = tree;
 	}
 
-	void setSyntacticTree(SyntacticTree tree) {
+	public void setSyntacticTree(SyntacticTree tree) {
 		mSyntacticTree = tree;
 	}
 
-	void setTokens(List<Token> tokens) {
+	public void setTokens(List<Token> tokens) {
 		mTokens = tokens;
 	}
 
@@ -92,13 +88,12 @@ public class CompilationUnit extends Scope {
 		mPackage.addTypeDeclaration(type);
 	}
 
-	void addSingleTypeImport(RawType canonicalName) {
+	public void addSingleTypeImport(RawType canonicalName) {
 		String simpleName = canonicalName.getLast().getIdentifier();
 		// Check if simple name is already imported
 		if (mTypeImportsSingle.containsKey(simpleName)) {
 			// Check if previous import is the same as new import
 			if (!mTypeImportsSingle.get(simpleName).equals(canonicalName)) {
-				//throw new RedeclarationParseException("Duplicate type import for " + simpleName + ". Previous declaration: " + mTypeImportsSingle.get(simpleName), this, sourceOffset);
 				// TODO:
 				throw new IllegalArgumentException("Duplicate type import for " + simpleName + ". Previous declaration: " + mTypeImportsSingle.get(simpleName));
 			} else {
@@ -111,16 +106,16 @@ public class CompilationUnit extends Scope {
 		resolve(new PendingType<>(canonicalName, super::addTypeDeclaration));
 	}
 
-	void addOnDemandTypeImport(RawType packageName) {
+	public void addOnDemandTypeImport(RawType packageName) {
 		mTypeImportsOnDemand.add(packageName);
 	}
 
-	void addSingleStaticImport(String identifier, RawType canonicalName) {
+	public void addSingleStaticImport(String identifier, RawType canonicalName) {
 		// TODO: Duplicates
 		mStaticImportsSingle.put(identifier, canonicalName);
 	}
 
-	void addOnDemandStaticImport(RawType canonicalName) {
+	public void addOnDemandStaticImport(RawType canonicalName) {
 		mStaticImportsOnDemand.add(canonicalName);
 	}
 
@@ -128,27 +123,30 @@ public class CompilationUnit extends Scope {
 		return mPackage;
 	}
 
-	public String getPackageName() {
-		return mPackage.getName();
-	}
-
-	void setPackage(CWPackage cwPackage) {
+	public void setPackage(CWPackage cwPackage) {
 		mPackage = cwPackage;
 		mEnclosingScope = cwPackage;
 	}
 
 	@Override
-	public CWType resolveOutwards(RawType type, Scope startScope) {
-		/*String identifier = type.getFirst().getIdentifier();
-		if (mTypeImportsSingle.containsKey(identifier)) {
-			RawType resolvedType = mTypeImportsSingle.get(identifier);
+	CWType resolveUpwards(RawType.Identifier identifier, Scope startScope) {
+		if (getTypeDeclaration(identifier.getIdentifier()) == null) {
+			for (RawType rawType : mTypeImportsOnDemand) {
+				CWType resolvedType = getRoot().getOrInitPackage(rawType.toString()).resolveUpwards(identifier, startScope);
+				if (resolvedType != null) {
+					if (resolvedType instanceof CWParameterizedType) {
+						resolvedType = ((CWParameterizedType) resolvedType).getType();
+					}
+					addTypeDeclaration(resolvedType);
+				}
+			}
+		}
 
-		}*/
-		return super.resolveOutwards(type, startScope);
+		return super.resolveUpwards(identifier, startScope);
 	}
 
 	@Override
 	public String toString() {
-		return mPath.toString();
+		return mPath.toString().replace('\\', '/');
 	}
 }
