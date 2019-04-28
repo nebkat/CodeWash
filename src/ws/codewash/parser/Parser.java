@@ -524,7 +524,7 @@ public class Parser {
 			default: throw new IllegalStateException("Unexpected " + node.getName());
 		}
 
-		CWBlock block = new CWBlock(scope);
+		CWBlock block = new CWBlock(node, scope);
 
 		// TODO: Explicit constructor invocation
 
@@ -566,7 +566,7 @@ public class Parser {
 			RawType type = parseType(node.get("LocalVariableType").get(), parseArrayDims(variableDeclaratorId.get("[Dims]").get()));
 
 			CWVariable cwVariable = new CWVariable(scope, modifiers, type, name);
-			consumer.accept(new CWLocalVariableDeclarationStatement(scope, cwVariable));
+			consumer.accept(new CWLocalVariableDeclarationStatement(node, scope, cwVariable));
 		}
 	}
 
@@ -597,7 +597,7 @@ public class Parser {
 			}
 			case "LabeledStatement", "LabeledStatementNoShortIf" -> {
 				String label = node.get("Identifier").getContent();
-				CWLabeledStatement statement = new CWLabeledStatement(scope, label);
+				CWLabeledStatement statement = new CWLabeledStatement(node, scope, label);
 				consumer.accept(statement);
 
 				processStatement(node.get(!noShortIf ? "Statement" : "StatementNoShortIf"), statement, statement::setStatement);
@@ -614,7 +614,7 @@ public class Parser {
 	// 'if' '(' Expression ')' StatementNoShortIf 'else' StatementNoShortIf
 	private void processIfStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWIfStatement> consumer) {
 		CWExpression condition = parseExpression(node.get("Expression"), scope);
-		CWIfStatement statement = new CWIfStatement(scope, condition);
+		CWIfStatement statement = new CWIfStatement(node, scope, condition);
 		consumer.accept(statement);
 
 		switch (node.getName()) {
@@ -631,7 +631,7 @@ public class Parser {
 	// 'while' '(' Expression ')' StatementNoShortIf
 	private void processWhileStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWWhileStatement> consumer) {
 		CWExpression condition = parseExpression(node.get("Expression"), scope);
-		CWWhileStatement statement = new CWWhileStatement(scope, node.getName().equals("DoStatement"), condition);
+		CWWhileStatement statement = new CWWhileStatement(node, scope, node.getName().equals("DoStatement"), condition);
 		consumer.accept(statement);
 
 		boolean noShortIf = node.getName().endsWith("NoShortIf");
@@ -653,7 +653,7 @@ public class Parser {
 	// 'for' '(' [ForInit] ';' [Expression] ';' [ForUpdate] ')' Statement
 	// 'for' '(' [ForInit] ';' [Expression] ';' [ForUpdate] ')' StatementNoShortIf
 	private void processBasicForStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWBasicForStatement> consumer) {
-		CWBasicForStatement statement = new CWBasicForStatement(scope);
+		CWBasicForStatement statement = new CWBasicForStatement(node, scope);
 		consumer.accept(statement);
 
 		SyntacticTreeNode forInitNode = node.get("[ForInit]").get();
@@ -677,7 +677,7 @@ public class Parser {
 	// 'for' '(' {VariableModifier} LocalVariableType VariableDeclaratorId ':' Expression ')' StatementNoShortIf
 	private void processEnhancedForStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWEnhancedForStatement> consumer) {
 		CWExpression expression = parseExpression(node.get("Expression"), scope);
-		CWEnhancedForStatement statement = new CWEnhancedForStatement(scope, expression);
+		CWEnhancedForStatement statement = new CWEnhancedForStatement(node, scope, expression);
 		consumer.accept(statement);
 
 		int modifiers = parseModifiers(node.get("{VariableModifier}"));

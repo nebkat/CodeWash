@@ -1,6 +1,7 @@
 package ws.codewash.java.statement;
 
 import ws.codewash.java.Scope;
+import ws.codewash.parser.tree.SyntacticTreeNode;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,8 +9,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class CWStatement extends Scope {
-	public CWStatement(Scope enclosingScope) {
+	private final SyntacticTreeNode mNode;
+
+	public CWStatement(SyntacticTreeNode node, Scope enclosingScope) {
 		super(enclosingScope);
+		mNode = node;
+	}
+
+	public SyntacticTreeNode getNode() {
+		return mNode;
 	}
 
 	public List<CWStatement> getSubStatements() {

@@ -3,13 +3,10 @@ package ws.codewash.java.statement;
 import ws.codewash.java.CWVariable;
 import ws.codewash.java.Scope;
 import ws.codewash.java.statement.expression.CWExpression;
+import ws.codewash.parser.tree.SyntacticTreeNode;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class CWBasicForStatement extends CWControlStatement {
 	private CWVariable mVariable;
@@ -19,8 +16,8 @@ public class CWBasicForStatement extends CWControlStatement {
 	private List<CWExpression> mUpdateExpressions;
 	private CWStatement mStatement;
 
-	public CWBasicForStatement(Scope enclosingScope) {
-		super(enclosingScope);
+	public CWBasicForStatement(SyntacticTreeNode node, Scope enclosingScope) {
+		super(node, enclosingScope);
 	}
 
 	public void setVariable(CWVariable variable) {

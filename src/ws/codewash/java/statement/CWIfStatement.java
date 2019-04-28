@@ -2,6 +2,7 @@ package ws.codewash.java.statement;
 
 import ws.codewash.java.statement.expression.CWExpression;
 import ws.codewash.java.Scope;
+import ws.codewash.parser.tree.SyntacticTreeNode;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,8 +12,8 @@ public class CWIfStatement extends CWControlStatement {
 	private CWStatement mThenStatement;
 	private CWStatement mElseStatement;
 
-	public CWIfStatement(Scope enclosingScope, CWExpression expression) {
-		super(enclosingScope);
+	public CWIfStatement(SyntacticTreeNode node, Scope enclosingScope, CWExpression expression) {
+		super(node, enclosingScope);
 
 		mExpression = expression;
 	}
