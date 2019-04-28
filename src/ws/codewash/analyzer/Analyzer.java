@@ -3,7 +3,7 @@ package ws.codewash.analyzer;
 import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.ParsedSourceTree;
-import ws.codewash.util.Config;
+import ws.codewash.util.config.Config;
 import ws.codewash.util.Log;
 
 import java.util.ArrayList;
@@ -26,8 +26,8 @@ public class Analyzer {
 	private List<CodeSmell> mCodeSmells = new ArrayList<>();
 
 	/**
-	 * Constructs an Analyzer object with the {@link ws.codewash.parser.ParsedSourceTree} object.
-	 * @param parsedSourceTree The {@link ws.codewash.parser.ParsedSourceTree} object to be analyzed.
+	 * Constructs an Analyzer object with the {@link ParsedSourceTree} object.
+	 * @param parsedSourceTree The {@link ParsedSourceTree} object to be analyzed.
 	 */
 	public Analyzer(ParsedSourceTree parsedSourceTree) {
 		// Get all of the code smells from the config

@@ -1,11 +1,8 @@
-package ws.codewash.util;
+package ws.codewash.util.config;
 
 import ws.codewash.analyzer.smells.CodeSmell;
-import ws.codewash.analyzer.smells.bloatedcode.LongClasses;
-import ws.codewash.analyzer.smells.bloatedcode.LongIDs;
-import ws.codewash.analyzer.smells.bloatedcode.LongMethods;
-import ws.codewash.analyzer.smells.bloatedcode.LongParameterList;
-import ws.codewash.analyzer.smells.bloatedcode.PrimitiveObsession;
+import ws.codewash.analyzer.smells.bloatedcode.*;
+import ws.codewash.analyzer.smells.couplers.FeatureEnvy;
 import ws.codewash.java.ParsedSourceTree;
 
 import java.util.ArrayList;
@@ -16,39 +13,59 @@ import java.util.function.Function;
 
 public class Config {
 	private final static Config INSTANCE = new Config();
-
-	private Config() {
-	}
-
 	private static final Map<String, Function<ParsedSourceTree, CodeSmell>> CODE_SMELLS = new HashMap<>() {{
 		put(LongMethods.NAME, LongMethods::new);
 		put(LongParameterList.NAME, LongParameterList::new);
 		put(PrimitiveObsession.NAME, PrimitiveObsession::new);
 		put(LongIDs.NAME, LongIDs::new);
 		put(LongClasses.NAME, LongClasses::new);
+		put(FeatureEnvy.NAME, FeatureEnvy::new);
 	}};
 
 	private final List<String> SelectedCodeSmells = new ArrayList<>();
-
 	private final Map<String, Number> LongMethodsConfig = new HashMap<>();
 	private final Map<String, Number> LongParametersListConfig = new HashMap<>();
 	private final Map<String, Number> PrimitiveObsessionConfig = new HashMap<>();
 	private final Map<String, Number> LongIDsConfig = new HashMap<>();
 	private final Map<String, Number> LongClassConfig = new HashMap<>();
 
-	public static void init(Config config) {
+	/**
+	 * Private constructor for singleton.
+	 */
+	private Config() {
+	}
+
+	/**
+	 * Initialises the original config. Called from {@link ConfigManager} constructor.
+	 *
+	 * @param config the default config loaded.
+	 */
+	static void init(Config config) {
 		INSTANCE.SelectedCodeSmells.addAll(config.SelectedCodeSmells);
 		updateMaps(config);
 	}
 
+	/**
+	 * Sets the {@link Config} to be a new specified parsed {@link Config}.
+	 *
+	 * @param config the new {@code Config} to be loaded.
+	 */
 	public static void set(Config config) {
+		// Clear the current selected smells
 		while (!INSTANCE.SelectedCodeSmells.isEmpty()) {
 			INSTANCE.SelectedCodeSmells.remove(0);
 		}
+
+		// Populate selected smells with new ones
 		INSTANCE.SelectedCodeSmells.addAll(config.SelectedCodeSmells);
 		updateMaps(config);
 	}
 
+	/**
+	 * Updates the current {@link Config} smells configurations with a new one pass through.
+	 *
+	 * @param config the new {@code Config} to be loaded.
+	 */
 	private static void updateMaps(Config config) {
 		config.LongMethodsConfig.forEach(INSTANCE.LongMethodsConfig::put);
 		config.LongParametersListConfig.forEach(INSTANCE.LongParametersListConfig::put);
@@ -57,6 +74,11 @@ public class Config {
 		config.LongClassConfig.forEach(INSTANCE.LongClassConfig::put);
 	}
 
+	/**
+	 * Getter for the {@link ConfigManager}.
+	 *
+	 * @return instance of the {@link ConfigManager}
+	 */
 	public static Config get() {
 		return INSTANCE;
 	}

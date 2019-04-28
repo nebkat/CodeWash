@@ -5,7 +5,7 @@ import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.ParsedSourceTree;
-import ws.codewash.util.Config;
+import ws.codewash.util.config.Config;
 import ws.codewash.util.Log;
 
 import java.util.ArrayList;

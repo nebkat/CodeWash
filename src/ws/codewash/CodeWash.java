@@ -12,7 +12,7 @@ import ws.codewash.reader.FolderReader;
 import ws.codewash.reader.SourceReadable;
 import ws.codewash.reader.ZipReader;
 import ws.codewash.util.Arguments;
-import ws.codewash.util.ConfigManager;
+import ws.codewash.util.config.ConfigManager;
 import ws.codewash.util.Log;
 import ws.codewash.util.ReportWriter;
 

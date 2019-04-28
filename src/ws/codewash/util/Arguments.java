@@ -2,6 +2,9 @@ package ws.codewash.util;
 
 import com.beust.jcommander.Parameter;
 
+/**
+ * Class used for arguments passed through into the program.
+ */
 public class Arguments {
 	private static final Arguments INSTANCE = new Arguments();
 
