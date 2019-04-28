@@ -14,12 +14,24 @@ public class CWWhileStatement extends CWControlStatement {
 
 	public CWWhileStatement(SyntacticTreeNode node, Scope enclosingScope, boolean doWhileLoop, CWExpression condition) {
 		super(node, enclosingScope);
-		mDoWhileLoop = doWhileLoop;
 		mCondition = condition;
+		mDoWhileLoop = doWhileLoop;
+	}
+
+	public CWStatement getStatement() {
+		return mStatement;
 	}
 
 	public void setStatement(CWStatement statement) {
 		mStatement = statement;
+	}
+
+	public CWExpression getCondition() {
+		return mCondition;
+	}
+
+	public boolean isDoWhileLoop() {
+		return mDoWhileLoop;
 	}
 
 	@Override
