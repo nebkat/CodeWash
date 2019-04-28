@@ -74,9 +74,7 @@ public class CWMethod extends Scope implements CWConstructorOrMethod, CWParamete
 				if (line.matches("\\w+") || line.isEmpty()) {
 					blankLines++;
 				}
-
 			}
-			System.out.println(mName + " Blanks = " + blankLines);
 			return lines.length - blankLines- 2;
 		}
 		return 0;

@@ -5,4 +5,5 @@ package ws.codewash.analyzer.reports;
  */
 public interface Report {
 	String getCodeSmell();
+	String getWarning();
 }

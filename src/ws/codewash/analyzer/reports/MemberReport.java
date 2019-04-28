@@ -57,8 +57,8 @@ public class MemberReport implements Report {
 		return mProblemMembers;
 	}
 
-	public Warning getSmellWarning() {
-		return mSmellWarning;
+	public String getWarning() {
+		return mSmellWarning.toString();
 	}
 
 	public String toString() {

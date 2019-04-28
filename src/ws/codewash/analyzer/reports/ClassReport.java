@@ -43,8 +43,8 @@ public class ClassReport implements Report {
 		return mProblemClass;
 	}
 
-	public Warning getSmellWarning() {
-		return mSmellWarning;
+	public String getWarning() {
+		return mSmellWarning.toString();
 	}
 
 	public String toString() {

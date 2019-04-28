@@ -1,9 +1,7 @@
 {
   "SelectedCodeSmells": [
-    "LongMethods",
-    "LongIDs",
-    "LongParameterList",
-    "PrimitiveObsession"
+
+    "LongClasses"
   ],
   "LongMethodsConfig": {
     "MethodLength": 10
@@ -19,7 +17,8 @@
     "MaxCharacters" : 25
   },
   "LongClassConfig": {
-    "MidClassLength" : 200,
-    "MaxClassLength" : 250
+    "MaxFields" : 15,
+    "MaxMethods" : 15,
+    "MaxClassLength" : 300
   }
 }

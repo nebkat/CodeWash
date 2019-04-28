@@ -31,9 +31,9 @@ public class ReportWriter {
 				((MemberReport) reports.get(i)).getProblemMembers().forEach(cwMember -> memberNames.add(cwMember.getName()));
 
 				String[] problemMembers = memberNames.toArray(new String[memberNames.size()]);
-				gsonReports[i] = new GsonMemberReport(((MemberReport) reports.get(i)).getReportClass().getSimpleName(), ((MemberReport) reports.get(i)).getReportClass().getPackageName(), reports.get(i).getCodeSmell(), problemMembers);
+				gsonReports[i] = new GsonMemberReport(((MemberReport) reports.get(i)).getReportClass().getSimpleName(), ((MemberReport) reports.get(i)).getReportClass().getPackageName(), reports.get(i).getCodeSmell(), problemMembers, reports.get(i).getWarning());
 			} else {
-				gsonReports[i] = (new GsonReport(((ClassReport) reports.get(i)).getClass().getSimpleName(), ((ClassReport) reports.get(i)).getProblemClass().getPackageName(), reports.get(i).getCodeSmell()));
+				gsonReports[i] = (new GsonReport(((ClassReport) reports.get(i)).getClass().getSimpleName(), ((ClassReport) reports.get(i)).getProblemClass().getPackageName(), reports.get(i).getCodeSmell(), reports.get(i).getWarning()));
 			}
 		}
 
@@ -55,11 +55,13 @@ public class ReportWriter {
 		private String mCodeSmell;
 		private String mPackage;
 		boolean mMemberReport = false;
+		private String mWarning;
 
-		GsonReport(String _class, String _package, String codeSmell) {
+		GsonReport(String _class, String _package, String codeSmell, String warning) {
 			mClass = _class;
 			mCodeSmell = codeSmell;
 			mPackage = _package;
+			mWarning = warning;
 		}
 	}
 
@@ -67,8 +69,8 @@ public class ReportWriter {
 
 		private String[] mProblemMembers;
 
-		GsonMemberReport(String parentClass, String codeSmell, String _package, String[] members) {
-			super(parentClass, codeSmell, _package);
+		GsonMemberReport(String parentClass, String codeSmell, String _package, String[] members, String warning) {
+			super(parentClass, codeSmell, _package, warning);
 			mProblemMembers = members;
 			mMemberReport = true;
 		}
