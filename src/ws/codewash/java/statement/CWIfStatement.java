@@ -26,6 +26,14 @@ public class CWIfStatement extends CWControlStatement {
 		mElseStatement = statement;
 	}
 
+	public CWStatement getElseStatement() {
+		return mElseStatement;
+	}
+
+	public CWStatement getThenStatement() {
+		return mThenStatement;
+	}
+
 	@Override
 	public List<CWStatement> getSubStatements() {
 		return Arrays.asList(mThenStatement, mElseStatement);

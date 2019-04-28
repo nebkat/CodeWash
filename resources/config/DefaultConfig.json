@@ -1,7 +1,11 @@
 {
   "SelectedCodeSmells": [
-
-    "LongClasses"
+    "LongMethods",
+    "LongParameterList",
+    "PrimitiveObsession",
+    "LongIDs",
+    "LongClasses",
+    "ArrowheadIndentation"
   ],
   "LongMethodsConfig": {
     "MethodLength": 10
@@ -20,5 +24,8 @@
     "MaxFields" : 15,
     "MaxMethods" : 15,
     "MaxClassLength" : 300
+  },
+  "ArrowheadIndentationConfig": {
+    "MaxDepth": 4
   }
 }

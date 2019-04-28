@@ -20,6 +20,7 @@ public class Config {
 		put(LongIDs.NAME, LongIDs::new);
 		put(LongClasses.NAME, LongClasses::new);
 		put(FeatureEnvy.NAME, FeatureEnvy::new);
+		put(ArrowheadIndentation.NAME, ArrowheadIndentation::new);
 	}};
 
 	private final List<String> SelectedCodeSmells = new ArrayList<>();
@@ -28,6 +29,7 @@ public class Config {
 	private final Map<String, Number> PrimitiveObsessionConfig = new HashMap<>();
 	private final Map<String, Number> LongIDsConfig = new HashMap<>();
 	private final Map<String, Number> LongClassConfig = new HashMap<>();
+	private final Map<String, Number> ArrowheadIndentationConfig = new HashMap<>();
 
 	/**
 	 * Private constructor for singleton.
@@ -72,6 +74,7 @@ public class Config {
 		config.PrimitiveObsessionConfig.forEach(INSTANCE.PrimitiveObsessionConfig::put);
 		config.LongIDsConfig.forEach(INSTANCE.LongIDsConfig::put);
 		config.LongClassConfig.forEach(INSTANCE.LongClassConfig::put);
+		config.ArrowheadIndentationConfig.forEach(INSTANCE.ArrowheadIndentationConfig::put);
 	}
 
 	/**
@@ -109,5 +112,9 @@ public class Config {
 
 	public Number LongClassConfig(String config) {
 		return LongClassConfig.get(config);
+	}
+
+	public Number ArrowheadConfig(String config) {
+		return ArrowheadIndentationConfig.get(config);
 	}
 }

@@ -39,7 +39,7 @@ public class ReportWriter {
 
 		String asGson = gson.toJson(gsonReports);
 		try {
-
+			RESULTS_ROOT.mkdirs();
 			Path p = Paths.get(RESULTS_ROOT + "/results.json");
 			Files.write(p, asGson.getBytes());
 		} catch (IOException ex) {
