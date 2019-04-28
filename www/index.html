@@ -133,6 +133,109 @@
         </div>
         <div id="reports" class="tab-pane">
             <h1>Reports</h1>
+            <div id="generatedReports">
+                <script>
+
+                    function loadJSON(callback) {
+
+                        var xobj = new XMLHttpRequest();
+                        xobj.overrideMimeType("application/json");
+                        xobj.open('GET', 'results.json', true); // Replace 'my_data' with the path to your file
+                        xobj.onreadystatechange = function () {
+                            if (xobj.readyState == 4 && xobj.status == "200") {
+                                // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+                                callback(xobj.responseText);
+                            }
+                        };
+                        xobj.send(null);
+                    }
+
+                    function init() {
+                        loadJSON(function (response) {
+                            // Parse JSON string into object
+                            var results = JSON.parse(response);
+                            // console.log(results);
+
+                            var newSmell = true;
+
+                            var currentSmell;
+                            var nextSmell = results[0].mCodeSmell;
+
+                            for (var i = 0; i < results.length; i++) {
+
+                                var para = document.createElement("P");
+
+                                if (i !== results.length - 1) {
+                                    currentSmell = nextSmell;
+                                    nextSmell = results[i + 1].mCodeSmell;
+                                }
+
+                                if (newSmell) {
+                                    var codeSmellSpan = document.createElement("SP");
+                                    // smellNameSpan.style.borderBottom = '3px solid black';
+                                    codeSmellSpan.style.color = 'black';
+                                    codeSmellSpan.style.fontSize = '30px';
+                                    codeSmellSpan.style.borderBottom = '2.5px solid black';
+
+                                    codeSmellSpan.appendChild(document.createTextNode("Code Smell : "));
+
+                                    para.appendChild(codeSmellSpan);
+
+                                    var smellNameSpan = document.createElement("SP");
+                                    smellNameSpan.style.fontSize = '30px';
+                                    smellNameSpan.style.borderBottom = '2.5px solid black';
+                                    smellNameSpan.appendChild( document.createTextNode(results[i].mCodeSmell));
+
+                                    para.appendChild(smellNameSpan);
+                                    para.appendChild(document.createElement("BR"));
+                                    newSmell = false;
+                                }
+
+                                if (currentSmell.localeCompare(nextSmell) !== 0) {
+                                    newSmell = true;
+                                }
+
+
+                                var mPackage = document.createTextNode("Package : " + results[i].mPackage);
+                                para.appendChild(mPackage);
+                                para.appendChild(document.createElement("BR"));
+
+                                var className = document.createTextNode("Class : " + results[i].mClass);
+                                para.appendChild(className);
+                                para.appendChild(document.createElement("BR"));
+                                para.appendChild(document.createElement("BR"));
+
+                                if (results[i].mMemberReport) {
+                                    console.log(results[i].mCodeSmell + results[i].mMemberReport);
+                                    var problemMembers = results[i].mProblemMembers;
+
+                                    para.appendChild(document.createTextNode("Problem Members :"));
+                                    para.appendChild(document.createElement("BR"));
+
+                                    for (var j = 0; j < problemMembers.length; j++) {
+                                        para.appendChild(document.createTextNode(problemMembers[j]));
+                                        para.appendChild(document.createElement("BR"));
+                                    }
+                                }
+
+                                var codeView = document.createElement("TEXTAREA");
+                                codeView.style.resize = 'none';
+                                codeView.rows = '10';
+                                codeView.cols = '135';
+                                codeView.style.color = '#FFFFFF';
+                                codeView.style.backgroundColor = '#2F4F4F';
+                                para.appendChild(codeView);
+                                para.style.borderBottom = '2px solid black';
+
+                                document.getElementById("generatedReports").appendChild(para);
+                            }
+                        });
+                    }
+
+                    init();
+                </script>
+            </div>
+
         </div>
     </div>
 </div>

@@ -1,0 +1,42 @@
+[
+  {
+    "mProblemMembers": [
+      "processFormalParameterList",
+      "processNormalInterfaceDeclaration",
+      "processAnnotationTypeDeclaration",
+      "processConstructorDeclaration",
+      "processClassBodyDeclaration",
+      "processInterfaceDeclaration",
+      "processInitializerDeclaration"
+    ],
+    "mClass": "Parser",
+    "mCodeSmell": "LongIDs",
+    "mPackage": "ws.codewash.parser",
+    "mMemberReport": true
+  },
+  {
+    "mProblemMembers": [
+      "addLocalVariableDeclaration",
+      "mLocalVariableDeclarations"
+    ],
+    "mClass": "Scope",
+    "mCodeSmell": "LongIDs",
+    "mPackage": "ws.codewash.java",
+    "mMemberReport": true
+  },
+  {
+    "mProblemMembers": [
+      "getGrammarTokenDescription"
+    ],
+    "mClass": "AbstractTreeNode",
+    "mCodeSmell": "LongIDs",
+    "mPackage": "ws.codewash.parser.tree",
+    "mMemberReport": true
+  },
+  {
+    "mClass": "ClassReport",
+    "mCodeSmell": "PrimitiveObsession",
+    "mPackage": "ws.codewash.analyzer.smells.bloatedcode",
+    "mMemberReport": false
+  }
+]
