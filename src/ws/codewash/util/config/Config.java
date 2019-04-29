@@ -8,6 +8,10 @@ import ws.codewash.analyzer.smells.bloatedcode.LongMethods;
 import ws.codewash.analyzer.smells.bloatedcode.LongParameterList;
 import ws.codewash.analyzer.smells.bloatedcode.PrimitiveObsession;
 import ws.codewash.analyzer.smells.oopviolation.DataClass;
+import ws.codewash.analyzer.smells.disposables.DuplicateCode;
+import ws.codewash.analyzer.smells.disposables.LazyClass;
+import ws.codewash.analyzer.smells.disposables.TooManyLiterals;
+import ws.codewash.analyzer.smells.oopviolations.DataHiding;
 import ws.codewash.java.ParsedSourceTree;
 
 import java.util.ArrayList;
@@ -26,6 +30,11 @@ public class Config {
 		put(LongClasses.NAME, LongClasses::new);
 		put(ArrowheadIndentation.NAME, ArrowheadIndentation::new);
 		put(DataClass.NAME, DataClass::new);
+		put(DuplicateCode.NAME, DuplicateCode::new);
+		put(LazyClass.NAME, LazyClass::new);
+		put(TooManyLiterals.NAME, TooManyLiterals::new);
+		put(DataHiding.NAME, DataHiding::new);
+
 	}};
 
 	private final List<String> SelectedCodeSmells = new ArrayList<>();
@@ -35,6 +44,10 @@ public class Config {
 	private final Map<String, Number> LongIDsConfig = new HashMap<>();
 	private final Map<String, Number> LongClassConfig = new HashMap<>();
 	private final Map<String, Number> ArrowheadIndentationConfig = new HashMap<>();
+	private final Map<String, Number> DuplicateCodeConfig = new HashMap<>();
+	private final Map<String, Number> LazyClassConfig = new HashMap<>();
+	private final Map<String, Number> TooManyLiteralsConfig = new HashMap<>();
+	private final Map<String, Number> DataHidingConfig = new HashMap<>();
 
 	/**
 	 * Private constructor for singleton.
@@ -80,6 +93,11 @@ public class Config {
 		config.LongIDsConfig.forEach(INSTANCE.LongIDsConfig::put);
 		config.LongClassConfig.forEach(INSTANCE.LongClassConfig::put);
 		config.ArrowheadIndentationConfig.forEach(INSTANCE.ArrowheadIndentationConfig::put);
+		config.DuplicateCodeConfig.forEach(INSTANCE.DuplicateCodeConfig::put);
+		config.LazyClassConfig.forEach(INSTANCE.LazyClassConfig::put);
+		config.TooManyLiteralsConfig.forEach(INSTANCE.TooManyLiteralsConfig::put);
+		config.DataHidingConfig.forEach(INSTANCE.DataHidingConfig::put);
+
 	}
 
 	/**
@@ -122,4 +140,22 @@ public class Config {
 	public Number ArrowheadConfig(String config) {
 		return ArrowheadIndentationConfig.get(config);
 	}
+
+	public Number DuplicateCodeConfig(String config) {
+		return DuplicateCodeConfig.get(config);
+	}
+
+	public Number LazyClassConfig(String config) {
+		return LazyClassConfig.get(config);
+	}
+
+	public Number TooManyLiteralsConfig(String config) {
+		return TooManyLiteralsConfig.get(config);
+	}
+
+	public Number DataHidingConfig(String config) {
+		return DataHidingConfig.get(config);
+	}
+
+
 }

@@ -44,9 +44,9 @@ public class PrimitiveObsession extends CodeSmell {
 	private final double ACCEPTABLE_RATIO;
 
 	/**
-	 * Constructs a Primitive Obsession object with a {@link ParsedSourceTree} object
+	 * Constructs a Primitive Obsession object with a {@link ws.codewash.java.ParsedSourceTree} object
 	 *
-	 * @param parsedSourceTree The {@link ParsedSourceTree} to check for Primitive Obsession.
+	 * @param parsedSourceTree The {@link ws.codewash.java.ParsedSourceTree} to check for Primitive Obsession.
 	 */
 	public PrimitiveObsession(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
@@ -55,7 +55,7 @@ public class PrimitiveObsession extends CodeSmell {
 	}
 
 	/**
-	 * Procedure for detecting Primitive Obsession across the {@link ParsedSourceTree} object.
+	 * Procedure for detecting Primitive Obsession across the {@link ws.codewash.java.ParsedSourceTree} object.
 	 *
 	 * @return A list of {@link ws.codewash.analyzer.reports.Report} which contains all of the problem classes.
 	 */
@@ -79,14 +79,9 @@ public class PrimitiveObsession extends CodeSmell {
 			int totalFields = value.getFields().size();
 			if (totalFields > 0) {
 				double ratio = (double) totalPrimitives / totalFields;
-				Log.d(NAME, value.getSimpleName() + "Total Fields = " + totalFields);
-				Log.d(NAME, value.getSimpleName() + "Total Primitives = " + totalPrimitives);
-
-				Log.d(NAME, value.getSimpleName() + "Ratio is " + ratio);
 
 				Log.d(NAME, totalFields + " > " + MIN_NUM_FIELDS + " and " + ratio + " > " + 0.5);
 				if (totalFields > MIN_NUM_FIELDS && ratio > 0.5) {
-					Log.i(NAME, "Class = " + value.getSimpleName() + " total fields = " + totalFields + " total Primitives = " + totalPrimitives);
 					reports.add(new ClassReport(NAME, value, Warning.CAUTION));
 					Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
 				} else {
