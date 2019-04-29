@@ -10,7 +10,6 @@ import ws.codewash.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO : Finish and test implementation
 
 /**
  * Class used to manage the Primitive Obsession Code Smell.
@@ -53,12 +52,11 @@ public class PrimitiveObsession extends CodeSmell {
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
 			int totalPrimitives = (int) value.getFields()
 					.parallelStream()
-					.filter(cwField -> cwField.getType().isPrimitive())
+					.filter(cwField -> cwField.getType() != null && cwField.getType().isPrimitive())
 					.count();
 			int totalFields = value.getFields().size();
 			if (totalFields > 0) {
 				double ratio = (double) totalPrimitives / totalFields;
-
 
 				if (totalFields > mConfig.minReqFields && ratio > mConfig.acceptableRatio) {
 					reports.add(new ClassReport(NAME,  Warning.CAUTION, value));

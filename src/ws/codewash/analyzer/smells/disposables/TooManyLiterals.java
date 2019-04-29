@@ -14,6 +14,7 @@ import ws.codewash.util.config.Config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,34 +71,27 @@ public class TooManyLiterals extends CodeSmell {
 
 		Map<String, Integer> countMap = new HashMap<>();
 
-
-
 		literals.forEach(token -> countMap.compute(token.getRawValue(), (k, v) -> (v == null) ? 1 : v + 1));
 
-		List<String> tempList = new ArrayList<>();
+
+		List<Literal> removalList = new ArrayList<>();
 
 		countMap.forEach((k, v) -> {
+
 			if (v < mConfig.literalLength) {
-				literals.remove(k);
-				tempList.add(k);
+				for (Literal literal : literals) {
+					if (literal.getRawValue().compareTo(k) == 0) {
+						removalList.add(literal);
+					}
+				}
 			}
 		});
 
-		//literals.forEach(System.out::println);
-		tempList.parallelStream().forEach(countMap::remove);
-
-
-		if (Arguments.get().verbose()) {
-			countMap.forEach((k, v) -> {
-				if (v > mConfig.literalCount) {
-					//Log.d(NAME, k + " -> " + v);
-				}
-			});
+		literals.removeAll(removalList);
+		
+		if (!literals.isEmpty()) {
+			literals.stream().forEach(literal -> reports.add(new LiteralReport(NAME, Warning.CAUTION, literal)));
 		}
-//
-//		if (!countMap.isEmpty()) {
-//			reports.add(new LiteralReport(NAME, Warning.CAUTION));
-//		}
 
 		return reports;
 	}

@@ -55,14 +55,16 @@ public class DataClass extends CodeSmell {
 							boolean fieldMethod = false;
 
 							//	Checking if method returns a field
-							if (m.getReturnType() != CWVoid.VOID) {
+							if (m.getReturnType() != null && m.getReturnType() != CWVoid.VOID) {
 								if (m.getBlock() != null)
 									fieldMethod = m.getBlock().getStatements()
 											.stream()
 											.filter(CWReturnStatement.class::isInstance)
 											.anyMatch(s -> cwClass.getFields()
 													.stream()
-													.anyMatch(f -> s.getContent().toLowerCase().contains(f.getName().toLowerCase())
+													.anyMatch(f -> s.getContent()
+															.toLowerCase()
+															.contains(f.getName().toLowerCase())
 															&& f.getType()
 															.equals(m.getReturnType())));
 							}
