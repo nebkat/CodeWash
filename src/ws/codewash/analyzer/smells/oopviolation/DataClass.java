@@ -21,6 +21,8 @@ public class DataClass extends CodeSmell {
 	 */
 	public static final String NAME = "DataClass";
 
+	private Config mConfig = ws.codewash.util.config.Config.get().configs.dataClass;
+
 	/**
 	 * Constructs a CodeSmell Object with a {@link ParsedSourceTree} object
 	 *
@@ -74,5 +76,8 @@ public class DataClass extends CodeSmell {
 	@Override
 	public String getName() {
 		return NAME;
+	}
+
+	public static class Config {
 	}
 }

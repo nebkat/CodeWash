@@ -19,12 +19,7 @@ public class ArrowheadIndentation extends CodeSmell {
 	 */
 	public static final String NAME = "ArrowheadIndentation";
 
-	/**
-	 * String used to retrieve the maximum number of characters from the config.
-	 */
-	private static final String CONFIG_DEPTH = "MaxDepth";
-
-	private final int MAX_DEPTH;
+	private Config mConfig = ws.codewash.util.config.Config.get().configs.arrowheadIndentation;
 
 	/**
 	 * Constructs a CodeSmell Object with a {@link ParsedSourceTree} object
@@ -33,7 +28,6 @@ public class ArrowheadIndentation extends CodeSmell {
 	 */
 	public ArrowheadIndentation(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
-		MAX_DEPTH = Config.get().ArrowheadConfig(CONFIG_DEPTH).intValue();
 	}
 
 	@Override
@@ -77,7 +71,7 @@ public class ArrowheadIndentation extends CodeSmell {
 	 * @return if the statement involves arrowhead indentation.
 	 */
 	private boolean detectArrowhead(CWIfStatement ifStatement, int depth) {
-		if (depth > MAX_DEPTH)
+		if (depth > mConfig.maxDepth)
 			return true;
 
 		// Checking the block of the if statement is arrowhead
@@ -116,5 +110,9 @@ public class ArrowheadIndentation extends CodeSmell {
 	@Override
 	public String getName() {
 		return NAME;
+	}
+
+	public static class Config {
+		private final int maxDepth = 4;
 	}
 }

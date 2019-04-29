@@ -8,7 +8,6 @@ import ws.codewash.analyzer.smells.bloatedcode.LongParameterList;
 import ws.codewash.analyzer.smells.bloatedcode.PrimitiveObsession;
 import ws.codewash.analyzer.smells.disposables.ArrowheadIndentation;
 import ws.codewash.analyzer.smells.oopviolation.DataClass;
-import ws.codewash.analyzer.smells.disposables.DuplicateCode;
 import ws.codewash.analyzer.smells.disposables.LazyClass;
 import ws.codewash.analyzer.smells.disposables.TooManyLiterals;
 import ws.codewash.analyzer.smells.oopviolation.DataHiding;
@@ -29,7 +28,6 @@ public class Config {
 		put(LongClasses.NAME, LongClasses::new);
 		put(ArrowheadIndentation.NAME, ArrowheadIndentation::new);
 		put(DataClass.NAME, DataClass::new);
-		put(DuplicateCode.NAME, DuplicateCode::new);
 		put(LazyClass.NAME, LazyClass::new);
 		put(TooManyLiterals.NAME, TooManyLiterals::new);
 		put(DataHiding.NAME, DataHiding::new);

@@ -6,6 +6,7 @@ import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CWMember;
 import ws.codewash.java.ParsedSourceTree;
+import ws.codewash.util.config.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,9 @@ public class DataHiding extends CodeSmell {
 	 * Name of the class, used for reports.
 	 */
 	public static final String NAME = "ViolationOfDataHiding";
+
+	private Config mConfig = ws.codewash.util.config.Config.get().configs.dataHiding;
+
 
 	/**
 	 * Constructs a DataHiding object with a {@link ws.codewash.java.ParsedSourceTree} object.
@@ -66,4 +70,6 @@ public class DataHiding extends CodeSmell {
 	public String getName() {
 		return NAME;
 	}
+
+	public static class Config {}
 }

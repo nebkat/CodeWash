@@ -6,7 +6,6 @@ import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CWMethod;
 import ws.codewash.java.ParsedSourceTree;
-import ws.codewash.util.config.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ public class LongClasses extends CodeSmell {
 		List<Report> reports = new ArrayList<>();
 
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
-			int totalFields = (int)value.getFields().parallelStream().filter(cwField -> !cwField.isFinal()).count();
+			int totalFields = (int) value.getFields().parallelStream().filter(cwField -> !cwField.isFinal()).count();
 
 			int totalMethods = value.getMethods().size();
 
@@ -44,12 +43,10 @@ public class LongClasses extends CodeSmell {
 				totalMethodLength += cwMethod.getMethodLength();
 			}
 
-			if (totalFields > mConfig.maxFields && totalMethods > mConfig.maxMethods && totalMethodLength + totalContructorsLength > mConfig.maxMethodLength
-				|| totalFields > mConfig.maxFields && totalMethods > mConfig.maxMethods || totalFields > mConfig.maxFields && totalMethodLength + totalContructorsLength > mConfig.maxMethodLength
-				|| totalFields > mConfig.maxMethods && totalMethodLength + totalContructorsLength > mConfig.maxMethodLength) {
+			if (totalFields > mConfig.maxFields && totalMethods > mConfig.maxMethods
+					|| totalFields > mConfig.maxFields && totalMethodLength + totalContructorsLength > mConfig.maxMethodLength) {
 				reports.add(new ClassReport(NAME, value, Warning.WARNING));
-			}
-			else if (totalMethodLength + totalContructorsLength > mConfig.maxMethodLength) {
+			} else if (totalMethodLength + totalContructorsLength > mConfig.maxMethodLength) {
 				reports.add(new ClassReport(NAME, value, Warning.CAUTION));
 			}
 		});

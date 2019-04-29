@@ -15,12 +15,10 @@ public class LazyClass extends CodeSmell {
 
 	public static final String NAME = "LazyClass";
 
-	private final String CONFIG_LAZY_LENTH = "MinLength";
-	private final int MIN_LENGTH;
+	private Config mConfig = ws.codewash.util.config.Config.get().configs.lazyClass;
 
 	public LazyClass(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
-		MIN_LENGTH = Config.get().LazyClassConfig(CONFIG_LAZY_LENTH).intValue();
 	}
 
 	/**
@@ -44,7 +42,7 @@ public class LazyClass extends CodeSmell {
 					totalMethodLength += cwMethod.getMethodLength();
 				}
 
-				if (totalFields + totalMethods + totalMethodLength < MIN_LENGTH) {
+				if (totalFields + totalMethods + totalMethodLength < mConfig.minLength) {
 					reports.add(new ClassReport(NAME, value, Warning.ISSUE));
 				}
 			}
@@ -64,4 +62,7 @@ public class LazyClass extends CodeSmell {
 	}
 
 
+	public static class Config {
+		private final int minLength = 15;
+	}
 }
