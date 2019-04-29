@@ -469,6 +469,8 @@ public class Parser {
 
 		processTypeParameters(node.get("[TypeParameters]"), cwConstructor);
 		processFormalParameterList(node.get("[FormalParameterList]"), cwConstructor);
+
+		processBlock(node.get("ConstructorBody"), cwConstructor, cwConstructor::setBlock);
 	}
 
 	// FieldDeclaration | ConstantDeclaration | MethodDeclaration | InterfaceMethodDeclaration | ClassDeclaration | InterfaceDeclaration
@@ -592,25 +594,31 @@ public class Parser {
 			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO
 		};
 
-		// TODO: BLOCK
-		scope.addInitializer(new CWInitializer(scope, staticOrInstance));
+		CWInitializer cwInitializer = new CWInitializer(scope, staticOrInstance);
+		scope.addInitializer(cwInitializer);
+
+		processBlock(node.get("Block"), cwInitializer, cwInitializer::setBlock);
 	}
 
 	private void processBlock(SyntacticTreeNode node, Scope scope, Consumer<? super CWBlock> consumer) {
 		switch (node.getName()) {
 			case "';'": return;
-			case "Block": break; // Parsed below
-			default: throw new IllegalStateException("Unexpected " + node.getName());
+			case "ConstructorBody":
+			case "Block":
+				break; // Parsed below
+			default: throw new IllegalStateException("Unexpected " + node.getName()); // TODO
 		}
 
 		CWBlock block = new CWBlock(node, scope);
+		consumer.accept(block);
 
-		// TODO: Explicit constructor invocation
+		if (node.getName().equals("ConstructorBody")) {
+			CWExpression expression = parseExpression(node.get("[ExplicitConstructorInvocation]"), block);
+			if (expression != null) block.addStatement(expression);
+		}
 
 		SyntacticTreeNode blockStatementsNode = node.get("[BlockStatements]").get();
 		processBlockStatements(blockStatementsNode, block, block::addStatement);
-
-		consumer.accept(block);
 	}
 
 	private void processBlockStatements(SyntacticTreeNode node, Scope scope, Consumer<CWStatement> consumer) {

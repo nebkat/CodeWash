@@ -1,5 +1,7 @@
 package ws.codewash.java;
 
+import ws.codewash.java.statement.CWBlock;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +13,8 @@ public class CWConstructor extends Scope implements CWConstructorOrMethod, CWPar
 
 	private final List<CWTypeParameter> mTypeParameters = new ArrayList<>();
 	private final List<CWVariable> mParameters = new ArrayList<>();
+
+	private CWBlock mBlock;
 
 	public CWConstructor(CWClassOrInterface parent, int modifiers) {
 		mParent = parent;
@@ -25,6 +29,14 @@ public class CWConstructor extends Scope implements CWConstructorOrMethod, CWPar
 	public void addParameter(CWVariable parameter) {
 		mParameters.add(parameter);
 		addLocalVariableDeclaration(parameter);
+	}
+
+	public CWBlock getBlock() {
+		return mBlock;
+	}
+
+	public void setBlock(CWBlock block) {
+		mBlock = block;
 	}
 
 	private CWClassOrInterface getParent() {

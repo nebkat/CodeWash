@@ -2,7 +2,7 @@ package ws.codewash.java;
 
 import ws.codewash.java.statement.CWBlock;
 
-public class CWInitializer {
+public class CWInitializer extends Scope {
 	private final CWClassOrInterface mParent;
 	private boolean mStatic;
 
@@ -15,5 +15,13 @@ public class CWInitializer {
 
 	public boolean isStatic() {
 		return mStatic;
+	}
+
+	public CWBlock getBlock() {
+		return mBlock;
+	}
+
+	public void setBlock(CWBlock block) {
+		mBlock = block;
 	}
 }
