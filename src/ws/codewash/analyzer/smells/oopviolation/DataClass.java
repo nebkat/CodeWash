@@ -59,7 +59,7 @@ public class DataClass extends CodeSmell {
 											.filter(CWReturnStatement.class::isInstance)
 											.anyMatch(s -> cwClass.getFields()
 													.stream()
-													.anyMatch(f -> s.getNode().getContent().toLowerCase().contains(f.getName().toLowerCase())
+													.anyMatch(f -> s.getContent().toLowerCase().contains(f.getName().toLowerCase())
 															&& f.getType().equals(m.getReturnType())));
 							}
 

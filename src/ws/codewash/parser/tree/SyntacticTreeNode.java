@@ -1,6 +1,7 @@
 package ws.codewash.parser.tree;
 
 import ws.codewash.java.CompilationUnit;
+import ws.codewash.java.Location;
 import ws.codewash.parser.grammar.GrammarToken;
 
 public class SyntacticTreeNode extends AbstractTreeNode<SyntacticTreeNode> {
@@ -35,5 +36,11 @@ public class SyntacticTreeNode extends AbstractTreeNode<SyntacticTreeNode> {
 
 	public int getNextTokenOffset() {
 		return mTokenOffset + mTokenCount;
+	}
+
+	public Location getLocation() {
+		return new Location(mRawCompilationUnit,
+				mRawCompilationUnit.getTokens().get(mTokenOffset).getIndex(),
+				mRawCompilationUnit.getTokens().get(mTokenOffset + mTokenCount - 1).getIndex());
 	}
 }

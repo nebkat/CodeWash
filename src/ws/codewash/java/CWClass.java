@@ -1,7 +1,5 @@
 package ws.codewash.java;
 
-import ws.codewash.util.Log;
-
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.List;
@@ -11,8 +9,8 @@ public class CWClass extends CWClassOrInterface {
 	private CWClass mSuperClass;
 	private Set<CWClass> mSubClasses = new HashSet<>();
 
-	public CWClass(Scope enclosingScope, int modifiers, String name, RawType superClass, List<RawType> interfaces) {
-		super(enclosingScope, modifiers, name, interfaces);
+	public CWClass(Location location, Scope enclosingScope, int modifiers, String name, RawType superClass, List<RawType> interfaces) {
+		super(location, enclosingScope, modifiers, name, interfaces);
 
 		resolve(new PendingType<>(superClass, this::setSuperClass));
 	}

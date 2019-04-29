@@ -7,8 +7,8 @@ import java.util.List;
 public class CWEnum extends CWClassOrInterface {
 	private List<String> mConstants = new ArrayList<>();
 
-	public CWEnum(Scope enclosingScope, int modifiers, String name, List<RawType> interfaces) {
-		super(enclosingScope, modifiers, name, interfaces);
+	public CWEnum(Location location, Scope enclosingScope, int modifiers, String name, List<RawType> interfaces) {
+		super(location, enclosingScope, modifiers, name, interfaces);
 	}
 
 	CWEnum(Scope enclosingScope, Class _class) {

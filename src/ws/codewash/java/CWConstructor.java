@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CWConstructor extends Scope implements CWConstructorOrMethod, CWParameterizable, Modifiable {
+public class CWConstructor extends Scope implements CWConstructorOrMethod, CWParameterizable, Modifiable, Locatable {
+	private Location mLocation;
+
 	private final CWClassOrInterface mParent;
 
 	private final int mModifiers;
@@ -16,9 +18,15 @@ public class CWConstructor extends Scope implements CWConstructorOrMethod, CWPar
 
 	private CWBlock mBlock;
 
-	public CWConstructor(CWClassOrInterface parent, int modifiers) {
+	public CWConstructor(Location location, CWClassOrInterface parent, int modifiers) {
+		mLocation = location;
 		mParent = parent;
 		mModifiers = modifiers;
+	}
+
+	@Override
+	public Location getLocation() {
+		return mLocation;
 	}
 
 	public void addTypeParameter(CWTypeParameter typeParameter) {

@@ -1,19 +1,16 @@
 package ws.codewash.java;
 
 import java.lang.reflect.Modifier;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class CWInterface extends CWClassOrInterface {
 	private Set<CWInterface> mSubInterfaces = new HashSet<>();
 	private Set<CWClassOrInterface> mImplementingClasses = new HashSet<>();
 
-	public CWInterface(Scope enclosingScope, int modifiers, String name, List<RawType> interfaces) {
-		super(enclosingScope, modifiers, name, interfaces);
+	public CWInterface(Location location, Scope enclosingScope, int modifiers, String name, List<RawType> interfaces) {
+		super(location, enclosingScope, modifiers, name, interfaces);
 	}
 
 	CWInterface(Scope enclosingScope, Class _class) {

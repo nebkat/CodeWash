@@ -1,5 +1,6 @@
 package ws.codewash.java.statement;
 
+import ws.codewash.java.Location;
 import ws.codewash.java.Scope;
 import ws.codewash.java.statement.expression.CWExpression;
 import ws.codewash.parser.tree.SyntacticTreeNode;
@@ -7,8 +8,8 @@ import ws.codewash.parser.tree.SyntacticTreeNode;
 public abstract class CWSingleExpressionControlStatement extends CWControlStatement {
 	private CWExpression mExpression;
 
-	public CWSingleExpressionControlStatement(SyntacticTreeNode node, Scope enclosingScope, CWExpression expression) {
-		super(node, enclosingScope);
+	public CWSingleExpressionControlStatement(Location location, Scope enclosingScope, CWExpression expression) {
+		super(location, enclosingScope);
 
 		mExpression = expression;
 	}

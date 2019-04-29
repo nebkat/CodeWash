@@ -3,8 +3,6 @@ package ws.codewash.java;
 import static ws.codewash.java.ParsedSourceTree.dot;
 
 public class CWPackage extends Scope {
-	private static final String TAG = CWPackage.class.getSimpleName();
-
 	private String mName;
 
 	public CWPackage(Scope enclosingScope, String name) {

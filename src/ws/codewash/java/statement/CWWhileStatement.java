@@ -1,5 +1,6 @@
 package ws.codewash.java.statement;
 
+import ws.codewash.java.Location;
 import ws.codewash.java.statement.expression.CWExpression;
 import ws.codewash.java.Scope;
 import ws.codewash.parser.tree.SyntacticTreeNode;
@@ -12,8 +13,8 @@ public class CWWhileStatement extends CWControlStatement {
 	private CWStatement mStatement;
 	private boolean mDoWhileLoop;
 
-	public CWWhileStatement(SyntacticTreeNode node, Scope enclosingScope, boolean doWhileLoop, CWExpression condition) {
-		super(node, enclosingScope);
+	public CWWhileStatement(Location location, Scope enclosingScope, boolean doWhileLoop, CWExpression condition) {
+		super(location, enclosingScope);
 		mCondition = condition;
 		mDoWhileLoop = doWhileLoop;
 	}

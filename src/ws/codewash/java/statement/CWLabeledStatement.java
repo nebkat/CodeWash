@@ -1,5 +1,6 @@
 package ws.codewash.java.statement;
 
+import ws.codewash.java.Location;
 import ws.codewash.java.Scope;
 import ws.codewash.parser.tree.SyntacticTreeNode;
 
@@ -10,8 +11,8 @@ public class CWLabeledStatement extends CWStatement {
 	private String mLabel;
 	private CWStatement mStatement;
 
-	public CWLabeledStatement(SyntacticTreeNode node, Scope enclosingScope, String label) {
-		super(node, enclosingScope);
+	public CWLabeledStatement(Location location, Scope enclosingScope, String label) {
+		super(location, enclosingScope);
 		mLabel = label;
 	}
 

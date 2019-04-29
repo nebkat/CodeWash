@@ -1,5 +1,7 @@
 package ws.codewash.java.statement;
 
+import ws.codewash.java.Locatable;
+import ws.codewash.java.Location;
 import ws.codewash.java.Scope;
 import ws.codewash.parser.tree.SyntacticTreeNode;
 
@@ -8,16 +10,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public abstract class CWStatement extends Scope {
-	private final SyntacticTreeNode mNode;
+public abstract class CWStatement extends Scope implements Locatable {
+	private final Location mLocation;
 
-	public CWStatement(SyntacticTreeNode node, Scope enclosingScope) {
+	public CWStatement(Location location, Scope enclosingScope) {
 		super(enclosingScope);
-		mNode = node;
+		mLocation = location;
 	}
 
-	public SyntacticTreeNode getNode() {
-		return mNode;
+	@Override
+	public Location getLocation() {
+		return mLocation;
 	}
 
 	public List<CWStatement> getSubStatements() {

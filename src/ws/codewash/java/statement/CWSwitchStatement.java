@@ -1,5 +1,6 @@
 package ws.codewash.java.statement;
 
+import ws.codewash.java.Location;
 import ws.codewash.java.Scope;
 import ws.codewash.java.statement.expression.CWExpression;
 import ws.codewash.parser.tree.SyntacticTreeNode;
@@ -13,8 +14,8 @@ public class CWSwitchStatement extends CWControlStatement {
 	private CWExpression mExpression;
 	private Map<CWExpression, List<CWStatement>> mCaseStatements = new LinkedHashMap<>();
 
-	public CWSwitchStatement(SyntacticTreeNode node, Scope enclosingScope, CWExpression expression) {
-		super(node, enclosingScope);
+	public CWSwitchStatement(Location location, Scope enclosingScope, CWExpression expression) {
+		super(location, enclosingScope);
 
 		mExpression = expression;
 	}

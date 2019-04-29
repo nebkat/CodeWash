@@ -88,6 +88,10 @@ public class CompilationUnit extends Scope {
 		return mSyntacticTree;
 	}
 
+	public String getContentRange(int startElement, int endElement) {
+		return mContent.substring(mInputElements.get(startElement).getStart(), mInputElements.get(endElement).getEnd());
+	}
+
 	@Override
 	public void addTypeDeclaration(CWType type) {
 		super.addTypeDeclaration(type);

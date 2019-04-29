@@ -1,5 +1,6 @@
 package ws.codewash.java.statement;
 
+import ws.codewash.java.Location;
 import ws.codewash.java.Scope;
 import ws.codewash.parser.tree.SyntacticTreeNode;
 
@@ -10,8 +11,8 @@ public class CWTryStatement extends CWStatement {
 	private List<CWCatchStatement> mCatchClauses = new ArrayList<>();
 	private CWBlock mFinallyBlock;
 
-	public CWTryStatement(SyntacticTreeNode node, Scope enclosingScope) {
-		super(node, enclosingScope);
+	public CWTryStatement(Location location, Scope enclosingScope) {
+		super(location, enclosingScope);
 	}
 
 	public List<CWCatchStatement> getCatchClauses() {

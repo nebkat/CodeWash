@@ -1,7 +1,5 @@
 package ws.codewash.java;
 
-import ws.codewash.util.Log;
-
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,7 +9,9 @@ import java.util.stream.Collectors;
 
 import static ws.codewash.java.ParsedSourceTree.dot;
 
-public abstract class CWClassOrInterface extends CWReferenceType implements CWParameterizable, Modifiable {
+public abstract class CWClassOrInterface extends CWReferenceType implements CWParameterizable, Modifiable, Locatable {
+	private Location mLocation;
+
 	private final Class mClass;
 	private final CWPackage mPackage;
 	private Set<CWType> mInterfaces = new HashSet<>();
@@ -29,8 +29,10 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 	private Set<CWMethod> mMethods = new HashSet<>();
 	private Set<CWField> mFields = new HashSet<>();
 
-	CWClassOrInterface(Scope enclosingScope, int modifiers, String name, List<RawType> interfaces) {
+	CWClassOrInterface(Location location, Scope enclosingScope, int modifiers, String name, List<RawType> interfaces) {
 		super(enclosingScope);
+
+		mLocation = location;
 
 		mClass = null;
 		mPackage = enclosingScope.getPackage();
@@ -95,6 +97,11 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 		}
 
 		return cwClassOrInterface;
+	}
+
+	@Override
+	public Location getLocation() {
+		return mLocation;
 	}
 
 	protected abstract int getValidModifiers();

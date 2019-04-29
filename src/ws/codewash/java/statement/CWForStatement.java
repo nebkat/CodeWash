@@ -1,6 +1,7 @@
 package ws.codewash.java.statement;
 
 import ws.codewash.java.CWVariable;
+import ws.codewash.java.Location;
 import ws.codewash.java.Scope;
 import ws.codewash.java.statement.expression.CWExpression;
 import ws.codewash.parser.tree.SyntacticTreeNode;
@@ -16,8 +17,8 @@ public class CWForStatement extends CWControlStatement {
 	private List<CWExpression> mUpdateExpressions;
 	private CWStatement mStatement;
 
-	public CWForStatement(SyntacticTreeNode node, Scope enclosingScope) {
-		super(node, enclosingScope);
+	public CWForStatement(Location location, Scope enclosingScope) {
+		super(location, enclosingScope);
 	}
 
 	public void setVariable(CWVariable variable) {

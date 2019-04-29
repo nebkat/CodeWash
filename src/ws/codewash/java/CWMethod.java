@@ -64,7 +64,7 @@ public class CWMethod extends Scope implements CWConstructorOrMethod, CWParamete
 	public int getMethodLength() {
 
 		if (mBlock != null) {
-			String tmpContent = mBlock.getNode().getContent();
+			String tmpContent = mBlock.getContent();
 			int blankLines = 0;
 
 			String[] lines = tmpContent.split("\n");

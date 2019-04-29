@@ -377,7 +377,7 @@ public class Parser {
 				superClass = parseClassType(superClassNode.get("ClassType"), 0);
 			}
 
-			CWClass cwClass = new CWClass(scope, modifiers, name, superClass, superInterfaces);
+			CWClass cwClass = new CWClass(node.getLocation(), scope, modifiers, name, superClass, superInterfaces);
 
 			processTypeParameters(node.get("[TypeParameters]"), cwClass);
 
@@ -388,7 +388,7 @@ public class Parser {
 
 			mParsedSourceTree.addType(cwClass);
 		} else {
-			CWEnum cwEnum = new CWEnum(scope, modifiers, name, superInterfaces);
+			CWEnum cwEnum = new CWEnum(node.getLocation(), scope, modifiers, name, superInterfaces);
 
 			SyntacticTreeNode enumBody = node.get("EnumBody");
 			SyntacticTreeNode enumConstantList = enumBody.get("[EnumConstantList]").get();
@@ -433,7 +433,7 @@ public class Parser {
 			superInterfaces = parseClassTypeList(superInterfacesNode.get("InterfaceTypeList"));
 		}
 
-		CWInterface cwInterface = new CWInterface(scope, modifiers, name, superInterfaces);
+		CWInterface cwInterface = new CWInterface(node.getLocation(), scope, modifiers, name, superInterfaces);
 
 		processTypeParameters(node.get("[TypeParameters]"), cwInterface);
 
@@ -474,7 +474,7 @@ public class Parser {
 			throw new IllegalStateException("Unexpected constructor " + name + " in " + classOrInterface.getSimpleName());
 		}
 
-		CWConstructor cwConstructor = new CWConstructor(classOrInterface, modifiers);
+		CWConstructor cwConstructor = new CWConstructor(node.getLocation(), classOrInterface, modifiers);
 		classOrInterface.addConstructor(cwConstructor);
 
 		processTypeParameters(node.get("[TypeParameters]"), cwConstructor);
@@ -515,7 +515,7 @@ public class Parser {
 			String name = variableDeclaratorId.get("Identifier").getContent();
 			RawType type = parseType(node.get("Type"), parseArrayDims(variableDeclaratorId.get("[Dims]").get()));
 
-			CWField cwField = new CWField(classOrInterface, modifiers, type, name);
+			CWField cwField = new CWField(node.getLocation(), classOrInterface, modifiers, type, name);
 			classOrInterface.addField(cwField);
 		}
 	}
@@ -593,7 +593,7 @@ public class Parser {
 				name = variableDeclaratorId.get("Identifier").getContent();
 			}
 
-			constructorOrMethod.addParameter(new CWVariable((Scope) constructorOrMethod, modifiers, type, name));
+			constructorOrMethod.addParameter(new CWVariable(node.getLocation(), (Scope) constructorOrMethod, modifiers, type, name));
 		}
 	}
 
@@ -604,7 +604,7 @@ public class Parser {
 			default -> throw new IllegalStateException("Unexpected " + node.getName()); // TODO
 		};
 
-		CWInitializer cwInitializer = new CWInitializer(scope, staticOrInstance);
+		CWInitializer cwInitializer = new CWInitializer(node.getLocation(), scope, staticOrInstance);
 		scope.addInitializer(cwInitializer);
 
 		processBlock(node.get("Block"), cwInitializer, cwInitializer::setBlock);
@@ -619,7 +619,7 @@ public class Parser {
 			default: throw new IllegalStateException("Unexpected " + node.getName()); // TODO
 		}
 
-		CWBlock block = new CWBlock(node, scope);
+		CWBlock block = new CWBlock(node.getLocation(), scope);
 		consumer.accept(block);
 
 		if (node.getName().equals("ConstructorBody")) {
@@ -658,8 +658,8 @@ public class Parser {
 			String name = variableDeclaratorId.get("Identifier").getContent();
 			RawType type = parseType(node.get("LocalVariableType").get(), parseArrayDims(variableDeclaratorId.get("[Dims]").get()));
 
-			CWVariable cwVariable = new CWVariable(scope, modifiers, type, name);
-			consumer.accept(new CWLocalVariableDeclarationStatement(node, scope, cwVariable));
+			CWVariable cwVariable = new CWVariable(node.getLocation(), scope, modifiers, type, name);
+			consumer.accept(new CWLocalVariableDeclarationStatement(node.getLocation(), scope, cwVariable));
 		}
 	}
 
@@ -677,7 +677,7 @@ public class Parser {
 					case "BreakStatement" -> processBreakStatement(node, scope, consumer);
 					case "ContinueStatement" -> processContinueStatement(node, scope, consumer);
 					case "DoStatement" -> processWhileStatement(node, scope, consumer);
-					case "EmptyStatement" -> consumer.accept(new CWEmptyStatement(node, scope));
+					case "EmptyStatement" -> consumer.accept(new CWEmptyStatement(node.getLocation(), scope));
 					case "ExpressionStatement" -> {} // TODO:
 					case "ReturnStatement" -> processReturnStatement(node, scope, consumer);
 					case "SwitchStatement" -> processSwitchStatement(node, scope, consumer);
@@ -698,18 +698,18 @@ public class Parser {
 		CWExpression condition = parseExpression(node.get(1), scope);
 		CWExpression detailMessageExpression = node.getElementCount() > 3 ?
 				parseExpression(node.get(3), scope) : null;
-		CWAssertStatement statement = new CWAssertStatement(node, scope, condition, detailMessageExpression);
+		CWAssertStatement statement = new CWAssertStatement(node.getLocation(), scope, condition, detailMessageExpression);
 		consumer.accept(statement);
 	}
 
 	private void processBreakStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWBreakStatement> consumer) {
 		CWExpression expression = parseExpression(node.get("Expression"), scope);
-		CWBreakStatement statement = new CWBreakStatement(node, scope, expression);
+		CWBreakStatement statement = new CWBreakStatement(node.getLocation(), scope, expression);
 		consumer.accept(statement);
 	}
 
 	private void processContinueStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWContinueStatement> consumer) {
-		CWContinueStatement statement = new CWContinueStatement(node, scope, node.get("[Identifier]").getContent());
+		CWContinueStatement statement = new CWContinueStatement(node.getLocation(), scope, node.get("[Identifier]").getContent());
 		consumer.accept(statement);
 	}
 
@@ -728,7 +728,7 @@ public class Parser {
 	// 'for' '(' [ForInit] ';' [Expression] ';' [ForUpdate] ')' Statement
 	// 'for' '(' [ForInit] ';' [Expression] ';' [ForUpdate] ')' StatementNoShortIf
 	private void processBasicForStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWForStatement> consumer) {
-		CWForStatement statement = new CWForStatement(node, scope);
+		CWForStatement statement = new CWForStatement(node.getLocation(), scope);
 		consumer.accept(statement);
 
 		SyntacticTreeNode forInitNode = node.get("[ForInit]").get();
@@ -752,7 +752,7 @@ public class Parser {
 	// 'for' '(' {VariableModifier} LocalVariableType VariableDeclaratorId ':' Expression ')' StatementNoShortIf
 	private void processEnhancedForStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWEnhancedForStatement> consumer) {
 		CWExpression expression = parseExpression(node.get("Expression"), scope);
-		CWEnhancedForStatement statement = new CWEnhancedForStatement(node, scope, expression);
+		CWEnhancedForStatement statement = new CWEnhancedForStatement(node.getLocation(), scope, expression);
 		consumer.accept(statement);
 
 		int modifiers = parseModifiers(node.get("{VariableModifier}"));
@@ -760,7 +760,7 @@ public class Parser {
 		String name = variableDeclaratorId.get("Identifier").getContent();
 		RawType type = parseType(node.get("LocalVariableType").get());
 
-		CWVariable cwVariable = new CWVariable(scope, modifiers, type, name);
+		CWVariable cwVariable = new CWVariable(node.getLocation(), scope, modifiers, type, name);
 		statement.setVariable(cwVariable);
 
 		boolean noShortIf = node.getName().endsWith("NoShortIf");
@@ -769,7 +769,7 @@ public class Parser {
 
 	private void processReturnStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWReturnStatement> consumer) {
 		CWExpression expression = parseExpression(node.get("Expression"), scope);
-		CWReturnStatement statement = new CWReturnStatement(node, scope, expression);
+		CWReturnStatement statement = new CWReturnStatement(node.getLocation(), scope, expression);
 		consumer.accept(statement);
 	}
 
@@ -788,7 +788,7 @@ public class Parser {
 	// 'switch' '(' Expression ')' '{' {SwitchBlockStatementGroup} '}'
 	private void processBasicSwitchStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWSwitchStatement> consumer) {
 		CWExpression expression = parseExpression(node.get("Expression"), scope);
-		CWSwitchStatement statement = new CWSwitchStatement(node, scope, expression);
+		CWSwitchStatement statement = new CWSwitchStatement(node.getLocation(), scope, expression);
 		consumer.accept(statement);
 
 		SyntacticTreeNode switchBlockStatementGroups = node.get("{SwitchBlockStatementGroup}");
@@ -812,7 +812,7 @@ public class Parser {
 	// 'switch' '(' Expression ')' '{' {EnhancedSwitchCase} '}'
 	private void processEnhancedSwitchStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWEnhancedSwitchStatement> consumer) {
 		CWExpression expression = parseExpression(node.get("Expression"), scope);
-		CWEnhancedSwitchStatement statement = new CWEnhancedSwitchStatement(node, scope, expression);
+		CWEnhancedSwitchStatement statement = new CWEnhancedSwitchStatement(node.getLocation(), scope, expression);
 		consumer.accept(statement);
 
 		// 'case' Expression {',' Expression} '->' EnhancedSwitchCaseStatement
@@ -831,7 +831,7 @@ public class Parser {
 
 	private void processSynchronizedStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWSynchronizedStatement> consumer) {
 		CWExpression object = parseExpression(node.get("Expression"), scope);
-		CWSynchronizedStatement statement = new CWSynchronizedStatement(node, scope, object);
+		CWSynchronizedStatement statement = new CWSynchronizedStatement(node.getLocation(), scope, object);
 		consumer.accept(statement);
 
 		processBlock(node.get("Block"), statement, statement::setBlock);
@@ -839,12 +839,12 @@ public class Parser {
 
 	private void processThrowStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWThrowStatement> consumer) {
 		CWExpression expression = parseExpression(node.get("Expression"), scope);
-		CWThrowStatement statement = new CWThrowStatement(node, scope, expression);
+		CWThrowStatement statement = new CWThrowStatement(node.getLocation(), scope, expression);
 		consumer.accept(statement);
 	}
 
 	private void processTryStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWTryStatement> consumer) {
-		CWTryStatement statement = new CWTryStatement(node, scope);
+		CWTryStatement statement = new CWTryStatement(node.getLocation(), scope);
 		consumer.accept(statement);
 
 		SyntacticTreeNode catchesNode = node.get("Catches");
@@ -858,8 +858,8 @@ public class Parser {
 				String name = variableDeclaratorId.get("Identifier").getContent();
 				RawType type = parseClassType(catchFormalParameterNode.get("CatchType").get("ClassType"));
 
-				CWVariable cwVariable = new CWVariable(scope, modifiers, type, name);
-				CWCatchStatement catchStatement = new CWCatchStatement(node, statement, cwVariable);
+				CWVariable cwVariable = new CWVariable(node.getLocation(), scope, modifiers, type, name);
+				CWCatchStatement catchStatement = new CWCatchStatement(node.getLocation(), statement, cwVariable);
 				processBlock(catchNode.get("Block"), catchStatement, catchStatement::setBlock);
 			}
 		}
@@ -876,7 +876,7 @@ public class Parser {
 
 	private void processLabeledStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWLabeledStatement> consumer) {
 		String label = node.get("Identifier").getContent();
-		CWLabeledStatement statement = new CWLabeledStatement(node, scope, label);
+		CWLabeledStatement statement = new CWLabeledStatement(node.getLocation(), scope, label);
 		consumer.accept(statement);
 
 		boolean noShortIf = node.getName().endsWith("NoShortIf");
@@ -888,7 +888,7 @@ public class Parser {
 	// 'if' '(' Expression ')' StatementNoShortIf 'else' StatementNoShortIf
 	private void processIfStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWIfStatement> consumer) {
 		CWExpression condition = parseExpression(node.get("Expression"), scope);
-		CWIfStatement statement = new CWIfStatement(node, scope, condition);
+		CWIfStatement statement = new CWIfStatement(node.getLocation(), scope, condition);
 		consumer.accept(statement);
 
 		switch (node.getName()) {
@@ -905,7 +905,7 @@ public class Parser {
 	// 'while' '(' Expression ')' StatementNoShortIf
 	private void processWhileStatement(SyntacticTreeNode node, Scope scope, Consumer<? super CWWhileStatement> consumer) {
 		CWExpression condition = parseExpression(node.get("Expression"), scope);
-		CWWhileStatement statement = new CWWhileStatement(node, scope, node.getName().equals("DoStatement"), condition);
+		CWWhileStatement statement = new CWWhileStatement(node.getLocation(), scope, node.getName().equals("DoStatement"), condition);
 		consumer.accept(statement);
 
 		boolean noShortIf = node.getName().endsWith("NoShortIf");
@@ -914,7 +914,7 @@ public class Parser {
 
 	private CWExpression parseExpression(SyntacticTreeNode node, Scope scope) {
 		if (node == null) return null;
-		return new CWUnknownExpression(node, scope);
+		return new CWUnknownExpression(node.getLocation(), scope);
 	}
 
 	private List<CWExpression> parseExpressionList(SyntacticTreeNode node, Scope scope) {
