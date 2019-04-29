@@ -88,9 +88,9 @@ public class TooManyLiterals extends CodeSmell {
 		});
 
 		literals.removeAll(removalList);
-		
+
 		if (!literals.isEmpty()) {
-			literals.stream().forEach(literal -> reports.add(new LiteralReport(NAME, Warning.CAUTION, literal)));
+			literals.forEach(literal -> reports.add(new LiteralReport(NAME, Warning.CAUTION, literal)));
 		}
 
 		return reports;
