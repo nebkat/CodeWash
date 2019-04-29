@@ -31,6 +31,16 @@ public class CodeWash {
 	private static final String TAG = "CodeWash";
 
 	public static void main(String[] args) throws IOException {
+		Log.wtf(TAG,"\n" +
+				"\nWelcome to the Code Smeller:\nThe\n" +
+				"_________            .___     __      __               .__     \n" +
+				"\\_   ___ \\  ____   __| _/____/  \\    /  \\_____    _____|  |__  \n" +
+				"/    \\  \\/ /  _ \\ / __ |/ __ \\   \\/\\/   /\\__  \\  /  ___/  |  \\ \n" +
+				"\\     \\___(  <_> ) /_/ \\  ___/\\        /  / __ \\_\\___ \\|   Y  \\\n" +
+				" \\______  /\\____/\\____ |\\___  >\\__/\\  /  (____  /____  >___|  /\n" +
+				"        \\/            \\/    \\/      \\/        \\/     \\/     \\/ \n"
+		+ "Team members:\n\t★\tNebojsa Cvetcovik\n\t\tConor Beenham\n\t\tJack Geraghty\n\t\tJakub Gajewski\n");
+
 		JCommander commander = JCommander.newBuilder()
 				.addObject(Arguments.get())
 				.build();
