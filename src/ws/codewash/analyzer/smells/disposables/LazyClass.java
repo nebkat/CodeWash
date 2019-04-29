@@ -4,6 +4,7 @@ import ws.codewash.analyzer.reports.ClassReport;
 import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
+import ws.codewash.java.CWClass;
 import ws.codewash.java.CWMethod;
 import ws.codewash.java.ParsedSourceTree;
 import ws.codewash.util.Log;
@@ -35,7 +36,7 @@ public class LazyClass extends CodeSmell {
 		List<Report> reports = new ArrayList<>();
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
 
-			if (!value.isExternal() && value.getOuterClass() == null) {
+			if (!value.isExternal() && value.getOuterClass() == null && value instanceof CWClass) {
 
 				int totalFields = value.getFields().size();
 				int totalMethods = value.getMethods().size();
@@ -67,6 +68,6 @@ public class LazyClass extends CodeSmell {
 
 
 	public static class Config {
-		private final int minLength = 15;
+		private final int minLength = 2;
 	}
 }

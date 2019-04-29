@@ -1,29 +1,8 @@
 package ws.codewash.util;
 
+import static ws.codewash.util.Color.*;
+
 public class Log {
-	// Color Reset
-	private static final String RESET = "\033[0m";
-
-	// Regular Colors
-	private static final String BLACK = "\033[0;30m";
-	private static final String RED = "\033[0;31m";
-	private static final String GREEN = "\033[0;32m";
-	private static final String YELLOW = "\033[0;33m";
-	private static final String BLUE = "\033[0;34m";
-	private static final String PURPLE = "\033[0;35m";
-	private static final String CYAN = "\033[0;36m";
-	private static final String WHITE = "\033[0;37m";
-
-	// Bold
-	private static final String BLACK_BOLD = "\033[1;30m";
-	private static final String RED_BOLD = "\033[1;31m";
-	private static final String GREEN_BOLD = "\033[1;32m";
-	private static final String YELLOW_BOLD = "\033[1;33m";
-	private static final String BLUE_BOLD = "\033[1;34m";
-	private static final String PURPLE_BOLD = "\033[1;35m";
-	private static final String CYAN_BOLD = "\033[1;36m";
-	private static final String WHITE_BOLD = "\033[1;37m";
-
 	/**
 	 * Used to log general excess messages that is not important or debug.
 	 * Only prints when the program is running in verbose mode.
@@ -34,7 +13,7 @@ public class Log {
 	 */
 	public static void v(String TAG, Object message) {
 		if (Arguments.get().verbose()) {
-			System.out.println(WHITE + "VERBOSE/" + TAG + " : " + message + RESET);
+			System.out.println(WHITE + "VERBOSE/" + TAG + " : " + message + Color.RESET);
 		}
 	}
 
@@ -48,7 +27,7 @@ public class Log {
 	 */
 	public static void d(String TAG, Object message) {
 		if (Arguments.get().verbose()) {
-			System.out.println(WHITE_BOLD + "DEBUG/" + TAG + " : " + WHITE + message + RESET);
+			System.out.println(WHITE_BOLD + "DEBUG/" + TAG + " : " + WHITE + message + Color.RESET);
 		}
 	}
 
@@ -60,7 +39,7 @@ public class Log {
 	 * @param message {@code String}: The messaged to be logged.
 	 */
 	public static void e(String TAG, Object message) {
-		System.out.println(RED_BOLD + "ERROR/" + TAG + " : " + RED + message + RESET);
+		System.out.println(RED_BOLD + "ERROR/" + TAG + " : " + RED + message + Color.RESET);
 	}
 
 	/**
@@ -71,7 +50,7 @@ public class Log {
 	 * @param message {@code String}: The messaged to be logged.
 	 */
 	public static void i(String TAG, Object message) {
-		System.out.println(BLUE_BOLD + "INFO/" + TAG + " : " + BLUE + message + RESET);
+		System.out.println(BLUE_BOLD + "INFO/" + TAG + " : " + BLUE + message + Color.RESET);
 	}
 
 	/**
@@ -82,7 +61,7 @@ public class Log {
 	 * @param message {@code String}: The messaged to be logged.
 	 */
 	public static void w(String TAG, Object message) {
-		System.out.println(YELLOW_BOLD + "WARN/" + TAG + " : " + YELLOW + message + RESET);
+		System.out.println(YELLOW_BOLD + "WARN/" + TAG + " : " + YELLOW + message + Color.RESET);
 	}
 
 	/**
@@ -93,6 +72,6 @@ public class Log {
 	 * @param message {@code String}: The messaged to be logged.
 	 */
 	public static void wtf(String TAG, Object message) {
-		System.out.println(PURPLE_BOLD + "WTF/" + TAG + " : " + PURPLE + message + RESET);
+		System.out.println(PURPLE_BOLD + "WTF/" + TAG + " : " + PURPLE + message + Color.RESET);
 	}
 }

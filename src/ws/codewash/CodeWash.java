@@ -73,10 +73,11 @@ public class CodeWash {
 					ParsedSourceTree tree = new Parser(grammar).parse(files);
 					Log.i(TAG, "Beginning Analyzer.\n");
 					List<Report> reports = new Analyzer(tree).analyse();
-					for (Report r : reports) {
-						Log.i(TAG, r.toString());
-					}
-					Log.i(TAG, "Total number of smells detected: " + reports.size());
+					ConsoleOutput.print(reports);
+					//for (Report r : reports) {
+					//	Log.i(TAG, r.toString());
+					//}
+					//Log.i(TAG, "Total number of smells detected: " + reports.size());
 				} finally {
 					try {
 						sources.close();

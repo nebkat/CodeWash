@@ -59,6 +59,7 @@ import ws.codewash.parser.tree.LexicalTree;
 import ws.codewash.parser.tree.LexicalTreeNode;
 import ws.codewash.parser.tree.SyntacticTree;
 import ws.codewash.parser.tree.SyntacticTreeNode;
+import ws.codewash.util.Color;
 import ws.codewash.util.Log;
 
 import java.io.IOException;
@@ -927,6 +928,8 @@ public class Parser {
 
 	// TODO: RawTypeName for names
 	private RawType parseTypeName(SyntacticTreeNode node) {
+		node.setPrintingColor(Color.BLUE, Color.BLUE_BOLD);
+
 		return new RawType(node.getListElements().stream()
 				.map(SyntacticTreeNode::getContent)
 				.map(RawType.Identifier::new)
@@ -970,6 +973,8 @@ public class Parser {
 	}
 
 	private RawType parseClassType(SyntacticTreeNode node, int arrayDimension) {
+		node.setPrintingColor(Color.BLUE, Color.BLUE_BOLD);
+
 		List<RawType.Identifier> identifiers = new ArrayList<>();
 
 		for (SyntacticTreeNode identifierNode : node.getListElements()) {
@@ -1001,9 +1006,11 @@ public class Parser {
 		return new RawType(Collections.singletonList(new RawType.Identifier(node.get(1).getContent())), arrayDimension);
 	}
 
-	private int parseModifiers(SyntacticTreeNode modifiersNode) {
+	private int parseModifiers(SyntacticTreeNode node) {
+		node.setPrintingColor(Color.YELLOW, Color.YELLOW_BOLD);
+
 		int modifiers = 0;
-		for (SyntacticTreeNode modifierNode : modifiersNode.getAll()) {
+		for (SyntacticTreeNode modifierNode : node.getAll()) {
 			modifierNode = modifierNode.get();
 
 			// Ignore annotations

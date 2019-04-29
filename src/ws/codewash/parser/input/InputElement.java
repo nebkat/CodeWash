@@ -14,6 +14,8 @@ public abstract class InputElement implements Locatable {
 	private int mIndex;
 
 	private Location mLocation;
+	private String mPrintingColor;
+	private String mPrintingColorBold;
 
 	InputElement(LexicalTreeNode node) {
 		mCompilationUnit = node.getCompilationUnit();
@@ -50,6 +52,21 @@ public abstract class InputElement implements Locatable {
 	@Override
 	public Location getLocation() {
 		return mLocation;
+	}
+
+	public abstract String getDefaultPrintingColor(boolean bold);
+
+	public String getPrintingColor(boolean bold) {
+		if (mPrintingColor == null) {
+			return getDefaultPrintingColor(bold);
+		}
+
+		return !bold ? mPrintingColor : mPrintingColorBold;
+	}
+
+	public void setPrintingColor(String color, String boldColor) {
+		mPrintingColor = color;
+		mPrintingColorBold = boldColor;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package ws.codewash.parser.input;
 
 import ws.codewash.parser.tree.LexicalTreeNode;
+import ws.codewash.util.Color;
 
 public abstract class Literal<T> extends Token {
 	Literal(LexicalTreeNode node) {
@@ -26,5 +27,10 @@ public abstract class Literal<T> extends Token {
 
 	public final String getTerminalType() {
 		return Literal.class.getSimpleName();
+	}
+
+	@Override
+	public String getDefaultPrintingColor(boolean bold) {
+		return bold ? Color.PURPLE : Color.PURPLE_BOLD;
 	}
 }

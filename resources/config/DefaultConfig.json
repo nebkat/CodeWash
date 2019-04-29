@@ -34,7 +34,7 @@
       "maxDepth": 4
     },
     "lazyClass": {
-      "minLength": 15
+      "minLength": 2
     },
     "tooManyLiterals": {
       "literalCount": 5,

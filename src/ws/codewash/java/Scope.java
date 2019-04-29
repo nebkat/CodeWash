@@ -1,6 +1,7 @@
 package ws.codewash.java;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +14,7 @@ public class Scope {
 	protected Scope mEnclosingScope;
 	private List<Scope> mSuperScopes = new ArrayList<>();
 
-	private Map<String, CWType> mTypeDeclarations = new HashMap<>();
+	private Map<String, CWType> mTypeDeclarations = Collections.synchronizedMap(new HashMap<>());
 	private Map<String, CWField> mFieldDeclarations = new HashMap<>();
 	private Map<String, CWMethod> mMethodDeclarations = new HashMap<>();
 	private Map<String, CWVariable> mLocalVariableDeclarations = new HashMap<>();

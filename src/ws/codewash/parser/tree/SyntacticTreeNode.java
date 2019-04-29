@@ -3,6 +3,11 @@ package ws.codewash.parser.tree;
 import ws.codewash.java.CompilationUnit;
 import ws.codewash.java.Location;
 import ws.codewash.parser.grammar.GrammarToken;
+import ws.codewash.parser.input.Operator;
+import ws.codewash.parser.input.Separator;
+import ws.codewash.parser.input.Token;
+
+import java.util.List;
 
 public class SyntacticTreeNode extends AbstractTreeNode<SyntacticTreeNode> {
 	private int mTokenOffset;
@@ -36,6 +41,17 @@ public class SyntacticTreeNode extends AbstractTreeNode<SyntacticTreeNode> {
 
 	public int getNextTokenOffset() {
 		return mTokenOffset + mTokenCount;
+	}
+
+	public void setPrintingColor(String color, String boldColor) {
+		List<Token> tokens = mRawCompilationUnit.getTokens();
+
+		for (int i = mTokenOffset; i < mTokenOffset + mTokenCount; i++) {
+			Token t = tokens.get(i);
+			if (!(t instanceof Operator || t instanceof Separator)) {
+				tokens.get(i).setPrintingColor(color, boldColor);
+			}
+		}
 	}
 
 	public Location getLocation() {
