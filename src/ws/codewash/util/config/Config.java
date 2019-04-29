@@ -1,12 +1,12 @@
 package ws.codewash.util.config;
 
 import ws.codewash.analyzer.smells.CodeSmell;
-import ws.codewash.analyzer.smells.bloatedcode.ArrowheadIndentation;
 import ws.codewash.analyzer.smells.bloatedcode.LongClasses;
 import ws.codewash.analyzer.smells.bloatedcode.LongIDs;
 import ws.codewash.analyzer.smells.bloatedcode.LongMethods;
 import ws.codewash.analyzer.smells.bloatedcode.LongParameterList;
 import ws.codewash.analyzer.smells.bloatedcode.PrimitiveObsession;
+import ws.codewash.analyzer.smells.disposables.ArrowheadIndentation;
 import ws.codewash.analyzer.smells.oopviolation.DataClass;
 import ws.codewash.analyzer.smells.disposables.DuplicateCode;
 import ws.codewash.analyzer.smells.disposables.LazyClass;

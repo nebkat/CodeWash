@@ -21,6 +21,10 @@ public interface Modifiable {
 		return Modifier.isFinal(getModifiers());
 	}
 
+	default boolean isPublic() {
+		return Modifier.isPublic(getModifiers());
+	}
+
 	default String getModifiersForToString() {
 		return getModifiers() > 0 ? Modifier.toString(getModifiers()) + " " : "";
 	}
