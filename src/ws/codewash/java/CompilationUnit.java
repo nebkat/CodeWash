@@ -272,6 +272,7 @@ public class CompilationUnit extends Scope {
 	public void setPackage(CWPackage cwPackage) {
 		mPackage = cwPackage;
 		mEnclosingScope = cwPackage;
+		mEnclosingScope.addChild(this);
 	}
 
 	/**
