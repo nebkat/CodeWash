@@ -26,7 +26,7 @@ public class ConfigManager {
 	private ConfigManager() {
 		JsonReader r = new JsonReader(new BufferedReader(
 				new InputStreamReader(CodeWash.class.getResourceAsStream("../../config/DefaultConfig.json"))));
-		Config.init(GSON.fromJson(r, Config.class));
+		Config.set(GSON.fromJson(r, Config.class));
 
 		Log.d(TAG, "Default Config Loaded: \n" + GSON.toJson(Config.get()));
 	}

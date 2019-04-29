@@ -3,12 +3,13 @@ package ws.codewash.analyzer;
 import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.ParsedSourceTree;
-import ws.codewash.util.config.Config;
 import ws.codewash.util.Log;
+import ws.codewash.util.config.Config;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Manages all of the Code Smells and how they are run, including the config options for each smell.
@@ -27,14 +28,15 @@ public class Analyzer {
 
 	/**
 	 * Constructs an Analyzer object with the {@link ParsedSourceTree} object.
+	 *
 	 * @param parsedSourceTree The {@link ParsedSourceTree} object to be analyzed.
 	 */
 	public Analyzer(ParsedSourceTree parsedSourceTree) {
 		// Get all of the code smells from the config
 		try {
-			for (String s : Config.get().getSmells().keySet()) {
-				mCodeSmells.add(Config.get().getSmells().get(s).apply(parsedSourceTree));
-			}
+			mCodeSmells = Config.get().getSmells().stream()
+					.map(c -> c.apply(parsedSourceTree))
+					.collect(Collectors.toList());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
@@ -47,6 +49,7 @@ public class Analyzer {
 
 	/**
 	 * Method used to run all of the selected Code Smells and get the reports generated
+	 *
 	 * @return A list of type {@link ws.codewash.analyzer.reports.Report} containing all of the Code Smell reports generated.
 	 */
 	public List<Report> analyse() {

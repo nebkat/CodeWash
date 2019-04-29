@@ -16,22 +16,23 @@ import ws.codewash.java.ParsedSourceTree;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Config {
 	private static Config sInstance = new Config();
 	private static final Map<String, Function<ParsedSourceTree, CodeSmell>> CODE_SMELLS = new HashMap<>() {{
+		put(LongClasses.NAME, LongClasses::new);
+		put(LongIDs.NAME, LongIDs::new);
 		put(LongMethods.NAME, LongMethods::new);
 		put(LongParameterList.NAME, LongParameterList::new);
 		put(PrimitiveObsession.NAME, PrimitiveObsession::new);
-		put(LongIDs.NAME, LongIDs::new);
-		put(LongClasses.NAME, LongClasses::new);
 		put(ArrowheadIndentation.NAME, ArrowheadIndentation::new);
-		put(DataClass.NAME, DataClass::new);
 		put(LazyClass.NAME, LazyClass::new);
 		put(TooManyLiterals.NAME, TooManyLiterals::new);
+		put(DataClass.NAME, DataClass::new);
 		put(DataHiding.NAME, DataHiding::new);
-
 	}};
 
 	public List<String> run;
@@ -39,14 +40,14 @@ public class Config {
 
 	public class SmellConfigs {
 		public LongClasses.Config longClasses;
-		public LongMethods.Config longMethods;
-		public PrimitiveObsession.Config primitiveObsession;
 		public LongIDs.Config longIDs;
-		public ArrowheadIndentation.Config arrowheadIndentation;
-		public DataClass.Config dataClass;
-		public TooManyLiterals.Config tooManyLiterals;
+		public LongMethods.Config longMethods;
 		public LongParameterList.Config longParameterList;
+		public PrimitiveObsession.Config primitiveObsession;
+		public ArrowheadIndentation.Config arrowheadIndentation;
 		public LazyClass.Config lazyClass;
+		public TooManyLiterals.Config tooManyLiterals;
+		public DataClass.Config dataClass;
 		public DataHiding.Config dataHiding;
 	}
 
@@ -68,11 +69,10 @@ public class Config {
 		return sInstance;
 	}
 
-	public Map<String, Function<ParsedSourceTree, CodeSmell>> getSmells() {
-		Map<String, Function<ParsedSourceTree, CodeSmell>> smells = new HashMap<>();
-		for (String s : run) {
-			smells.put(s, CODE_SMELLS.get(s));
-		}
-		return smells;
+	public List<Function<ParsedSourceTree, CodeSmell>> getSmells() {
+		return run.stream()
+				.map(CODE_SMELLS::get)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
 	}
 }

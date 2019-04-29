@@ -20,10 +20,9 @@ public class DataHiding extends CodeSmell {
 	/**
 	 * Name of the class, used for reports.
 	 */
-	public static final String NAME = "ViolationOfDataHiding";
+	public static final String NAME = "DataHiding";
 
 	private Config mConfig = ws.codewash.util.config.Config.get().configs.dataHiding;
-
 
 	/**
 	 * Constructs a DataHiding object with a {@link ws.codewash.java.ParsedSourceTree} object.

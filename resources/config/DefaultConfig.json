@@ -1,32 +1,50 @@
 {
-  "SelectedCodeSmells": [
+  "run": [
+    "LongClasses",
+    "LongIDs",
     "LongMethods",
     "LongParameterList",
     "PrimitiveObsession",
-    "LongIDs",
-    "LongClasses",
     "ArrowheadIndentation",
-    "DataClass"
+    "LazyClass",
+    "TooManyLiterals",
+    "DataClass",
+    "DataHiding"
   ],
-  "LongMethodsConfig": {
-    "MethodLength": 10
-  },
-  "LongParametersListConfig": {
-    "ParameterListLength": 3
-  },
-  "PrimitiveObsessionConfig": {
-    "MinimumNumberOfFields": 5,
-    "AcceptableRatio": 0.5
-  },
-  "LongIDsConfig": {
-    "MaxCharacters" : 25
-  },
-  "LongClassConfig": {
-    "MaxFields" : 15,
-    "MaxMethods" : 15,
-    "MaxClassLength" : 300
-  },
-  "ArrowheadIndentationConfig": {
-    "MaxDepth": 4
+  "configs": {
+    "longClasses": {
+      "maxFields": 15,
+      "maxMethods": 15,
+      "maxClassLength": 300
+    },
+    "longIDs": {
+      "maxCharacters": 25
+    },
+    "longMethods": {
+      "methodLength": 10
+    },
+    "longParameterList": {
+      "parameterListLength": 3
+    },
+    "primitiveObsession": {
+      "minimumNumberOfFields": 5,
+      "acceptableRatio": 0.5
+    },
+    "arrowheadIndentation": {
+      "maxDepth": 4
+    },
+    "lazyClass": {
+      "minLength": 15
+    },
+    "tooManyLiterals": {
+      "literalCount": 5,
+      "literalLength": 4
+    },
+    "dataClass": {
+
+    },
+    "dataHiding": {
+
+    }
   }
 }
