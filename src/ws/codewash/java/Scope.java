@@ -29,7 +29,7 @@ public class Scope {
 		mEnclosingScope.addChild(this);
 	}
 
-	void addChild(Scope child) {
+	private void addChild(Scope child) {
 		mChildren.add(child);
 	}
 
