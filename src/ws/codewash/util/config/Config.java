@@ -40,7 +40,7 @@ public class Config {
 	public class SmellConfigs {
 		public LongClasses.Config longClasses;
 		public LongMethods.Config longMethods;
-		public PrimitiveObsession.COnfig primitiveObsession;
+		public PrimitiveObsession.Config primitiveObsession;
 		public LongIDs.Config longIDs;
 		public ArrowheadIndentation.Config arrowheadIndentation;
 		public DataClass.Config dataClass;

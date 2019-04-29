@@ -6,7 +6,6 @@ import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CWMember;
 import ws.codewash.java.ParsedSourceTree;
-import ws.codewash.util.config.Config;
 import ws.codewash.util.Log;
 
 import java.util.ArrayList;
@@ -25,15 +24,7 @@ public class LongParameterList extends CodeSmell {
 	 */
 	public static final String NAME = "LongParameterList";
 
-	/**
-	 * String used to retrieve the max Parameter List length from the config.
-	 */
-	private static final String CONFIG_PARAMETER_LIST_LENGTH = "ParameterListLength";
-
-	/**
-	 * Maximum number of parameters a method can have before being considered a Code Smell
-	 */
-	private final int MAX_PARAMETER_LENGTH;
+	private LongParameterList.Config mConfig = ws.codewash.util.config.Config.get().configs.longParameterList;
 
 	/**
 	 * Constructor a LongParameterList with a specified {@link ParsedSourceTree} object.
@@ -42,7 +33,6 @@ public class LongParameterList extends CodeSmell {
 	 */
 	public LongParameterList(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
-		MAX_PARAMETER_LENGTH = Config.get().LongParameterListConfig(CONFIG_PARAMETER_LIST_LENGTH).intValue();
 	}
 
 	/**
@@ -52,7 +42,7 @@ public class LongParameterList extends CodeSmell {
 	 */
 	@Override
 	public List<Report> run() {
-		Log.i(NAME.toUpperCase(), "Running Long Parameter List check. Max Parameter = " + MAX_PARAMETER_LENGTH);
+		Log.i(NAME.toUpperCase(), "Running Long Parameter List check. Max Parameter = " + mConfig.maxParameters);
 
 		List<Report> reports = new ArrayList<>();
 
@@ -63,7 +53,7 @@ public class LongParameterList extends CodeSmell {
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
 			List<CWMember> problemMethods = value.getMethods()
 					.parallelStream()
-					.filter(cwMethod -> cwMethod.getParameters().size() > MAX_PARAMETER_LENGTH)
+					.filter(cwMethod -> cwMethod.getParameters().size() > mConfig.maxParameters)
 					.collect(Collectors.toList());
 
 			if (!problemMethods.isEmpty()) {
@@ -73,6 +63,10 @@ public class LongParameterList extends CodeSmell {
 		});
 
 		return reports;
+	}
+
+	public static class Config {
+		public int maxParameters = 3;
 	}
 
 	/**

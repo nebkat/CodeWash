@@ -5,7 +5,6 @@ import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.ParsedSourceTree;
-import ws.codewash.util.config.Config;
 import ws.codewash.util.Log;
 
 import java.util.ArrayList;
@@ -23,26 +22,7 @@ public class PrimitiveObsession extends CodeSmell {
 	 */
 	public static final String NAME = "PrimitiveObsession";
 
-	/**
-	 * String used to retrieve the minimum number of fields from the Config.
-	 */
-	private static final String CONFIG_MIN_NUM = "MinimumNumberOfFields";
-
-	/**
-	 * String used to retrieve the acceptable ratio of primitive fields to total fields.
-	 */
-	private static final String CONFIG_ACCEPT_RATIO = "AcceptableRatio";
-
-	/**
-	 * Minimum number of fields required to test for Primitive Obsession, retrieved from the config
-	 */
-	private final int MIN_NUM_FIELDS;
-
-	/**
-	 * Acceptable ratio of primitive fields to total fields, retrieved from the config
-	 */
-	private final double ACCEPTABLE_RATIO;
-
+	private PrimitiveObsession.Config mConfig = ws.codewash.util.config.Config.get().configs.primitiveObsession;
 	/**
 	 * Constructs a Primitive Obsession object with a {@link ws.codewash.java.ParsedSourceTree} object
 	 *
@@ -50,8 +30,6 @@ public class PrimitiveObsession extends CodeSmell {
 	 */
 	public PrimitiveObsession(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
-		MIN_NUM_FIELDS = Config.get().PrimitiveObsessionConfig(CONFIG_MIN_NUM).intValue();
-		ACCEPTABLE_RATIO = Config.get().PrimitiveObsessionConfig(CONFIG_ACCEPT_RATIO).intValue();
 	}
 
 	/**
@@ -61,7 +39,8 @@ public class PrimitiveObsession extends CodeSmell {
 	 */
 	@Override
 	public List<Report> run() {
-		Log.i(NAME.toUpperCase(), "Running Primitive Obsession check.\n\tMin Fields = " + MIN_NUM_FIELDS + "\n\tAcceptable Ratio = " + ACCEPTABLE_RATIO);
+		Log.i(NAME.toUpperCase(), "Running Primitive Obsession check.\n\tMin Fields = " + mConfig.minReqFields
+				+ "\n\tAcceptable Ratio = " + mConfig.acceptableRatio);
 
 		List<Report> reports = new ArrayList<>();
 
@@ -80,8 +59,8 @@ public class PrimitiveObsession extends CodeSmell {
 			if (totalFields > 0) {
 				double ratio = (double) totalPrimitives / totalFields;
 
-				Log.d(NAME, totalFields + " > " + MIN_NUM_FIELDS + " and " + ratio + " > " + 0.5);
-				if (totalFields > MIN_NUM_FIELDS && ratio > 0.5) {
+
+				if (totalFields > mConfig.minReqFields && ratio > mConfig.acceptableRatio) {
 					reports.add(new ClassReport(NAME, value, Warning.CAUTION));
 					Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
 				} else {
@@ -91,6 +70,11 @@ public class PrimitiveObsession extends CodeSmell {
 		});
 
 		return reports;
+	}
+
+	public static class Config {
+		public int minReqFields = 5;
+		public double acceptableRatio = 0.5;
 	}
 
 	/**

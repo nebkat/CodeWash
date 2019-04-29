@@ -21,19 +21,11 @@ import java.util.stream.Collectors;
 public class LongMethods extends CodeSmell {
 
 	/**
-	 * String used to retrieve the max method length from the config.
-	 */
-	private static final String CONFIG_LENGTH = "MethodLength";
-
-	/**
 	 * The name of the Code Smell. Used in reports.
 	 */
 	public static final String NAME = "LongMethods";
 
-	/**
-	 * Maximum method length before it is considered a Code Smell, retrieved from config.
-	 */
-	private final int METHOD_LENGTH;
+	private LongMethods.Config mConfig = ws.codewash.util.config.Config.get().configs.longMethods;
 
 	/**
 	 * Constructs a LongMethods object with a specified {@link ParsedSourceTree} object.
@@ -42,7 +34,6 @@ public class LongMethods extends CodeSmell {
 	 */
 	public LongMethods(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
-		METHOD_LENGTH = Config.get().LongMethodsConfig(CONFIG_LENGTH).intValue();
 	}
 
 	/**
@@ -51,7 +42,7 @@ public class LongMethods extends CodeSmell {
 	 * @return A list of {@link ws.codewash.analyzer.reports.Report} which contain all of the problem methods.
 	 */
 	public List<Report> run() {
-		Log.i(NAME.toUpperCase(), "Running Long Methods check. Method Length = " + METHOD_LENGTH);
+		Log.i(NAME.toUpperCase(), "Running Long Methods check. Method Length = " + mConfig.methodLength);
 
 		List<Report> reports = new ArrayList<>();
 
@@ -62,7 +53,7 @@ public class LongMethods extends CodeSmell {
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
 			List<CWMember> longMethods = value.getMethods()
 					.parallelStream()
-					.filter(cwMethod -> cwMethod.getMethodLength() > METHOD_LENGTH)
+					.filter(cwMethod -> cwMethod.getMethodLength() > mConfig.methodLength)
 					.collect(Collectors.toList());
 
 			if (!longMethods.isEmpty()) {
@@ -73,6 +64,10 @@ public class LongMethods extends CodeSmell {
 		});
 
 		return reports;
+	}
+
+	public static class Config {
+		public int methodLength = 13;
 	}
 
 	/**

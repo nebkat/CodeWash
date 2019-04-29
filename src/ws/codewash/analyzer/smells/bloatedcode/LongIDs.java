@@ -26,15 +26,7 @@ public class LongIDs extends CodeSmell {
 	 */
 	public static final String NAME = "LongIDs";
 
-	/**
-	 * String used to retrieve the maximum number of characters from the config.
-	 */
-	public static final String CONFIG_CHARACTERS = "MaxCharacters";
-
-	/**
-	 * The maximum number of characters in an ID before it is considered a Code Smell. Retrieved from the config.
-	 */
-	private final int MAX_CHARACTERS;
+	private LongIDs.Config mConfig = ws.codewash.util.config.Config.get().configs.longIDs;
 
 	/**
 	 * Constructs a LongIDs object with a specified {@link ParsedSourceTree} object.
@@ -43,7 +35,6 @@ public class LongIDs extends CodeSmell {
 	 */
 	public LongIDs(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
-		MAX_CHARACTERS = Config.get().LongIDsConfig(CONFIG_CHARACTERS).intValue();
 	}
 
 	/**
@@ -53,7 +44,7 @@ public class LongIDs extends CodeSmell {
 	 */
 	@Override
 	public List<Report> run() {
-		Log.i(NAME.toUpperCase(), "Running Long IDs check. Max Characters = " + MAX_CHARACTERS);
+		Log.i(NAME.toUpperCase(), "Running Long IDs check. Max Characters = " + mConfig.maxCharacters);
 
 		List<Report> reports = new ArrayList<>();
 
@@ -66,11 +57,11 @@ public class LongIDs extends CodeSmell {
 			List<CWMember> longIDs;
 
 			longIDs = value.getMethods().parallelStream()
-					.filter(cwMethod -> cwMethod.getName().length() > MAX_CHARACTERS)
+					.filter(cwMethod -> cwMethod.getName().length() > mConfig.maxCharacters)
 					.collect(Collectors.toList());
 
 			longIDs.addAll(value.getFields().parallelStream()
-					.filter(cwField -> !cwField.isFinal() && cwField.getName().length() > MAX_CHARACTERS)
+					.filter(cwField -> !cwField.isFinal() && cwField.getName().length() > mConfig.maxCharacters)
 					.collect(Collectors.toList()));
 
 
@@ -81,6 +72,10 @@ public class LongIDs extends CodeSmell {
 		});
 
 		return reports;
+	}
+
+	public static class Config {
+		private int maxCharacters = 25;
 	}
 
 	/**
