@@ -141,6 +141,10 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 		return mInterfaces;
 	}
 
+	public boolean hasInterfaces() {
+		return !mInterfaces.isEmpty();
+	}
+
 	public String getSimpleName() {
 		if (mClass != null) return mClass.getSimpleName();
 		return mName;
@@ -169,6 +173,10 @@ public abstract class CWClassOrInterface extends CWReferenceType implements CWPa
 
 	public boolean isExternal() {
 		return mClass != null;
+	}
+
+	public boolean isInternal() {
+		return mClass == null;
 	}
 
 	public Class getJavaClass() {

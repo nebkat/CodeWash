@@ -4,7 +4,9 @@ import ws.codewash.analyzer.reports.MemberReport;
 import ws.codewash.analyzer.reports.Report;
 import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
-import ws.codewash.java.*;
+import ws.codewash.java.CWClass;
+import ws.codewash.java.CWMember;
+import ws.codewash.java.ParsedSourceTree;
 import ws.codewash.java.statement.CWIfStatement;
 import ws.codewash.util.Log;
 import ws.codewash.util.config.Config;
@@ -42,29 +44,25 @@ public class ArrowheadIndentation extends CodeSmell {
 
 		List<Report> reports = new ArrayList<>();
 
-		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
+		super.getParsedSourceTree().getClasses().values().stream().filter(CWClass.class::isInstance)
+				.forEach(cwClass -> {
+					List<CWMember> problemMethods = cwClass.getMethods().stream()
+							.filter(cwMethod -> {
+								if (cwMethod.getBlock() != null)
+									return cwMethod.getBlock().getClosestDescendants(CWIfStatement.class)
+											.stream()
+											.anyMatch(s -> {
+												if (s != null) {
+													return detectArrowhead(s, 0);
+												}
+												return false;
+											});
+								return false;
+							}).collect(Collectors.toList());
 
-			if (value instanceof CWClass) {
-				List<CWMember> problemMethods = value.getMethods().stream()
-						.filter(cwMethod -> {
-
-							if (cwMethod.getBlock() != null)
-								return cwMethod.getBlock().getClosestDescendants(CWIfStatement.class)
-										.stream()
-										.anyMatch(s -> {
-											if (s != null) {
-												return detectArrowhead(s, 0);
-											}
-											return false;
-										});
-							return false;
-
-						}).collect(Collectors.toList());
-
-				if (!problemMethods.isEmpty())
-					reports.add(new MemberReport(NAME, value, problemMethods, Warning.WARNING));
-			}
-		});
+					if (!problemMethods.isEmpty())
+						reports.add(new MemberReport(NAME, cwClass, problemMethods, Warning.WARNING));
+				});
 
 		return reports;
 	}
@@ -73,7 +71,7 @@ public class ArrowheadIndentation extends CodeSmell {
 	 * Recursive function to detect arrowhead indentations of an If Statement.
 	 *
 	 * @param ifStatement the if statement to check
-	 * @param depth the current depth of the arrowhead indentation
+	 * @param depth       the current depth of the arrowhead indentation
 	 * @return if the statement involves arrowhead indentation.
 	 */
 	private boolean detectArrowhead(CWIfStatement ifStatement, int depth) {

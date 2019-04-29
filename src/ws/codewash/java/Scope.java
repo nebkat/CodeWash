@@ -1,7 +1,5 @@
 package ws.codewash.java;
 
-import ws.codewash.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,7 +21,8 @@ public class Scope {
 	private Set<PendingType> mPendingTypes = new HashSet<>();
 	private List<Scope> mChildren = new ArrayList<>();
 
-	public Scope() {}
+	public Scope() {
+	}
 
 	public Scope(Scope enclosingScope) {
 		mEnclosingScope = enclosingScope;

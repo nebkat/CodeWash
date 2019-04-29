@@ -1,7 +1,13 @@
 package ws.codewash.util.config;
 
 import ws.codewash.analyzer.smells.CodeSmell;
-import ws.codewash.analyzer.smells.bloatedcode.*;
+import ws.codewash.analyzer.smells.bloatedcode.ArrowheadIndentation;
+import ws.codewash.analyzer.smells.bloatedcode.LongClasses;
+import ws.codewash.analyzer.smells.bloatedcode.LongIDs;
+import ws.codewash.analyzer.smells.bloatedcode.LongMethods;
+import ws.codewash.analyzer.smells.bloatedcode.LongParameterList;
+import ws.codewash.analyzer.smells.bloatedcode.PrimitiveObsession;
+import ws.codewash.analyzer.smells.oopviolation.DataClass;
 import ws.codewash.java.ParsedSourceTree;
 
 import java.util.ArrayList;
@@ -19,6 +25,7 @@ public class Config {
 		put(LongIDs.NAME, LongIDs::new);
 		put(LongClasses.NAME, LongClasses::new);
 		put(ArrowheadIndentation.NAME, ArrowheadIndentation::new);
+		put(DataClass.NAME, DataClass::new);
 	}};
 
 	private final List<String> SelectedCodeSmells = new ArrayList<>();
