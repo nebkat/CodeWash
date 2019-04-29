@@ -44,7 +44,7 @@ public class CWClass extends CWClassOrInterface {
 	}
 
 	public boolean hasSuperClass() {
-		return !mSuperClass.getName().equals(Object.class.getName());
+		return mSuperClass != null && !mSuperClass.getName().equals(Object.class.getName());
 	}
 
 	private void addSubClass(CWClass subClass) {
