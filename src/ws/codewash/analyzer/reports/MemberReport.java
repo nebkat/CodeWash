@@ -1,5 +1,6 @@
 package ws.codewash.analyzer.reports;
 
+import ws.codewash.java.CWClass;
 import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.CWMember;
 
@@ -20,6 +21,8 @@ public class MemberReport extends Report {
 	 */
 	private Warning mSmellWarning;
 
+	private CWClassOrInterface mProblemClass;
+
 	/**
 	 * Constructs a report with the values passed through to it.
 	 *
@@ -31,6 +34,7 @@ public class MemberReport extends Report {
 		super(codeSmell, warning.toString(), problemMember.getLocation());
 		mProblemMember = problemMember;
 		mSmellWarning = warning;
+		mProblemClass = reportClass;
 	}
 
 	public CWMember getProblemMembers() {
@@ -44,23 +48,15 @@ public class MemberReport extends Report {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCodeSmell());
-		sb.append("\n");
-//		for (CWMember member : mProblemMembers) {
-//			sb.append("\tClass = ");
-//			sb.append(mReportClass.getSimpleName());
-//
-//			if (member instanceof CWMethod) {
-//				sb.append(" - Method = ");
-//			} else {
-//				sb.append(" - Field = ");
-//			}
-//
-//			sb.append(member.getName());
-//			sb.append("\n");
-//		}
+		sb.append(" in ");
+		if (getLocation() != null)
+			sb.append(getLocation().unit.getFileName());
+		else
+			sb.append(mProblemClass.getSimpleName());
+		sb.append(": Method - ");
 
 		sb.append(getProblemMembers().getName());
-		sb.append("\n");
+
 		return sb.toString();
 	}
 

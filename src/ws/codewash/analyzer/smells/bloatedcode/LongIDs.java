@@ -44,7 +44,7 @@ public class LongIDs extends CodeSmell {
 	 */
 	@Override
 	public List<Report> run() {
-		Log.i(NAME.toUpperCase(), "Running Long IDs check. Max Characters = " + mConfig.maxCharacters);
+		Log.i(NAME.toUpperCase(), "Running Long IDs check.\t| Params: Max Characters = " + mConfig.maxCharacters);
 
 		List<Report> reports = new ArrayList<>();
 
@@ -67,7 +67,6 @@ public class LongIDs extends CodeSmell {
 
 			if (!longIDs.isEmpty()) {
 				longIDs.forEach(cwMember ->  reports.add(new MemberReport(NAME, value, cwMember, Warning.CAUTION)));
-				Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
 			}
 		});
 

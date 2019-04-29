@@ -6,6 +6,7 @@ import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CWMethod;
 import ws.codewash.java.ParsedSourceTree;
+import ws.codewash.util.Log;
 import ws.codewash.util.config.Config;
 
 import java.util.ArrayList;
@@ -28,6 +29,9 @@ public class LazyClass extends CodeSmell {
 	 */
 	@Override
 	public List<Report> run() {
+		Log.i(NAME.toUpperCase(), "Running Lazy Classes check.\t| Params: Min Length = " + mConfig.minLength);
+
+
 		List<Report> reports = new ArrayList<>();
 		super.getParsedSourceTree().getClasses().forEach((key, value) -> {
 

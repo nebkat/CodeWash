@@ -6,6 +6,7 @@ import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CWMember;
 import ws.codewash.java.ParsedSourceTree;
+import ws.codewash.util.Log;
 import ws.codewash.util.config.Config;
 
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ public class DataHiding extends CodeSmell {
 	 */
 	@Override
 	public List<Report> run() {
+		Log.i(NAME.toUpperCase(), "Running Data Hiding check. | Params: None.");
+
 		List<Report> reports = new ArrayList<>();
 
 		/*

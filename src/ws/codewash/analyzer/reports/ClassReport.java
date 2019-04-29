@@ -21,7 +21,7 @@ public class ClassReport extends Report {
 
 	@Override
 	public String toString() {
-		return getCodeSmell() + " " + getLocation().unit.getFileName() ;
+		return getCodeSmell() + " in " + getLocation().unit.getFileName() ;
 	}
 
 }

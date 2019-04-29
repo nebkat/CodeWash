@@ -9,6 +9,7 @@ import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.CWVoid;
 import ws.codewash.java.ParsedSourceTree;
 import ws.codewash.java.statement.CWReturnStatement;
+import ws.codewash.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,8 @@ public class DataClass extends CodeSmell {
 
 	@Override
 	public List<Report> run() {
+		Log.i(NAME.toUpperCase(), "Running Data Classes check. | Params: None.");
+
 		List<Report> reports = new ArrayList<>();
 
 		getParsedSourceTree().getClasses().values().stream()
@@ -60,7 +63,8 @@ public class DataClass extends CodeSmell {
 											.anyMatch(s -> cwClass.getFields()
 													.stream()
 													.anyMatch(f -> s.getContent().toLowerCase().contains(f.getName().toLowerCase())
-															&& f.getType().equals(m.getReturnType())));
+															&& f.getType()
+															.equals(m.getReturnType())));
 							}
 
 							return fieldMethod || m.getName().toLowerCase().startsWith("get") || m.getName().toLowerCase().startsWith("set");

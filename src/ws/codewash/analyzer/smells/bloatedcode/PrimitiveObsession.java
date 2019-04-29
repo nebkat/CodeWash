@@ -39,8 +39,8 @@ public class PrimitiveObsession extends CodeSmell {
 	 */
 	@Override
 	public List<Report> run() {
-		Log.i(NAME.toUpperCase(), "Running Primitive Obsession check.\n\tMin Fields = " + mConfig.minReqFields
-				+ "\n\tAcceptable Ratio = " + mConfig.acceptableRatio);
+		Log.i(NAME.toUpperCase(), "Running Primitive Obsession check.\t| Params: Min Fields = " + mConfig.minReqFields
+				+ ", Acceptable Ratio = " + mConfig.acceptableRatio);
 
 		List<Report> reports = new ArrayList<>();
 
@@ -62,9 +62,6 @@ public class PrimitiveObsession extends CodeSmell {
 
 				if (totalFields > mConfig.minReqFields && ratio > mConfig.acceptableRatio) {
 					reports.add(new ClassReport(NAME,  Warning.CAUTION, value));
-					Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
-				} else {
-					Log.d(NAME.toUpperCase(), "Not creating report for " + value.getSimpleName() + " Num primitives = " + totalPrimitives);
 				}
 			}
 		});

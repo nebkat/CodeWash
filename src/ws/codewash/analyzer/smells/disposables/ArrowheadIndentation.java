@@ -32,7 +32,7 @@ public class ArrowheadIndentation extends CodeSmell {
 
 	@Override
 	public List<Report> run() {
-		Log.i(NAME.toUpperCase(), "Running Arrowhead Indentation:");
+		Log.i(NAME.toUpperCase(), "Running Arrowhead Indentations check.\t| Params: Max Depth = " + mConfig.maxDepth);
 
 		List<Report> reports = new ArrayList<>();
 

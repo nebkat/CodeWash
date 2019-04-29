@@ -135,6 +135,8 @@ public class Parser {
 		mParsedSourceTree.resolvePendingTypes();
 		Log.d(TAG, "Resolved pending types in " + duration(start, time()) + "s");
 
+		Log.i(TAG, "Parsing complete\n");
+
 		return mParsedSourceTree;
 	}
 

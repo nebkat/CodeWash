@@ -52,6 +52,10 @@ public class TooManyLiterals extends CodeSmell {
 	 */
 	@Override
 	public List<Report> run() {
+
+		Log.i(NAME.toUpperCase(), "Running Too Many Literals check.\t| Params: Literal Count = " + mConfig.literalCount
+				+ ", Literal Length = " + mConfig.literalLength);
+
 		List<Report> reports = new ArrayList<>();
 		List<Literal> literals = getParsedSourceTree().getSources().stream()
 				.map(CompilationUnit::getTokens)
@@ -79,14 +83,14 @@ public class TooManyLiterals extends CodeSmell {
 			}
 		});
 
-		literals.forEach(System.out::println);
+		//literals.forEach(System.out::println);
 		tempList.parallelStream().forEach(countMap::remove);
 
 
 		if (Arguments.get().verbose()) {
 			countMap.forEach((k, v) -> {
 				if (v > mConfig.literalCount) {
-					Log.d(NAME, k + " -> " + v);
+					//Log.d(NAME, k + " -> " + v);
 				}
 			});
 		}

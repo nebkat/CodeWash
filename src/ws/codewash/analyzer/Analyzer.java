@@ -44,6 +44,7 @@ public class Analyzer {
 			for (CodeSmell codeSmell : mCodeSmells) {
 				Log.i(TAG, "- " + codeSmell.getName());
 			}
+			Log.i(TAG,"\n");
 		}
 	}
 
@@ -56,6 +57,8 @@ public class Analyzer {
 		List<Report> reports = new ArrayList<>();
 		mCodeSmells.parallelStream().forEach(codeSmell -> reports.addAll(codeSmell.run()));
 		reports.sort(Comparator.comparing(Report::getCodeSmell));
+
+		Log.i(TAG, "Analyzing complete.\n");
 		return reports;
 	}
 }

@@ -59,7 +59,9 @@ public class CodeWash {
 							.filter(Files::isRegularFile)
 							.collect(Collectors.toList());
 					Grammar grammar = Grammar.parse(Paths.get("resources/language/java-11.cwls"));
+					Log.i(TAG, "Beginning Parser.\n");
 					ParsedSourceTree tree = new Parser(grammar).parse(files);
+					Log.i(TAG, "Beginning Analyzer.\n");
 					List<Report> reports = new Analyzer(tree).analyse();
 					for (Report r : reports) {
 						Log.i(TAG, r.toString());

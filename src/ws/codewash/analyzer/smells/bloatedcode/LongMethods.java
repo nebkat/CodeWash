@@ -42,7 +42,7 @@ public class LongMethods extends CodeSmell {
 	 * @return A list of {@link ws.codewash.analyzer.reports.Report} which contain all of the problem methods.
 	 */
 	public List<Report> run() {
-		Log.i(NAME.toUpperCase(), "Running Long Methods check. Method Length = " + mConfig.methodLength);
+		Log.i(NAME.toUpperCase(), "Running Long Methods check.\t| Params: Method Length = " + mConfig.methodLength);
 
 		List<Report> reports = new ArrayList<>();
 
@@ -58,7 +58,6 @@ public class LongMethods extends CodeSmell {
 
 			if (!longMethods.isEmpty()) {
 				longMethods.forEach(cwMember -> reports.add(new MemberReport(NAME, value, cwMember, Warning.CAUTION)));
-				Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
 			}
 
 		});

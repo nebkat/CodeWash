@@ -6,6 +6,7 @@ import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CWMethod;
 import ws.codewash.java.ParsedSourceTree;
+import ws.codewash.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,8 @@ public class LongClasses extends CodeSmell {
 	// TODO : Add in count for the actual lines of the file - empty lines
 	@Override
 	public List<Report> run() {
+		Log.i(NAME.toUpperCase(), "Running Long Classes check.\t| Params: Max Fields = " + mConfig.maxFields +
+				", Max Methods = " + mConfig.maxMethods + ", Max Method Length = " + mConfig.maxMethodLength);
 
 		List<Report> reports = new ArrayList<>();
 

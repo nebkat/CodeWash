@@ -42,7 +42,7 @@ public class LongParameterList extends CodeSmell {
 	 */
 	@Override
 	public List<Report> run() {
-		Log.i(NAME.toUpperCase(), "Running Long Parameter List check. Max Parameter = " + mConfig.maxParameters);
+		Log.i(NAME.toUpperCase(), "Running Long Parameter List check.\t| Params: Max Parameter Count = " + mConfig.maxParameters);
 
 		List<Report> reports = new ArrayList<>();
 
@@ -60,7 +60,6 @@ public class LongParameterList extends CodeSmell {
 				problemMethods.forEach(problemMethod -> {
 					reports.add(new MemberReport(NAME, value, problemMethod, Warning.CAUTION));
 				});
-				Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
 			}
 		});
 
