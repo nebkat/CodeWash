@@ -54,11 +54,12 @@ public class CompilationUnit extends Scope {
 	/**
 	 * Constructs a new {@code CompilationUnit} for the given file
 	 *
+	 * @param parent the parsed source tree containing all compilation units
 	 * @param path source file
 	 * @throws IOException File read failure
 	 */
-	public CompilationUnit(Path path) throws IOException {
-		super();
+	public CompilationUnit(ParsedSourceTree parent, Path path) throws IOException {
+		super(parent);
 
 		mPath = path;
 		mContent = new String(Files.readAllBytes(path)).trim();

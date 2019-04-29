@@ -28,7 +28,7 @@ public class ParsedSourceTree extends Scope {
 	public ParsedSourceTree(List<Path> paths) throws IOException {
 		for (Path path : paths) {
 			if (path.toString().endsWith(".java")) {
-				mSources.add(new CompilationUnit(path));
+				mSources.add(new CompilationUnit(this, path));
 			} else if (path.toString().endsWith(".class")) {
 				mExternalClassLoader.addClassFile(path);
 			} else if (path.toString().endsWith(".jar")) {
