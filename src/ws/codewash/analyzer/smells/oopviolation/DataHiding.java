@@ -1,4 +1,4 @@
-package ws.codewash.analyzer.smells.oopviolations;
+package ws.codewash.analyzer.smells.oopviolation;
 
 import ws.codewash.analyzer.reports.MemberReport;
 import ws.codewash.analyzer.reports.Report;
