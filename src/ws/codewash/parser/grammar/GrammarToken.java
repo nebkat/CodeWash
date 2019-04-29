@@ -2,7 +2,7 @@ package ws.codewash.parser.grammar;
 
 import ws.codewash.parser.tree.SyntacticTreeNode;
 import ws.codewash.java.CompilationUnit;
-import ws.codewash.parser.Token;
+import ws.codewash.parser.input.Token;
 import ws.codewash.parser.tree.LexicalTreeNode;
 
 import java.util.List;

@@ -40,6 +40,22 @@ import ws.codewash.java.statement.CWWhileStatement;
 import ws.codewash.java.statement.expression.CWExpression;
 import ws.codewash.java.statement.expression.CWUnknownExpression;
 import ws.codewash.parser.grammar.Grammar;
+import ws.codewash.parser.input.BooleanLiteral;
+import ws.codewash.parser.input.CharacterLiteral;
+import ws.codewash.parser.input.Comment;
+import ws.codewash.parser.input.DoubleLiteral;
+import ws.codewash.parser.input.FloatLiteral;
+import ws.codewash.parser.input.Identifier;
+import ws.codewash.parser.input.InputElement;
+import ws.codewash.parser.input.IntegerLiteral;
+import ws.codewash.parser.input.Keyword;
+import ws.codewash.parser.input.LongLiteral;
+import ws.codewash.parser.input.NullLiteral;
+import ws.codewash.parser.input.Operator;
+import ws.codewash.parser.input.Separator;
+import ws.codewash.parser.input.StringLiteral;
+import ws.codewash.parser.input.Token;
+import ws.codewash.parser.input.WhiteSpace;
 import ws.codewash.parser.tree.LexicalTree;
 import ws.codewash.parser.tree.LexicalTreeNode;
 import ws.codewash.parser.tree.SyntacticTree;
@@ -169,15 +185,66 @@ public class Parser {
 
 		unit.setLexicalTree(new LexicalTree(lexicalInput));
 
-		// Extract tokens from lexical tree
-		List<Token> tokens = lexicalInput.get("{InputElement}").getAll().stream()
-				.map(inputElement -> inputElement.get("Token"))
-				.filter(Objects::nonNull)
-				.map(LexicalTreeNode::get)
-				.map(Token::new)
-				.collect(Collectors.toList());
-		unit.setTokens(tokens);
+
+		List<InputElement> inputElements = new ArrayList<>();
+		for (LexicalTreeNode inputElement : lexicalInput.get("{InputElement}").getAll()) {
+			LexicalTreeNode originalInputElement = inputElement;
+
+			// Descend to specific input element type (Token, Comment, WhiteSpace)
+			inputElement = inputElement.get();
+
+			inputElements.add(switch (inputElement.getName()) {
+				case "Token" -> {
+					LexicalTreeNode token = inputElement.get();
+					break switch (token.getName()) {
+						case "Identifier" -> new Identifier(originalInputElement);
+						case "Keyword" -> new Keyword(originalInputElement);
+						case "Literal" -> {
+							LexicalTreeNode literal = token.get();
+							break switch (literal.getName()) {
+								case "IntegerLiteral" -> {
+									LexicalTreeNode integerLiteral = literal.get();
+
+									String integerTypeSuffix = integerLiteral.get("[IntegerTypeSuffix]").getContent();
+									if (integerTypeSuffix.equalsIgnoreCase("l")) {
+										break new LongLiteral(originalInputElement);
+									} else {
+										break new IntegerLiteral(originalInputElement);
+									}
+								}
+								case "FloatingPointLiteral" -> {
+									LexicalTreeNode floatingPointLiteral = literal.get();
+
+									LexicalTreeNode floatTypeSuffixNode = floatingPointLiteral.get("[FloatTypeSuffix]");
+									if (floatTypeSuffixNode == null) floatTypeSuffixNode = floatingPointLiteral.get("FloatTypeSuffix");
+									String floatTypeSuffix = floatTypeSuffixNode.getContent();
+									if (floatTypeSuffix.equalsIgnoreCase("f")) {
+										break new FloatLiteral(originalInputElement);
+									} else {
+										break new DoubleLiteral(originalInputElement);
+									}
+								}
+								case "BooleanLiteral" -> new BooleanLiteral(originalInputElement);
+								case "CharacterLiteral" -> new CharacterLiteral(originalInputElement);
+								case "StringLiteral" -> new StringLiteral(originalInputElement);
+								case "NullLiteral" -> new NullLiteral(originalInputElement);
+								default -> throw new IllegalStateException("Unexpected " + literal.getName());
+							};
+						}
+						case "Separator" -> new Separator(originalInputElement);
+						case "Operator" -> new Operator(originalInputElement);
+						default -> throw new IllegalStateException("Unexpected " + token.getName());
+					};
+				}
+				case "Comment" -> new Comment(originalInputElement);
+				case "WhiteSpace" -> new WhiteSpace(originalInputElement);
+				default -> throw new IllegalStateException("Unexpected " + inputElement.getName());
+			});
+		}
+
+		unit.setInputElements(inputElements);
 	}
+
 
 	private void processSyntactic(CompilationUnit unit) {
 		// Generate syntactic tree

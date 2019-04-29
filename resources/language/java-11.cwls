@@ -854,10 +854,13 @@ EnhancedSwitchCase:
 	'case' ArgumentList '->' EnhancedSwitchCaseStatement
 	'default' '->' EnhancedSwitchCaseStatement
 
-EnhancedSwitchCaseStatement:
+EnhancedSwitchCaseStatement*:
 	Block
-	ExpressionStatement
+	EnhancedSwitchCaseExpressionStatement
 	ThrowStatement
+
+EnhancedSwitchCaseExpressionStatement:
+    Expression ';'
 
 WhileStatement:
 	'while' '(' Expression ')' Statement

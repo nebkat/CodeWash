@@ -1,9 +1,9 @@
 package ws.codewash.java;
 
-import ws.codewash.parser.Token;
+import ws.codewash.parser.input.InputElement;
+import ws.codewash.parser.input.Token;
 import ws.codewash.parser.tree.LexicalTree;
 import ws.codewash.parser.tree.SyntacticTree;
-import ws.codewash.util.Log;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CompilationUnit extends Scope {
 	private final Path mPath;
@@ -22,6 +23,7 @@ public class CompilationUnit extends Scope {
 	private SyntacticTree mSyntacticTree;
 
 	private List<Token> mTokens;
+	private List<InputElement> mInputElements;
 
 	private CWPackage mPackage;
 
@@ -66,8 +68,12 @@ public class CompilationUnit extends Scope {
 		mSyntacticTree = tree;
 	}
 
-	public void setTokens(List<Token> tokens) {
-		mTokens = tokens;
+	public void setInputElements(List<InputElement> inputElements) {
+		mInputElements = inputElements;
+		mTokens = inputElements.stream()
+				.filter(Token.class::isInstance)
+				.map(Token.class::cast)
+				.collect(Collectors.toList());
 	}
 
 	public List<Token> getTokens() {

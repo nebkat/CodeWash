@@ -1,15 +1,21 @@
 package ws.codewash.parser.grammar;
 
+import ws.codewash.parser.input.Identifier;
+import ws.codewash.parser.input.Keyword;
+import ws.codewash.parser.input.Literal;
+import ws.codewash.parser.input.Operator;
+import ws.codewash.parser.input.Separator;
 import ws.codewash.parser.tree.AbstractTreeNode;
 import ws.codewash.parser.Parser;
-import ws.codewash.parser.tree.SyntacticTree;
 import ws.codewash.parser.tree.SyntacticTreeNode;
 import ws.codewash.java.CompilationUnit;
-import ws.codewash.parser.Token;
+import ws.codewash.parser.input.Token;
 import ws.codewash.parser.tree.LexicalTreeNode;
 import ws.codewash.util.Log;
 
+import java.security.Key;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,7 +60,7 @@ public class GrammarProduction extends GrammarToken {
 		// Check if the token has already been parsed by a lexical rule of the same name (e.g. "Literal" or "Identifier")
 		if (isSyntacticallyTerminal()) {
 			// Token type must be the same as symbol
-			if (!tokens.get(offset).getType().name().equals(mSymbol)) {
+			if (!tokens.get(offset).getTerminalType().equals(mSymbol)) {
 				return Collections.emptyList();
 			}
 
@@ -124,13 +130,9 @@ public class GrammarProduction extends GrammarToken {
 
 	@Override
 	public boolean isSyntacticallyTerminal() {
-		try {
-			// Tokens are terminal symbols of syntactic grammar
-			Token.Type.valueOf(mSymbol);
-			return true;
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
+		return Arrays.asList(Identifier.class, Literal.class, Keyword.class, Operator.class, Separator.class).stream()
+				.map(Class::getSimpleName)
+				.anyMatch(mSymbol::equals);
 	}
 
 	@Override

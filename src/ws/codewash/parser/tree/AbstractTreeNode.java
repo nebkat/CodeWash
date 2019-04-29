@@ -141,7 +141,7 @@ public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
 	public T get() {
 		if (mElements.size() > 1) {
 			// TODO:
-			throw new IllegalStateException("Accessing multiple element node with get()");
+			throw new IllegalStateException("Accessing multiple element node " + getName() + " with get()");
 		}
 
 		return mElements.isEmpty() ? null : mElements.get(0);

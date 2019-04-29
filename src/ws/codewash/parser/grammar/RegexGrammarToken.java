@@ -2,7 +2,7 @@ package ws.codewash.parser.grammar;
 
 import ws.codewash.parser.tree.SyntacticTreeNode;
 import ws.codewash.java.CompilationUnit;
-import ws.codewash.parser.Token;
+import ws.codewash.parser.input.Token;
 import ws.codewash.parser.tree.LexicalTreeNode;
 
 import java.util.Collections;
@@ -25,7 +25,7 @@ public class RegexGrammarToken extends GrammarToken {
 			return Collections.emptyList();
 		}
 
-		if (mPattern.matcher(tokens.get(offset).getValue()).matches()) {
+		if (mPattern.matcher(tokens.get(offset).getRawValue()).matches()) {
 			return Collections.singletonList(new SyntacticTreeNode(unit, this, offset, 1));
 		}
 
