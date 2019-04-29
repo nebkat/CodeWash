@@ -248,6 +248,10 @@ public class Parser {
 			});
 		}
 
+		for (int i = 0; i < inputElements.size(); i++) {
+			inputElements.get(i).setIndex(i);
+		}
+
 		unit.setInputElements(inputElements);
 	}
 

@@ -9,6 +9,8 @@ public abstract class InputElement {
 	private final int mStart;
 	private final int mEnd;
 
+	private int mIndex;
+
 	InputElement(LexicalTreeNode node) {
 		mCompilationUnit = node.getCompilationUnit();
 		mValue = node.getContent();
@@ -30,6 +32,14 @@ public abstract class InputElement {
 
 	public int getEnd() {
 		return mEnd;
+	}
+
+	public int getIndex() {
+		return mIndex;
+	}
+
+	public void setIndex(int index) {
+		mIndex = index;
 	}
 
 	@Override
