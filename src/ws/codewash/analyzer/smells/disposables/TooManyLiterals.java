@@ -1,6 +1,8 @@
 package ws.codewash.analyzer.smells.disposables;
 
+import ws.codewash.analyzer.reports.LiteralReport;
 import ws.codewash.analyzer.reports.Report;
+import ws.codewash.analyzer.reports.Warning;
 import ws.codewash.analyzer.smells.CodeSmell;
 import ws.codewash.java.CompilationUnit;
 import ws.codewash.java.ParsedSourceTree;
@@ -64,17 +66,22 @@ public class TooManyLiterals extends CodeSmell {
 
 		Map<String, Integer> countMap = new HashMap<>();
 
+
+
 		literals.forEach(token -> countMap.compute(token.getRawValue(), (k, v) -> (v == null) ? 1 : v + 1));
 
 		List<String> tempList = new ArrayList<>();
 
 		countMap.forEach((k, v) -> {
 			if (v < mConfig.literalLength) {
+				literals.remove(k);
 				tempList.add(k);
 			}
 		});
 
+		literals.forEach(System.out::println);
 		tempList.parallelStream().forEach(countMap::remove);
+
 
 		if (Arguments.get().verbose()) {
 			countMap.forEach((k, v) -> {

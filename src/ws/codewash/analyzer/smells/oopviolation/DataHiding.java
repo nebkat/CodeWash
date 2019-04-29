@@ -53,7 +53,8 @@ public class DataHiding extends CodeSmell {
 					.collect(Collectors.toList()));
 
 			if (!problemFields.isEmpty()) {
-				reports.add(new MemberReport(NAME, cwClass, problemFields, Warning.ISSUE));
+				problemFields.forEach(cwMember -> reports.add(new MemberReport(NAME, cwClass, cwMember, Warning.ISSUE)));
+
 			}
 		});
 

@@ -67,7 +67,7 @@ public class DataClass extends CodeSmell {
 						});
 
 						if (allMatch)
-							reports.add(new ClassReport(NAME, cwClass, Warning.ISSUE));
+							reports.add(new ClassReport(NAME, Warning.ISSUE, cwClass));
 					}
 				});
 		return reports;

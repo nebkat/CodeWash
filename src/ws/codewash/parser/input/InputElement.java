@@ -1,15 +1,19 @@
 package ws.codewash.parser.input;
 
 import ws.codewash.java.CompilationUnit;
+import ws.codewash.java.Locatable;
+import ws.codewash.java.Location;
 import ws.codewash.parser.tree.LexicalTreeNode;
 
-public abstract class InputElement {
+public abstract class InputElement implements Locatable {
 	private CompilationUnit mCompilationUnit;
 	private final String mValue;
 	private final int mStart;
 	private final int mEnd;
 
 	private int mIndex;
+
+	private Location mLocation;
 
 	InputElement(LexicalTreeNode node) {
 		mCompilationUnit = node.getCompilationUnit();
@@ -40,6 +44,12 @@ public abstract class InputElement {
 
 	public void setIndex(int index) {
 		mIndex = index;
+		mLocation = new Location(mCompilationUnit, index, index);
+	}
+
+	@Override
+	public Location getLocation() {
+		return mLocation;
 	}
 
 	@Override

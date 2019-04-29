@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CWMethod extends Scope implements CWConstructorOrMethod, CWParameterizable, CWMember, Modifiable {
+	private Location mLocation;
+
 	private final CWClassOrInterface mParent;
 	private final String mName;
 	private final int mModifiers;
@@ -93,6 +95,11 @@ public class CWMethod extends Scope implements CWConstructorOrMethod, CWParamete
 	@Override
 	public int getModifiers() {
 		return mModifiers;
+	}
+
+	@Override
+	public Location getLocation() {
+		return mLocation;
 	}
 
 	@Override

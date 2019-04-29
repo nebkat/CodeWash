@@ -61,7 +61,7 @@ public class PrimitiveObsession extends CodeSmell {
 
 
 				if (totalFields > mConfig.minReqFields && ratio > mConfig.acceptableRatio) {
-					reports.add(new ClassReport(NAME, value, Warning.CAUTION));
+					reports.add(new ClassReport(NAME,  Warning.CAUTION, value));
 					Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
 				} else {
 					Log.d(NAME.toUpperCase(), "Not creating report for " + value.getSimpleName() + " Num primitives = " + totalPrimitives);

@@ -45,9 +45,9 @@ public class LongClasses extends CodeSmell {
 
 			if (totalFields > mConfig.maxFields && totalMethods > mConfig.maxMethods
 					|| totalFields > mConfig.maxFields && totalMethodLength + totalContructorsLength > mConfig.maxMethodLength) {
-				reports.add(new ClassReport(NAME, value, Warning.WARNING));
+				reports.add(new ClassReport(NAME, Warning.WARNING, value));
 			} else if (totalMethodLength + totalContructorsLength > mConfig.maxMethodLength) {
-				reports.add(new ClassReport(NAME, value, Warning.CAUTION));
+				reports.add(new ClassReport(NAME, Warning.CAUTION,value));
 			}
 		});
 

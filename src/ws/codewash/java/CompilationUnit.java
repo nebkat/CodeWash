@@ -68,6 +68,10 @@ public class CompilationUnit extends Scope {
 		mSyntacticTree = tree;
 	}
 
+	public List<InputElement> getInputElements() {
+		return mInputElements;
+	}
+
 	public void setInputElements(List<InputElement> inputElements) {
 		mInputElements = inputElements;
 		mTokens = inputElements.stream()

@@ -43,7 +43,7 @@ public class LazyClass extends CodeSmell {
 				}
 
 				if (totalFields + totalMethods + totalMethodLength < mConfig.minLength) {
-					reports.add(new ClassReport(NAME, value, Warning.ISSUE));
+					reports.add(new ClassReport(NAME, Warning.ISSUE, value));
 				}
 			}
 		});

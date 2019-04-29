@@ -57,8 +57,10 @@ public class LongParameterList extends CodeSmell {
 					.collect(Collectors.toList());
 
 			if (!problemMethods.isEmpty()) {
+				problemMethods.forEach(problemMethod -> {
+					reports.add(new MemberReport(NAME, value, problemMethod, Warning.CAUTION));
+				});
 				Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
-				reports.add(new MemberReport(NAME, value, problemMethods, Warning.CAUTION));
 			}
 		});
 

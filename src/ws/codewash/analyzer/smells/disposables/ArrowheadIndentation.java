@@ -55,8 +55,9 @@ public class ArrowheadIndentation extends CodeSmell {
 
 						}).collect(Collectors.toList());
 
-				if (!problemMethods.isEmpty())
-					reports.add(new MemberReport(NAME, value, problemMethods, Warning.WARNING));
+				if (!problemMethods.isEmpty()) {
+					problemMethods.forEach(cwMember -> reports.add(new MemberReport(NAME, value, cwMember, Warning.WARNING)));
+				}
 			}
 		});
 
@@ -67,7 +68,7 @@ public class ArrowheadIndentation extends CodeSmell {
 	 * Recursive function to detect arrowhead indentations of an If Statement.
 	 *
 	 * @param ifStatement the if statement to check
-	 * @param depth the current depth of the arrowhead indentation
+	 * @param depth       the current depth of the arrowhead indentation
 	 * @return if the statement involves arrowhead indentation.
 	 */
 	private boolean detectArrowhead(CWIfStatement ifStatement, int depth) {

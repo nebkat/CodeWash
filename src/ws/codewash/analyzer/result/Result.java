@@ -1,28 +1,43 @@
 package ws.codewash.analyzer.result;
 
+
+import ws.codewash.analyzer.reports.Report;
+import ws.codewash.java.CompilationUnit;
 import ws.codewash.java.Location;
+import ws.codewash.java.ParsedSourceTree;
+import ws.codewash.parser.input.InputElement;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Result {
 	public final Map<String, List<Input>> sources;
 
 	public final List<Report> reports;
 
-	public Result(Map<String, List<Input>> sources, List<Report> reports) {
-		this.sources = sources;
-		this.reports = reports;
+	public Result(ParsedSourceTree parsedSourceTree, List<ws.codewash.analyzer.reports.Report> extReports) {
+		sources = parsedSourceTree.getSources().stream()
+				.collect(Collectors.toMap(CompilationUnit::getFileName,
+						c -> c.getInputElements().stream()
+								.map(Input::new)
+								.collect(Collectors.toList())));
+
+		reports = extReports.stream()
+				.map(Report::new)
+				.collect(Collectors.toList());
+
 	}
 
 	public static class Input {
 		public final String v;
 		public final int t;
 
-		public Input(String v, int t) {
-			this.v = v;
-			this.t = t;
+		public Input(InputElement inputElement) {
+			this.v = inputElement.getRawValue();
+			this.t = 0;
 		}
+
 	}
 
 	public static class Report {
@@ -30,10 +45,11 @@ public class Result {
 		public final String severity;
 		public final Location location;
 
-		public Report(String type, String severity, Location location) {
-			this.type = type;
-			this.severity = severity;
-			this.location = location;
+		public Report(ws.codewash.analyzer.reports.Report report) {
+			this.type = report.getCodeSmell();
+			this.severity = report.getWarning();
+			this.location = report.getLocation();
 		}
+
 	}
 }

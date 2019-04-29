@@ -66,8 +66,8 @@ public class LongIDs extends CodeSmell {
 
 
 			if (!longIDs.isEmpty()) {
+				longIDs.forEach(cwMember ->  reports.add(new MemberReport(NAME, value, cwMember, Warning.CAUTION)));
 				Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
-				reports.add(new MemberReport(NAME, value, longIDs, Warning.CAUTION));
 			}
 		});
 

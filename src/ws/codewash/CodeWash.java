@@ -2,8 +2,11 @@ package ws.codewash;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ws.codewash.analyzer.Analyzer;
 import ws.codewash.analyzer.reports.Report;
+import ws.codewash.analyzer.result.Result;
 import ws.codewash.http.ServerHandler;
 import ws.codewash.java.ParsedSourceTree;
 import ws.codewash.parser.Parser;
@@ -62,11 +65,6 @@ public class CodeWash {
 						Log.i(TAG, r.toString());
 					}
 					Log.i(TAG, "Total number of smells detected: " + reports.size());
-
-					ReportWriter writer = new ReportWriter();
-					String output = writer.writeReport(reports);
-					System.out.println(output);
-
 				} finally {
 					try {
 						sources.close();

@@ -57,8 +57,8 @@ public class LongMethods extends CodeSmell {
 					.collect(Collectors.toList());
 
 			if (!longMethods.isEmpty()) {
+				longMethods.forEach(cwMember -> reports.add(new MemberReport(NAME, value, cwMember, Warning.CAUTION)));
 				Log.d(NAME.toUpperCase(), "Created report for " + NAME + " " + value.getSimpleName());
-				reports.add(new MemberReport(NAME, value, longMethods, Warning.CAUTION));
 			}
 
 		});

@@ -2,29 +2,18 @@ package ws.codewash.analyzer.reports;
 
 import ws.codewash.java.CWClassOrInterface;
 import ws.codewash.java.CWMember;
-import ws.codewash.java.CWMethod;
 
-import java.util.List;
 
 /**
  * Used to store the data relating to Code Smells relating to Members of Classes.
  */
-public class MemberReport implements Report {
+public class MemberReport extends Report {
+
 
 	/**
-	 * The name of the Code Smell being reported on.
+	 * Member in which there is a Code Smell.
 	 */
-	private String mCodeSmell;
-
-	/**
-	 * The class containing the problem members.
-	 */
-	private CWClassOrInterface mReportClass;
-
-	/**
-	 * List of the members in which there is a Code Smell.
-	 */
-	private List<CWMember> mProblemMembers;
+	private CWMember mProblemMember;
 
 	/**
 	 * The warning associated with the Code Smell.
@@ -35,26 +24,17 @@ public class MemberReport implements Report {
 	 * Constructs a report with the values passed through to it.
 	 *
 	 * @param codeSmell      The name of the Code Smell associated with the report
-	 * @param problemMembers The list of problem members.
+	 * @param problemMember The list of problem members.
 	 * @param warning        The warning associated with the smell.
 	 */
-	public MemberReport(String codeSmell, CWClassOrInterface reportClass, List<CWMember> problemMembers, Warning warning) {
-		mCodeSmell = codeSmell;
-		mReportClass = reportClass;
-		mProblemMembers = problemMembers;
+	public MemberReport(String codeSmell, CWClassOrInterface reportClass, CWMember problemMember, Warning warning) {
+		super(codeSmell, warning.toString(), problemMember.getLocation());
+		mProblemMember = problemMember;
 		mSmellWarning = warning;
 	}
 
-	public String getCodeSmell() {
-		return mCodeSmell;
-	}
-
-	public CWClassOrInterface getReportClass() {
-		return mReportClass;
-	}
-
-	public List<CWMember> getProblemMembers() {
-		return mProblemMembers;
+	public CWMember getProblemMembers() {
+		return mProblemMember;
 	}
 
 	public String getWarning() {
@@ -63,22 +43,24 @@ public class MemberReport implements Report {
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(mCodeSmell);
+		sb.append(getCodeSmell());
 		sb.append("\n");
-		for (CWMember member : mProblemMembers) {
-			sb.append("\tClass = ");
-			sb.append(mReportClass.getSimpleName());
+//		for (CWMember member : mProblemMembers) {
+//			sb.append("\tClass = ");
+//			sb.append(mReportClass.getSimpleName());
+//
+//			if (member instanceof CWMethod) {
+//				sb.append(" - Method = ");
+//			} else {
+//				sb.append(" - Field = ");
+//			}
+//
+//			sb.append(member.getName());
+//			sb.append("\n");
+//		}
 
-			if (member instanceof CWMethod) {
-				sb.append(" - Method = ");
-			} else {
-				sb.append(" - Field = ");
-			}
-
-			sb.append(member.getName());
-			sb.append("\n");
-		}
-
+		sb.append(getProblemMembers().getName());
+		sb.append("\n");
 		return sb.toString();
 	}
 

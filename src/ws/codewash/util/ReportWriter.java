@@ -25,18 +25,7 @@ public class ReportWriter {
 		GsonReport[] gsonReports = new GsonReport[reports.size()];
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-		for (int i = 0; i < reports.size(); i++) {
-			if (reports.get(i) instanceof MemberReport) {
 
-				List<String> memberNames = new ArrayList<>();
-				((MemberReport) reports.get(i)).getProblemMembers().forEach(cwMember -> memberNames.add(cwMember.getName()));
-
-				String[] problemMembers = memberNames.toArray(new String[memberNames.size()]);
-				gsonReports[i] = new GsonMemberReport(((MemberReport) reports.get(i)).getReportClass().getSimpleName(), ((MemberReport) reports.get(i)).getReportClass().getPackageName(), reports.get(i).getCodeSmell(), problemMembers, reports.get(i).getWarning());
-			} else {
-				gsonReports[i] = (new GsonReport(((ClassReport) reports.get(i)).getProblemClass().getSimpleName(), ((ClassReport) reports.get(i)).getProblemClass().getPackageName(), reports.get(i).getCodeSmell(), reports.get(i).getWarning()));
-			}
-		}
 
 		String asGson = gson.toJson(gsonReports);
 		try {
