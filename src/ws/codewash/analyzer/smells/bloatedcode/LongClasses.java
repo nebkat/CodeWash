@@ -14,19 +14,12 @@ import java.util.List;
 public class LongClasses extends CodeSmell {
 
 	public final static String NAME = "LongClasses";
-	private final String CONFIG_MAX_CLASS_LENGTH = "MaxClassLength";
-	private final String CONFIG_MAX_NUM_FIELDS = "MaxFields";
-	private final String CONFIG_MAX_NUM_METHODS = "MaxMethods";
 
-	private final int MAX_LENGTH;
-	private final int MAX_METHODS;
-	private final int MAX_FIELDS;
+	private Config mConfig = ws.codewash.util.config.Config.get().configs.longClasses;
 
 	public LongClasses(ParsedSourceTree parsedSourceTree) {
 		super(parsedSourceTree);
-		MAX_LENGTH = Config.get().LongClassConfig(CONFIG_MAX_CLASS_LENGTH).intValue();
-		MAX_METHODS = Config.get().LongClassConfig(CONFIG_MAX_NUM_METHODS).intValue();
-		MAX_FIELDS = Config.get().LongClassConfig(CONFIG_MAX_NUM_FIELDS).intValue();
+
 	}
 
 	// TODO : Add in count for the actual lines of the file - empty lines
@@ -51,12 +44,12 @@ public class LongClasses extends CodeSmell {
 				totalMethodLength += cwMethod.getMethodLength();
 			}
 
-			if (totalFields > MAX_FIELDS && totalMethods > MAX_METHODS && totalMethodLength + totalContructorsLength > MAX_LENGTH
-				|| totalFields > MAX_FIELDS && totalMethods > MAX_METHODS || totalFields > MAX_FIELDS && totalMethodLength + totalContructorsLength > MAX_LENGTH
-				|| totalFields > MAX_METHODS && totalMethodLength + totalContructorsLength > MAX_LENGTH) {
+			if (totalFields > mConfig.maxFields && totalMethods > mConfig.maxMethods && totalMethodLength + totalContructorsLength > mConfig.maxMethodLength
+				|| totalFields > mConfig.maxFields && totalMethods > mConfig.maxMethods || totalFields > mConfig.maxFields && totalMethodLength + totalContructorsLength > mConfig.maxMethodLength
+				|| totalFields > mConfig.maxMethods && totalMethodLength + totalContructorsLength > mConfig.maxMethodLength) {
 				reports.add(new ClassReport(NAME, value, Warning.WARNING));
 			}
-			else if (totalMethodLength + totalContructorsLength > MAX_LENGTH) {
+			else if (totalMethodLength + totalContructorsLength > mConfig.maxMethodLength) {
 				reports.add(new ClassReport(NAME, value, Warning.CAUTION));
 			}
 		});
@@ -74,5 +67,11 @@ public class LongClasses extends CodeSmell {
 		return NAME;
 	}
 
+
+	public static class Config {
+		private final int maxFields = 15;
+		private final int maxMethods = 15;
+		private final int maxMethodLength = 300;
+	}
 
 }
