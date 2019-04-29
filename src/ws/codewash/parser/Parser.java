@@ -54,7 +54,6 @@ import ws.codewash.parser.input.NullLiteral;
 import ws.codewash.parser.input.Operator;
 import ws.codewash.parser.input.Separator;
 import ws.codewash.parser.input.StringLiteral;
-import ws.codewash.parser.input.Token;
 import ws.codewash.parser.input.WhiteSpace;
 import ws.codewash.parser.tree.LexicalTree;
 import ws.codewash.parser.tree.LexicalTreeNode;
@@ -70,7 +69,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -237,7 +235,15 @@ public class Parser {
 					};
 				}
 				case "Comment" -> new Comment(originalInputElement);
-				case "WhiteSpace" -> new WhiteSpace(originalInputElement);
+				case "WhiteSpace" -> {
+					LexicalTreeNode whiteSpace = inputElement.get();
+
+					if (whiteSpace.getName().equals("LineTerminator")) {
+						break new LineTerminator(originalInputElement);
+					} else {
+						break new WhiteSpace(originalInputElement);
+					}
+				}
 				default -> throw new IllegalStateException("Unexpected " + inputElement.getName());
 			});
 		}
